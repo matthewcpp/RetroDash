@@ -1,5 +1,6 @@
 #include "n64_renderer.h"
 #include "n64_input.h"
+#include "player.h"
 
 #include <libdragon.h>
 
@@ -23,23 +24,20 @@ int main(void)
 
     Input* input = n64_input_create();
 
-    Sprite* sprite = renderer->sprites[0];
+    Player* player = player_create(input, renderer);
 
-    int spriteX = 0, spriteY = 0, frame = 0;
+    const char* message = "chris is cool";
 
-    int controller_status = get_controllers_present();
-    char message[24];
-
-    if (controller_status & CONTROLLER_1_INSERTED)
-        sprintf(message, "controller 1 active");
-    else
-        sprintf(message, "no controller");
+    unsigned long prev_time = get_ticks_ms();
 
 
     /* Main loop test */
     while(1) 
     {
+        unsigned long current_time = get_ticks_ms();
+        float time_delta = (current_time - prev_time) / 1000.0f;
         n64_input_update(input);
+        player_update(player, time_delta);
 
         static display_context_t disp = 0;
 
@@ -66,12 +64,14 @@ int main(void)
         /* Attach RDP to display */
         rdp_attach_display( disp );
 
-        renderer_draw_sprite(renderer, sprite, spriteX, spriteY, frame);
+        player_draw(player);
 
         /* Inform the RDP we are finished drawing and that any pending operations should be flushed */
         rdp_detach_display();
 
         /* Force backbuffer flip */
         display_show(disp);
+
+        prev_time = current_time;
     }
 }

@@ -34,3 +34,7 @@ void renderer_draw_sprite(Renderer* renderer, Sprite* sprite, int x, int y, int 
     rdp_load_texture_stride( 0, 0, MIRROR_DISABLED, sprite->libdragon_sprite, frame);
     rdp_draw_sprite( 0, x, y, MIRROR_DISABLED );
 }
+
+Sprite* renderer_get_sprite(Renderer* renderer, int index) {
+    return renderer->sprites[index];
+}
