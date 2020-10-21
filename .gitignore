@@ -1,0 +1,8 @@
+node_modules
+filesystem
+.DS_Store
+*.dfs
+*elf
+*.z64
+*.o
+*.bin
