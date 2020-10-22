@@ -3,6 +3,7 @@
 
 #include "entity.h"
 #include "renderer.h"
+#include "tilemap.h"
 
 typedef struct {
     Entity* entities[2];
@@ -10,6 +11,7 @@ typedef struct {
     float gravity;
 
     Renderer* _renderer;
+    Tilemap* tilemap;
 } Level;
 
 Level* level_create(Renderer* renderer);

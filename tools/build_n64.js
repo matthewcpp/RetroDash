@@ -15,6 +15,12 @@ const sprites = [
         bitDepth: 16,
         horizontalSlices: 4,
         verticalSlices: 1
+    },
+    {
+        input: "tilemap.png",
+        bitDepth: 16,
+        horizontalSlices: 2,
+        verticalSlices: 2
     }
 ];
 

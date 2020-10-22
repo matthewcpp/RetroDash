@@ -11,4 +11,8 @@ void renderer_draw_sprite(Renderer* renderer, Sprite* sprite, int x, int y, int 
 void renderer_set_color(Renderer* renderer, int r, int g, int b, int a);
 void renderer_draw_filled_rect(Renderer* renderer, Rect* rect);
 
+void renderer_begin_tile_drawing(Renderer* renderer);
+void renderer_draw_tile(Renderer* renderer, int index, int x, int y);
+void renderer_end_tile_drawing(Renderer* renderer);
+
 #endif
