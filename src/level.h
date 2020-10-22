@@ -5,7 +5,7 @@
 #include "renderer.h"
 
 typedef struct {
-    Entity* entity;
+    Entity* entities[2];
     float speed;
     float gravity;
 

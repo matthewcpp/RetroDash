@@ -26,6 +26,21 @@ int main(void)
     Input* input = n64_input_create();
 
     Level* level = level_create(renderer);
+
+    Entity* entity = entity_create(renderer);
+    entity->rect.x = 0.0f;
+    entity->rect.y = 200.0f;
+    entity->rect.w = 300.0f;
+    entity->rect.h = 40.0f;
+    level->entities[0] = entity;
+
+    entity = entity_create(renderer);
+    entity->rect.x = 345.0f;
+    entity->rect.y = 200.0f;
+    entity->rect.w = 300.0f;
+    entity->rect.h = 40.0f;
+    level->entities[1] = entity;
+
     Player* player = player_create(level, input, renderer);
     player->pos_x = 75;
     player->pos_y = 150;

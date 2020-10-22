@@ -5,8 +5,8 @@
 #include "renderer.h"
 
 typedef struct  {
-	Rect rect;
-	Renderer* _renderer;
+    Rect rect;
+    Renderer* _renderer;
 } Entity;
 
 Entity* entity_create(Renderer* renderer);
