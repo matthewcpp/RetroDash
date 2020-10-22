@@ -54,6 +54,12 @@ int get_input_value(struct controller_data* controller_state, ControllerIndex co
         case CONTROLLER_BUTTON_Z:
             return controller_state->c[controller].Z;
 
+        case CONTROLLER_BUTTON_L:
+            return controller_state->c[controller].L;
+
+        case CONTROLLER_BUTTON_R:
+            return controller_state->c[controller].R;
+
         default:
             return 0;
     }

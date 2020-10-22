@@ -4,61 +4,53 @@
 
 #define PLAYER_SPRITE_INDEX 0
 #define FRAME_TIME 1.0f / 20.0f
-#define PLAYER_SPEED 75.0f
 
-Player* player_create(Input* input, Renderer* renderer) {
+Player* player_create(Level* level, Input* input, Renderer* renderer) {
     Player* player = malloc(sizeof(Player));
 
+    player->_level = level;
     player->_input = input;
     player->_renderer = renderer;
 
-    player->_prev_x = 0.0f;
-    player->_prev_y = 0.0f;
     player->pos_x = 0.0f;
     player->pos_y = 0.0f;
 
     player->frame_time = 0.0f;
     player->sprite_frame = 0;
 
+    player->jump_velocity = 200.0f;
+    player->velocity = 0.0f;
+    player->on_ground = 0;
+
     return player;
 }
 
-static int did_move(Player* player) {
-    return player->_prev_x != player->pos_x || player->_prev_y != player->pos_y;
-}
+void player_update(Player* player, float time) {
+    player->frame_time += time;
+    if (player->frame_time > FRAME_TIME) {
+        player->frame_time -= FRAME_TIME;
+        player->sprite_frame += 1;
 
-static void update_anim(Player* player, float time) {
-    if (did_move(player)) {
-        player->frame_time += time;
-        if (player->frame_time > FRAME_TIME) {
-            player->frame_time -= FRAME_TIME;
-            player->sprite_frame += 1;
+        if (player->sprite_frame > 3)
+            player->sprite_frame = 1;
+    }
 
-            if (player->sprite_frame > 3)
-                player->sprite_frame = 1;
+
+    if (player->on_ground && input_button_is_down(player->_input, CONTROLLER_1, CONTROLLER_BUTTON_A)){
+        player->on_ground = 0;
+        player->velocity = player->jump_velocity;
+    }
+
+    if (!player->on_ground) {
+        player->pos_y -= player->velocity * time;
+        player->velocity -= player->_level->gravity * time;
+
+        if (player->pos_y >= 175.0f) {
+            player->pos_y = 175.0f;
+            player->on_ground = 1;
         }
     }
-    else {
-        player->sprite_frame = 0;
-        player->frame_time = FRAME_TIME;
-    }
-}
 
-void player_update(Player* player, float time) {
-    if (input_button_is_held(player->_input, CONTROLLER_1, CONTROLLER_BUTTON_DPAD_RIGHT))
-        player->pos_x += time * PLAYER_SPEED;
-    else if (input_button_is_held(player->_input, CONTROLLER_1, CONTROLLER_BUTTON_DPAD_LEFT))
-        player->pos_x -= time * PLAYER_SPEED;
-
-    else if (input_button_is_held(player->_input, CONTROLLER_1, CONTROLLER_BUTTON_DPAD_UP))
-        player->pos_y -= time * PLAYER_SPEED;
-    else if (input_button_is_held(player->_input, CONTROLLER_1, CONTROLLER_BUTTON_DPAD_DOWN))
-        player->pos_y += time * PLAYER_SPEED;
-
-    update_anim(player, time);
-
-    player->_prev_x = player->pos_x;
-    player->_prev_y = player->pos_y;
 }
 
 void player_draw(Player* player) {

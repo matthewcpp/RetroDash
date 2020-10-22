@@ -43,4 +43,4 @@ spritemap.dfs:
 all: $(PROG_NAME)$(ROM_EXTENSION)
 
 clean:
-	rm -f *.v64 *.z64 *.elf *.o *.bin *.dfs
+	rm -f *.v64 *.z64 *.elf src/*.o *.bin *.dfs
