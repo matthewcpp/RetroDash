@@ -1,4 +1,4 @@
-#include "renderer.h"
+#include "../renderer.h"
 #include "n64_renderer.h"
 
 #include <libdragon.h>

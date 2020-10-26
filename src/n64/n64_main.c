@@ -1,10 +1,10 @@
 #include "n64_renderer.h"
 #include "n64_input.h"
-#include "level.h"
+#include "../level.h"
 
 #include <libdragon.h>
 
-#include "filesystem.h"
+#include "../filesystem.h"
 
 #include <stdio.h>
 #include <malloc.h>

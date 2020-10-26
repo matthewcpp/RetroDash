@@ -2,7 +2,7 @@
 #define N64_RENDERER_H
 
 #include "batch.h"
-#include "renderer.h"
+#include "../renderer.h"
 
 #include <libdragon.h>
 

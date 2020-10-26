@@ -1,7 +1,7 @@
 #ifndef N64_INPUT_H
 #define N64_INPUT_H
 
-#include "input.h"
+#include "../input.h"
 
 #include <libdragon.h>
 

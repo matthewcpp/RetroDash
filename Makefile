@@ -1,5 +1,5 @@
-SRC_FILES = $(wildcard src/*.c)
-HEADER_FILES = $(wildcard src/*.h)
+SRC_FILES = $(wildcard src/*.c) $(wildcard src/n64/*.c)
+HEADER_FILES = $(wildcard src/*.h) $(wildcard src/n64/*.h)
 
 OBJ_FILES = $(SRC_FILES:.c=.o)
 
@@ -43,4 +43,4 @@ spritemap.dfs:
 all: $(PROG_NAME)$(ROM_EXTENSION)
 
 clean:
-	rm -f *.v64 *.z64 *.elf src/*.o *.bin *.dfs
+	rm -f *.v64 *.z64 *.elf src/*.o src/n64/*.o *.bin *.dfs
