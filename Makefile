@@ -38,7 +38,7 @@ $(PROG_NAME).elf : $(OBJ_FILES) $(HEADER_FILES)
 	$(LD) -o $(PROG_NAME).elf $(OBJ_FILES) $(LINK_FLAGS)
 
 spritemap.dfs:
-	$(MKDFSPATH) spritemap.dfs ./filesystem/
+	$(MKDFSPATH) spritemap.dfs ./assets/build_n64/
 
 all: $(PROG_NAME)$(ROM_EXTENSION)
 

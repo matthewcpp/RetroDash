@@ -3,11 +3,15 @@
 
 #include <libdragon.h>
 
-#include <stdlib.h>
 #include <stdint.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
 Renderer* n64_renderer_create() {
     Renderer* renderer = calloc(1, sizeof(Renderer));
+    renderer->clear_color = graphics_make_color(255, 255, 255, 255);
+    renderer->draw_mode = DDRAW_MODE_UNSPECIFIED;
 
     for (int i = 0; i < BATCH_COUNT; i++) {
         renderer->tile_batches[i] = tile_batch_create();
@@ -16,12 +20,19 @@ Renderer* n64_renderer_create() {
     return renderer;
 }
 
-Sprite* n64_rendrer_load_sprite(Renderer* renderer, const char* path) {
-    (void)renderer;
-    int fp = dfs_open(path);
-    sprite_t* libdragon_sprite = malloc( dfs_size( fp ) );
-    dfs_read( libdragon_sprite, 1, dfs_size( fp ), fp );
-    dfs_close( fp );
+Sprite* renderer_load_sprite(Renderer* renderer, const char* path) {
+    char* spritePath = malloc(strlen(path) + 8);  // .sprite
+    sprintf(spritePath, "%s.sprite", path);
+
+    int handle = dfs_open(spritePath);
+    free(spritePath);
+
+    if (handle < 0)
+        return NULL;
+
+    sprite_t* libdragon_sprite = malloc( dfs_size( handle ) );
+    dfs_read(libdragon_sprite, 1, dfs_size( handle ), handle);
+    dfs_close(handle);
 
     Sprite* sprite = malloc(sizeof(Sprite*));
     sprite->libdragon_sprite = libdragon_sprite;
@@ -29,20 +40,11 @@ Sprite* n64_rendrer_load_sprite(Renderer* renderer, const char* path) {
     return sprite;
 }
 
-void n64_renderer_load_sprites(Renderer* renderer) {
-    renderer->sprites[0] = n64_rendrer_load_sprite(renderer, "/player.sprite");
-    renderer->sprites[1] = n64_rendrer_load_sprite(renderer, "/tilemap.sprite");
-}
-
 void renderer_draw_sprite(Renderer* renderer, Sprite* sprite, int x, int y, int frame) {
     (void)renderer;
     rdp_sync( SYNC_PIPE );
     rdp_load_texture_stride( 0, 0, MIRROR_DISABLED, sprite->libdragon_sprite, frame);
     rdp_draw_sprite( 0, x, y, MIRROR_DISABLED );
-}
-
-Sprite* renderer_get_sprite(Renderer* renderer, int index) {
-    return renderer->sprites[index];
 }
 
 void renderer_set_color(Renderer* renderer, int r, int g, int b, int a) {
@@ -55,31 +57,52 @@ void renderer_draw_filled_rect(Renderer* renderer, Rect* rect) {
     rdp_draw_filled_rectangle(rect->x, rect->y, rect->x + rect->w, rect->y + rect->w);
 }
 
-void renderer_begin_tile_drawing(Renderer* renderer) {
+void renderer_begin_tile_drawing(Renderer* renderer, Sprite* sprite, int horizontal_slices, int vertical_slices) {
     for (int i = 0; i < BATCH_COUNT; i++) {
         renderer->tile_batches[i]->count = 0;
     }
+
+    sprite->libdragon_sprite->hslices = (uint8_t)horizontal_slices;
+    sprite->libdragon_sprite->vslices = (uint8_t)vertical_slices;
+    renderer->tile_sprite = sprite;
+}
+
+void renderer_draw_tile(Renderer* renderer, int index, int x, int y) {
+    tile_batch_add(renderer->tile_batches[index], x, y);
 }
 
 void renderer_end_tile_drawing(Renderer* renderer) {
+    if (renderer->draw_mode != DRAW_MODE_TEXTURED) {
+        rdp_enable_texture_copy();
+        rdp_sync( SYNC_PIPE );
+        renderer->draw_mode = DRAW_MODE_TEXTURED;
+    }
+
     for (int b = 0; b < BATCH_COUNT; b++) {
         TileBatch* batch = renderer->tile_batches[b];
 
         if (batch->count == 0) continue;
 
-        rdp_sync( SYNC_PIPE );
-        rdp_enable_texture_copy();
-        rdp_load_texture_stride( 0, 0, MIRROR_DISABLED, renderer->sprites[1]->libdragon_sprite, b);
+        rdp_load_texture_stride( 0, 0, MIRROR_DISABLED, renderer->tile_sprite->libdragon_sprite, b);
 
         for (int i = 0; i < batch->count; i++) {
             rdp_draw_sprite( 0, batch->positions[i].x, batch->positions[i].y, MIRROR_DISABLED );
         }
+
+        rdp_sync( SYNC_PIPE ); // flush draw commands before loading next batch texture
     }
+
+    renderer->tile_sprite = NULL;
 }
 
-void renderer_draw_tile(Renderer* renderer, int index, int x, int y) {
-    tile_batch_add(renderer->tile_batches[index], x, y);
-
+void renderer_set_clear_color(Renderer* renderer, uint8_t r, uint8_t g, uint8_t b) {
+    renderer->clear_color = graphics_make_color(r, g, b, 255);
 }
 
+int sprite_width(Sprite* sprite) {
+    return sprite->libdragon_sprite->width;
+}
 
+int sprite_height(Sprite* sprite) {
+    return sprite->libdragon_sprite->height;
+}

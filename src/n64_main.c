@@ -1,9 +1,10 @@
 #include "n64_renderer.h"
 #include "n64_input.h"
 #include "level.h"
-#include "player.h"
 
 #include <libdragon.h>
+
+#include "filesystem.h"
 
 #include <stdio.h>
 #include <malloc.h>
@@ -15,63 +16,35 @@ int main(void)
 {
     init_interrupts();
     display_init( RESOLUTION_320x240, DEPTH_16_BPP, 2, GAMMA_NONE, ANTIALIAS_RESAMPLE );
-    dfs_init( DFS_DEFAULT_LOCATION );
+    filesystem_init(NULL);
     rdp_init();
     controller_init();
     timer_init();
 
     Renderer* renderer = n64_renderer_create();
-    n64_renderer_load_sprites(renderer);
-
+    renderer_set_clear_color(renderer, 10, 7, 53);
     Input* input = n64_input_create();
 
     Level* level = level_create(renderer);
+    int result = level_load(level, "/level01.level");
 
-    Entity* entity = entity_create(renderer);
-    entity->rect.x = 0.0f;
-    entity->rect.y = 200.0f;
-    entity->rect.w = 300.0f;
-    entity->rect.h = 40.0f;
-    level->entities[0] = entity;
-
-    entity = entity_create(renderer);
-    entity->rect.x = 345.0f;
-    entity->rect.y = 200.0f;
-    entity->rect.w = 300.0f;
-    entity->rect.h = 40.0f;
-    level->entities[1] = entity;
-
-    Player* player = player_create(level, input, renderer);
-    player->pos_x = 75;
-    player->pos_y = 150;
+    if (result == 0)
+        renderer_set_clear_color(renderer, 255, 0, 0);
 
     char message[100];
+    sprintf(message, "%s: %ld h: %ld", level->name, level->width, level->height);
 
-    unsigned long prev_time = get_ticks_ms();
+
+    //unsigned long prev_time = get_ticks_ms();
 
 
     /* Main loop test */
     while(1) 
     {
-        unsigned long current_time = get_ticks_ms();
-        float time_delta = (current_time - prev_time) / 1000.0f;
+        //unsigned long current_time = get_ticks_ms();
+        //float time_delta = (current_time - prev_time) / 1000.0f;
 
         n64_input_update(input);
-
-        if (input_button_is_down(input, CONTROLLER_1, CONTROLLER_BUTTON_L))
-            player->jump_velocity -= 5.0f;
-
-        if (input_button_is_down(input, CONTROLLER_1, CONTROLLER_BUTTON_R))
-            player->jump_velocity += 5.0f;
-
-        if (input_button_is_down(input, CONTROLLER_1, CONTROLLER_BUTTON_DPAD_LEFT))
-            level->gravity -= 5.0f;
-
-        if (input_button_is_down(input, CONTROLLER_1, CONTROLLER_BUTTON_DPAD_RIGHT))
-            level->gravity += 5.0f;
-
-        level_update(level, time_delta);
-        player_update(player, time_delta);
 
         static display_context_t disp = 0;
 
@@ -79,13 +52,10 @@ int main(void)
         while( !(disp = display_lock()) );
        
         /*Fill the screen */
-        graphics_fill_screen( disp, 0xFFFFFFFF );
+        graphics_fill_screen( disp, renderer->clear_color);
 
-        /* Set the text output color */
         graphics_set_color( 0x0, 0xFFFFFFFF );
-
-        sprintf(message, "jump: %.2f gravity: %.2f", player->jump_velocity, level->gravity);
-        graphics_draw_text( disp, 30, 0, message);
+        graphics_draw_text( disp, 20, 20, message);
 
         /* Assure RDP is ready for new commands */
         rdp_sync( SYNC_PIPE );
@@ -93,22 +63,20 @@ int main(void)
         /* Remove any clipping windows */
         rdp_set_default_clipping();
 
-
         /* Attach RDP to display */
         rdp_attach_display( disp );
 
-        rdp_enable_primitive_fill ();
+        rdp_sync( SYNC_PIPE );
+
         level_draw(level);
 
-        rdp_enable_texture_copy();
-        player_draw(player);
-
         /* Inform the RDP we are finished drawing and that any pending operations should be flushed */
+        rdp_sync( SYNC_PIPE );
         rdp_detach_display();
 
         /* Force backbuffer flip */
         display_show(disp);
 
-        prev_time = current_time;
+        //prev_time = current_time;
     }
 }
