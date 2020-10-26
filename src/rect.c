@@ -18,7 +18,7 @@ int rect_intersection(Rect* a, Rect* b) {
     return 1;
 }
 
-void rect_set(Rect* r, float x, float y, float w, float h) {
+void rect_set(Rect* r, int x, int y, int w, int h) {
     r->x = x;
     r->y = y;
     r->w = w;

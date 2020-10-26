@@ -1,0 +1,3 @@
+[submodule "lib/sdl2-cmake-modules"]
+	path = lib/sdl2-cmake-modules
+	url = https://github.com/aminosbh/sdl2-cmake-modules
