@@ -1,0 +1,23 @@
+{
+    "sprite": "/geom_dash",
+    "horizontalCount": 2,
+    "verticalCount": 2,
+    "tiles": [
+        {
+            "index": 0,
+            "attributes": ["solid"]
+        },
+        {
+            "index": 1,
+            "attributes": ["solid"]
+        },
+        {
+            "index": 2,
+            "attributes": ["solid"]
+        },
+        {
+            "index": 3,
+            "attributes": ["solid"]
+        }
+    ]
+}
