@@ -1,10 +1,12 @@
 #include "n64_renderer.h"
 #include "n64_input.h"
-#include "../level.h"
-
-#include <libdragon.h>
 
 #include "../filesystem.h"
+#include "../level.h"
+#include "../player.h"
+#include "../renderer.h"
+
+#include <libdragon.h>
 
 #include <stdio.h>
 #include <malloc.h>
@@ -23,13 +25,13 @@ int main(void)
 
     Renderer* renderer = n64_renderer_create();
     renderer_set_clear_color(renderer, 10, 7, 53);
+
     Input* input = n64_input_create();
 
     Level* level = level_create(renderer);
-    int result = level_load(level, "/level01.level");
+    level_load(level, "/level01.level");
 
-    if (result == 0)
-        renderer_set_clear_color(renderer, 255, 0, 0);
+    Player* player = player_create(level, renderer);
 
     char message[100];
     sprintf(message, "%s: %ld h: %ld", level->name, level->width, level->height);
@@ -69,6 +71,7 @@ int main(void)
         rdp_sync( SYNC_PIPE );
 
         level_draw(level);
+        player_draw(player);
 
         /* Inform the RDP we are finished drawing and that any pending operations should be flushed */
         rdp_sync( SYNC_PIPE );

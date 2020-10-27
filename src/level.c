@@ -24,10 +24,10 @@ int level_set_tile(Level* level, int x, int y, int tile) {
 }
 
 void level_draw(Level* level) {
-    renderer_begin_tile_drawing(level->_renderer, level->tile_set.sprite, level->tile_set.sprite_horizontal_slices, level->tile_set.sprite_vertical_slices);
+    renderer_begin_tile_drawing(level->_renderer, level->tile_set.sprite);
 
-    int tile_width = sprite_width(level->tile_set.sprite) / level->tile_set.sprite_horizontal_slices;
-    int tile_height = sprite_height(level->tile_set.sprite) / level->tile_set.sprite_vertical_slices;
+    int tile_width = sprite_horizontal_frame_size(level->tile_set.sprite);
+    int tile_height = sprite_horizontal_frame_size(level->tile_set.sprite);
 
     for (int y = 0; y < level->height; y++) {
         for (int x = 0; x < level->width; x++) {

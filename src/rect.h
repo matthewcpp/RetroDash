@@ -9,4 +9,8 @@ typedef struct {
 int rect_intersection(Rect* a, Rect* b);
 void rect_set(Rect* r, int x, int y, int w, int h);
 
+typedef struct {
+    int x, y;
+} Point;
+
 #endif

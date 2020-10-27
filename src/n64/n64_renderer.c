@@ -40,8 +40,17 @@ Sprite* renderer_load_sprite(Renderer* renderer, const char* path) {
     return sprite;
 }
 
+static void renderer_enable_texture_mode(Renderer* renderer) {
+    if (renderer->draw_mode != DRAW_MODE_TEXTURED) {
+        rdp_enable_texture_copy();
+        rdp_sync( SYNC_PIPE );
+        renderer->draw_mode = DRAW_MODE_TEXTURED;
+    }
+}
+
 void renderer_draw_sprite(Renderer* renderer, Sprite* sprite, int x, int y, int frame) {
-    (void)renderer;
+    renderer_enable_texture_mode(renderer);
+
     rdp_sync( SYNC_PIPE );
     rdp_load_texture_stride( 0, 0, MIRROR_DISABLED, sprite->libdragon_sprite, frame);
     rdp_draw_sprite( 0, x, y, MIRROR_DISABLED );
@@ -57,13 +66,11 @@ void renderer_draw_filled_rect(Renderer* renderer, Rect* rect) {
     rdp_draw_filled_rectangle(rect->x, rect->y, rect->x + rect->w, rect->y + rect->w);
 }
 
-void renderer_begin_tile_drawing(Renderer* renderer, Sprite* sprite, int horizontal_slices, int vertical_slices) {
+void renderer_begin_tile_drawing(Renderer* renderer, Sprite* sprite) {
     for (int i = 0; i < BATCH_COUNT; i++) {
         renderer->tile_batches[i]->count = 0;
     }
 
-    sprite->libdragon_sprite->hslices = (uint8_t)horizontal_slices;
-    sprite->libdragon_sprite->vslices = (uint8_t)vertical_slices;
     renderer->tile_sprite = sprite;
 }
 
@@ -72,11 +79,7 @@ void renderer_draw_tile(Renderer* renderer, int index, int x, int y) {
 }
 
 void renderer_end_tile_drawing(Renderer* renderer) {
-    if (renderer->draw_mode != DRAW_MODE_TEXTURED) {
-        rdp_enable_texture_copy();
-        rdp_sync( SYNC_PIPE );
-        renderer->draw_mode = DRAW_MODE_TEXTURED;
-    }
+    renderer_enable_texture_mode(renderer);
 
     for (int b = 0; b < BATCH_COUNT; b++) {
         TileBatch* batch = renderer->tile_batches[b];
@@ -105,4 +108,12 @@ int sprite_width(Sprite* sprite) {
 
 int sprite_height(Sprite* sprite) {
     return sprite->libdragon_sprite->height;
+}
+
+int sprite_horizontal_frame_size(Sprite* sprite){
+    return sprite->libdragon_sprite->width / sprite->libdragon_sprite->hslices;
+}
+
+int sprite_vertial_frame_size(Sprite* sprite) {
+    return sprite->libdragon_sprite->height / sprite->libdragon_sprite->vslices;
 }

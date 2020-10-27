@@ -8,6 +8,7 @@
 struct Sprite {
     SDL_Texture* texture;
     int width, height;
+    uint32_t horizontal_slices, vertical_slices;
 };
 
 struct Renderer {
@@ -16,8 +17,7 @@ struct Renderer {
     char* asset_dir;
 
     Sprite* tile_sprite;
-    int tile_sprite_horizontal_slices;
-    int tile_sprite_vertical_slices;
+    int tile_size_x, tile_size_y;
 
     int screen_size_x, screen_size_y;
 };

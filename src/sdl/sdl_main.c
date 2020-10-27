@@ -1,10 +1,13 @@
 #include <SDL.h>
 
 #include "../filesystem.h"
+#include "../level.h"
+#include "../player.h"
+
 #include "sdl_input.h"
 #include "sdl_renderer.h"
 
-#include "../level.h"
+
 
 #include <stdio.h>
 
@@ -23,6 +26,8 @@ int main(int argc, char** argv) {
 
     Level* level = level_create(renderer);
     level_load(level, "/level01.level");
+
+    Player* player = player_create(level, renderer);
 
     SDL_Event event;
     int keep_going = 1;
@@ -45,6 +50,7 @@ int main(int argc, char** argv) {
 
             sdl_renderer_begin(renderer);
             level_draw(level);
+            player_draw(player);
             sdl_renderer_end(renderer);
 
             last_update = now;

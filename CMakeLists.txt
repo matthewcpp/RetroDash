@@ -3,13 +3,12 @@ cmake_minimum_required(VERSION 3.11)
 project (n64-game-jam C)
 
 set(game_src
-        src/n64/batch.h src/n64/batch.c
     src/filesystem.h
     src/input.h
     src/level.h src/level.c
+    src/player.h src/player.c
     src/rect.h src/rect.c
-    src/renderer.h
-        )
+    src/renderer.h)
 
 set(sdl_src
     src/sdl/sdl_filesystem.c
