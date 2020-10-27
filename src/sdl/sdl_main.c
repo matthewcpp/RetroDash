@@ -27,7 +27,7 @@ int main(int argc, char** argv) {
     Level* level = level_create(renderer);
     level_load(level, "/level01.level");
 
-    Player* player = player_create(level, renderer);
+    Player* player = player_create(level, renderer, input);
 
     SDL_Event event;
     int keep_going = 1;
@@ -50,6 +50,7 @@ int main(int argc, char** argv) {
 
             sdl_renderer_begin(renderer);
             level_draw(level);
+            player_update(player, (float)time_delta / 1000.0f);
             player_draw(player);
             sdl_renderer_end(renderer);
 

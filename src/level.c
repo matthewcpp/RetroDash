@@ -4,6 +4,8 @@
 
 #include <stdlib.h>
 
+#define TILE_EMPTY UINT8_MAX
+
 Level* level_create(Renderer* renderer) {
     Level* level = malloc(sizeof(Level));
 
@@ -13,14 +15,18 @@ Level* level_create(Renderer* renderer) {
     level->tile_set.sprite = NULL;
     level->tile_set.palette_size = 0;
     level->tile_set.palette = NULL;
+    level->gravity = 22.0f;
 
     return level;
 }
 
-int level_set_tile(Level* level, int x, int y, int tile) {
-    level->_tile_map[y * level->width + x] = tile;
+Tile* level_get_tile(Level* level, int x, int y) {
+    uint8_t tile_index = level->_tile_map[y * level->width + x];
 
-    return 1;
+    if (tile_index != TILE_EMPTY)
+        return &level->tile_set.palette[tile_index];
+    else
+        return NULL;
 }
 
 void level_draw(Level* level) {
@@ -58,12 +64,10 @@ static int load_tile_set(Level* level, const char* path) {
     sprite_name[sprite_name_size] = '\0';
 
     level->tile_set.sprite = renderer_load_sprite(level->_renderer, sprite_name);
+    free(sprite_name);
 
     if (level->tile_set.sprite == NULL)
         return 0;
-
-    filesystem_read(&level->tile_set.sprite_horizontal_slices, sizeof(uint32_t), 1, tilemap_file);
-    filesystem_read(&level->tile_set.sprite_vertical_slices, sizeof(uint32_t), 1, tilemap_file);
 
     filesystem_read(&level->tile_set.palette_size, sizeof(uint32_t), 1, tilemap_file);
     level->tile_set.palette = malloc(sizeof(Tile) * level->tile_set.palette_size);

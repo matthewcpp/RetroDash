@@ -59,7 +59,7 @@ void renderer_draw_filled_rect(Renderer* renderer, Rect* rect) {
 void renderer_begin_tile_drawing(Renderer* renderer, Sprite* sprite) {
     renderer->tile_sprite = sprite;
     renderer->tile_size_x = sprite_horizontal_frame_size(sprite);
-    renderer->tile_size_y = sprite_vertial_frame_size(sprite);
+    renderer->tile_size_y = sprite_vertical_frame_size(sprite);
 }
 
 static void _draw_sprite(Renderer* renderer, Sprite* sprite, int index, int size_x, int size_y, int dst_x, int dst_y) {
@@ -79,7 +79,7 @@ static void _draw_sprite(Renderer* renderer, Sprite* sprite, int index, int size
 }
 
 void renderer_draw_sprite(Renderer* renderer, Sprite* sprite, int x, int y, int frame) {
-    _draw_sprite(renderer, sprite, frame, sprite_horizontal_frame_size(sprite), sprite_vertial_frame_size(sprite), x, y);
+    _draw_sprite(renderer, sprite, frame, sprite_horizontal_frame_size(sprite), sprite_vertical_frame_size(sprite), x, y);
 }
 
 void renderer_draw_tile(Renderer* renderer, int index, int x, int y) {
@@ -120,6 +120,6 @@ int sprite_horizontal_frame_size(Sprite* sprite) {
     return sprite->width / sprite->vertical_slices;
 }
 
-int sprite_vertial_frame_size(Sprite* sprite) {
+int sprite_vertical_frame_size(Sprite* sprite) {
     return sprite->height / sprite->vertical_slices;
 }

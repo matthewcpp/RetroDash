@@ -114,6 +114,6 @@ int sprite_horizontal_frame_size(Sprite* sprite){
     return sprite->libdragon_sprite->width / sprite->libdragon_sprite->hslices;
 }
 
-int sprite_vertial_frame_size(Sprite* sprite) {
+int sprite_vertical_frame_size(Sprite* sprite) {
     return sprite->libdragon_sprite->height / sprite->libdragon_sprite->vslices;
 }

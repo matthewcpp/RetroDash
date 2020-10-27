@@ -13,4 +13,8 @@ typedef struct {
     int x, y;
 } Point;
 
+typedef struct {
+    float x, y;
+} Vec2;
+
 #endif

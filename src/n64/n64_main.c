@@ -31,22 +31,23 @@ int main(void)
     Level* level = level_create(renderer);
     level_load(level, "/level01.level");
 
-    Player* player = player_create(level, renderer);
+    Player* player = player_create(level, renderer, input);
 
     char message[100];
     sprintf(message, "%s: %ld h: %ld", level->name, level->width, level->height);
 
 
-    //unsigned long prev_time = get_ticks_ms();
+    unsigned long prev_time = get_ticks_ms();
 
 
     /* Main loop test */
     while(1) 
     {
-        //unsigned long current_time = get_ticks_ms();
-        //float time_delta = (current_time - prev_time) / 1000.0f;
+        unsigned long current_time = get_ticks_ms();
+        float time_delta = (current_time - prev_time) / 1000.0f;
 
         n64_input_update(input);
+        player_update(player, time_delta);
 
         static display_context_t disp = 0;
 
@@ -80,6 +81,6 @@ int main(void)
         /* Force backbuffer flip */
         display_show(disp);
 
-        //prev_time = current_time;
+        prev_time = current_time;
     }
 }

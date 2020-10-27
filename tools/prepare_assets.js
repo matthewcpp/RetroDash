@@ -18,14 +18,11 @@ function prepareTileSet(srcPath, destPath, littleEndian) {
     const tileSet = JSON.parse(sourceFile);
 
     const spriteLength = Buffer.byteLength(tileSet.sprite, "utf8");
-    const bufferSize = 4 + spriteLength + 8 + 4 + (tileSet.tiles.length * 8);
+    const bufferSize = 4 + spriteLength + 4 + (tileSet.tiles.length * 8);
     const buffer = Buffer.alloc(bufferSize);
 
     let offset = writeUint32(spriteLength, buffer, 0, littleEndian);
     offset += buffer.write(tileSet.sprite, offset, spriteLength, "utf8");
-
-    offset = writeUint32(tileSet.horizontalCount, buffer, offset, littleEndian);
-    offset = writeUint32(tileSet.verticalCount, buffer, offset, littleEndian);
 
     offset = writeUint32(tileSet.tiles.length, buffer, offset, littleEndian);
     for (const tile of tileSet.tiles) {
