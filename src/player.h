@@ -17,7 +17,6 @@ typedef struct {
     PlayerSize size;
 
     Vec2 position;
-    Vec2 acceleration;
     Vec2 velocity;
     int on_ground;
 
@@ -31,5 +30,8 @@ typedef struct {
 Player* player_create(Level* level, Renderer* renderer, Camera* camera, Input* input);
 void player_update(Player* player, float time_delta);
 void player_draw(Player* player);
+
+void player_kill(Player* player);
+void player_start(Player* player);
 
 #endif

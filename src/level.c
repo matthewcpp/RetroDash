@@ -18,7 +18,7 @@ Level* level_create(Renderer* renderer, Camera* camera) {
     level->tile_set.sprite = NULL;
     level->tile_set.palette_size = 0;
     level->tile_set.palette = NULL;
-    level->gravity = 22.0f;
+    level->gravity = 30.0f;
 
     return level;
 }

@@ -10,7 +10,8 @@
 
 typedef enum {
     TILE_BIT_NONE = 0,
-    TILE_BIT_SOLID = 1
+    TILE_BIT_SOLID = 1,
+    TILE_BIT_KILL = 2
 } TileBits;
 
 typedef struct {

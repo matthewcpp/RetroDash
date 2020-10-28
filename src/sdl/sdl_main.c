@@ -27,11 +27,17 @@ int main(int argc, char** argv) {
 
     Player* player = player_create(level, renderer, camera, input);
     camera_set_target(camera, &player->position);
-    camera_set_offset(camera, -0.5f, 8.0f);
+    camera_set_offset(camera, -3.0f, 8.0f);
+    player_start(player);
 
     SDL_Event event;
     int keep_going = 1;
     Uint32 last_update, now, time_delta;
+
+    // first call to poll event can take some time as systems are initialized.
+    // prime it here before tight update loop
+    SDL_PollEvent(&event);
+
     last_update = SDL_GetTicks();
 
     while (keep_going) {
@@ -42,15 +48,17 @@ int main(int argc, char** argv) {
                     break;
             }
         }
-
         now = SDL_GetTicks();
         time_delta = now - last_update;
         if (time_delta >= 32) {
             sdl_input_update(input);
+            player_update(player, (float)time_delta / 1000.0f);
+            if (input_button_is_down(player->_input, CONTROLLER_1, CONTROLLER_BUTTON_L)) {
+                player_kill(player);
+            }
 
             sdl_renderer_begin(renderer);
             level_draw(level);
-            player_update(player, (float)time_delta / 1000.0f);
             player_draw(player);
             sdl_renderer_end(renderer);
 

@@ -36,9 +36,9 @@ int main(void)
     level_load(level, "/level01.level");
 
     Player* player = player_create(level, renderer, camera, input);
-
-    char message[100];
-    sprintf(message, "%s: %ld h: %ld", level->name, level->width, level->height);
+    camera_set_target(camera, &player->position);
+    camera_set_offset(camera, -3.0f, 8.0f);
+    player_start(player);
 
 
     unsigned long prev_time = get_ticks_ms();
@@ -49,9 +49,13 @@ int main(void)
     {
         unsigned long current_time = get_ticks_ms();
         float time_delta = (current_time - prev_time) / 1000.0f;
+        (void)time_delta;
 
         n64_input_update(input);
         player_update(player, time_delta);
+        if (input_button_is_down(player->_input, CONTROLLER_1, CONTROLLER_BUTTON_L)) {
+            player_kill(player);
+        }
 
         static display_context_t disp = 0;
 
@@ -60,9 +64,6 @@ int main(void)
        
         /*Fill the screen */
         graphics_fill_screen( disp, renderer->clear_color);
-
-        graphics_set_color( 0x0, 0xFFFFFFFF );
-        graphics_draw_text( disp, 20, 20, message);
 
         /* Assure RDP is ready for new commands */
         rdp_sync( SYNC_PIPE );
