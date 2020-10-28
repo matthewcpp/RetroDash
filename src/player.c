@@ -112,6 +112,11 @@ void player_update(Player* player, float time_delta) {
     if (input_button_is_down(player->_input, CONTROLLER_1, CONTROLLER_BUTTON_A)) {
         try_jump(player);
     }
+
+    player->bounding_box.x = player->position.x;
+    player->bounding_box.y = player->position.y;
+    player->bounding_box.w = player_hit_sizes[player->size].x;
+    player->bounding_box.h = player_hit_sizes[player->size].y;
 }
 
 void player_draw(Player* player) {

@@ -26,8 +26,8 @@ int main(int argc, char** argv) {
     level_load(level, "/level01.level");
 
     Player* player = player_create(level, renderer, camera, input);
-    camera_set_target(camera, &player->position);
-    camera_set_offset(camera, -3.0f, 8.0f);
+    camera_set_target(camera, &player->bounding_box);
+    camera_set_safe_margins(camera, -3.0f, 3.0f);
     player_start(player);
 
     SDL_Event event;
@@ -53,6 +53,7 @@ int main(int argc, char** argv) {
         if (time_delta >= 32) {
             sdl_input_update(input);
             player_update(player, (float)time_delta / 1000.0f);
+            camera_update(camera);
             if (input_button_is_down(player->_input, CONTROLLER_1, CONTROLLER_BUTTON_L)) {
                 player_kill(player);
             }
