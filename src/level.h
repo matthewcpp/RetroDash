@@ -1,6 +1,7 @@
 #ifndef LEVEL_H
 #define LEVEL_H
 
+#include "camera.h"
 #include "renderer.h"
 
 #include <stdint.h>
@@ -25,7 +26,6 @@ typedef struct {
 } TileSet;
 
 typedef struct {
-    Renderer* _renderer;
     uint32_t width;
     uint32_t height;
     char* name;
@@ -33,9 +33,12 @@ typedef struct {
 
     TileSet tile_set;
     uint8_t* _tile_map;
+
+    Renderer* _renderer;
+    Camera* _camera;
 } Level;
 
-Level* level_create(Renderer* renderer);
+Level* level_create(Renderer* renderer, Camera* camera);
 int level_load(Level* level, const char* path);
 Tile* level_get_tile(Level* level, int x, int y);
 void level_draw(Level* level);

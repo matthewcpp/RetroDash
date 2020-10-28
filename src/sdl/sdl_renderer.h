@@ -19,7 +19,7 @@ struct Renderer {
     Sprite* tile_sprite;
     int tile_size_x, tile_size_y;
 
-    int screen_size_x, screen_size_y;
+    Point screen_size;
 };
 
 Renderer* sdl_renderer_create(SDL_Window* window, const char* asset_dir);

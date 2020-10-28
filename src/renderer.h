@@ -14,6 +14,7 @@ int sprite_height(Sprite* sprite);
 int sprite_horizontal_frame_size(Sprite* sprite);
 int sprite_vertical_frame_size(Sprite* sprite);
 
+void renderer_get_screen_size(Renderer* renderer, Point* screen_size);
 void renderer_draw_sprite(Renderer* renderer, Sprite* sprite, int x, int y, int frame);
 void renderer_set_color(Renderer* renderer, int r, int g, int b, int a);
 void renderer_draw_filled_rect(Renderer* renderer, Rect* rect);

@@ -1,6 +1,7 @@
 #ifndef PLAYER_H
 #define PLAYER_H
 
+#include "camera.h"
 #include "input.h"
 #include "level.h"
 #include "rect.h"
@@ -24,9 +25,10 @@ typedef struct {
     Level* _level;
     Renderer* _renderer;
     Input* _input;
+    Camera* _camera;
 } Player;
 
-Player* player_create(Level* level, Renderer* renderer, Input* input);
+Player* player_create(Level* level, Renderer* renderer, Camera* camera, Input* input);
 void player_update(Player* player, float time_delta);
 void player_draw(Player* player);
 

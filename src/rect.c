@@ -24,3 +24,8 @@ void rect_set(Rect* r, int x, int y, int w, int h) {
     r->w = w;
     r->h = h;
 }
+
+void point_set_from_vec2(Point* p, const Vec2* v) {
+    p->x = (int)v->x;
+    p->y = (int)v->y;
+}

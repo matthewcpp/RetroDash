@@ -15,12 +15,17 @@ Renderer* sdl_renderer_create(SDL_Window* window, const char* asset_dir) {
     strcpy(renderer->asset_dir, asset_dir);
 
     renderer->sdl_renderer = SDL_CreateRenderer(window, -1, 0);
-    SDL_GetRendererOutputSize(renderer->sdl_renderer, &renderer->screen_size_x, &renderer->screen_size_y);
+    SDL_GetRendererOutputSize(renderer->sdl_renderer, &renderer->screen_size.x, &renderer->screen_size.y);
 
     renderer_set_clear_color(renderer, 255, 255, 255);
     renderer_end_tile_drawing(renderer);
 
     return renderer;
+}
+
+void renderer_get_screen_size(Renderer* renderer, Point* screen_size) {
+    screen_size->x = renderer->screen_size.x;
+    screen_size->y = renderer->screen_size.y;
 }
 
 Sprite* renderer_load_sprite(Renderer* renderer, const char* sprite_base_path) {

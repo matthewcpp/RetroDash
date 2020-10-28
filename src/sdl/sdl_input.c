@@ -41,6 +41,8 @@ static void sdl_update_controller(Input* input) {
 static void sdl_update_keyboard(Input* input) {
     const Uint8* keyboard_state = SDL_GetKeyboardState(NULL);
     rr_sdl_input_update_button(input, CONTROLLER_BUTTON_A, keyboard_state[SDL_SCANCODE_X], 0);
+    rr_sdl_input_update_button(input, CONTROLLER_BUTTON_L, keyboard_state[SDL_SCANCODE_A], 0);
+    rr_sdl_input_update_button(input, CONTROLLER_BUTTON_R, keyboard_state[SDL_SCANCODE_S], 0);
 }
 
 void sdl_input_update(Input* input) {

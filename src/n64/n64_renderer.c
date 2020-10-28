@@ -8,16 +8,24 @@
 #include <stdlib.h>
 #include <string.h>
 
-Renderer* n64_renderer_create() {
+Renderer* n64_renderer_create(int screen_width, int screen_height) {
     Renderer* renderer = calloc(1, sizeof(Renderer));
     renderer->clear_color = graphics_make_color(255, 255, 255, 255);
     renderer->draw_mode = DDRAW_MODE_UNSPECIFIED;
+
+    renderer->screen_size.x = screen_width;
+    renderer->screen_size.y = screen_height;
 
     for (int i = 0; i < BATCH_COUNT; i++) {
         renderer->tile_batches[i] = tile_batch_create();
     }
 
     return renderer;
+}
+
+void renderer_get_screen_size(Renderer* renderer, Point* screen_size) {
+    screen_size->x = renderer->screen_size.x;
+    screen_size->y = renderer->screen_size.y;
 }
 
 Sprite* renderer_load_sprite(Renderer* renderer, const char* path) {

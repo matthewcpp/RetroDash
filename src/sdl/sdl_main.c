@@ -1,15 +1,12 @@
 #include <SDL.h>
 
+#include "../camera.h"
 #include "../filesystem.h"
 #include "../level.h"
 #include "../player.h"
 
 #include "sdl_input.h"
 #include "sdl_renderer.h"
-
-
-
-#include <stdio.h>
 
 int main(int argc, char** argv) {
     SDL_VideoInit(NULL);
@@ -23,11 +20,14 @@ int main(int argc, char** argv) {
     Input* input = sdl_input_create();
     Renderer* renderer = sdl_renderer_create(window, ASSET_DIRECTORY);
     renderer_set_clear_color(renderer, 10, 7, 53);
+    Camera* camera = camera_create(screen_width, screen_height);
 
-    Level* level = level_create(renderer);
+    Level* level = level_create(renderer, camera);
     level_load(level, "/level01.level");
 
-    Player* player = player_create(level, renderer, input);
+    Player* player = player_create(level, renderer, camera, input);
+    camera_set_target(camera, &player->position);
+    camera_set_offset(camera, -0.5f, 8.0f);
 
     SDL_Event event;
     int keep_going = 1;

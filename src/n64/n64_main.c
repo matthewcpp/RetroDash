@@ -1,6 +1,7 @@
 #include "n64_renderer.h"
 #include "n64_input.h"
 
+#include "../camera.h"
 #include "../filesystem.h"
 #include "../level.h"
 #include "../player.h"
@@ -13,6 +14,8 @@
 #include <string.h>
 #include <stdint.h>
 
+#define SCREEN_WIDTH 320
+#define SCREEN_HEIGHT 240
 
 int main(void)
 {
@@ -23,15 +26,16 @@ int main(void)
     controller_init();
     timer_init();
 
-    Renderer* renderer = n64_renderer_create();
-    renderer_set_clear_color(renderer, 10, 7, 53);
-
     Input* input = n64_input_create();
 
-    Level* level = level_create(renderer);
+    Renderer* renderer = n64_renderer_create(SCREEN_WIDTH, SCREEN_HEIGHT);
+    renderer_set_clear_color(renderer, 10, 7, 53);
+
+    Camera* camera = camera_create(SCREEN_WIDTH, SCREEN_HEIGHT);
+    Level* level = level_create(renderer, camera);
     level_load(level, "/level01.level");
 
-    Player* player = player_create(level, renderer, input);
+    Player* player = player_create(level, renderer, camera, input);
 
     char message[100];
     sprintf(message, "%s: %ld h: %ld", level->name, level->width, level->height);
