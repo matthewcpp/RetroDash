@@ -70,7 +70,7 @@ void renderer_begin_tile_drawing(Renderer* renderer, Sprite* sprite) {
 static void _draw_sprite(Renderer* renderer, Sprite* sprite, int index, int size_x, int size_y, int dst_x, int dst_y) {
     SDL_Rect source_rect;
     source_rect.x = (index % sprite->horizontal_slices) * size_x;
-    source_rect.y = (index / sprite->vertical_slices) * size_y;
+    source_rect.y = (index / sprite->horizontal_slices) * size_y;
     source_rect.w = size_x;
     source_rect.h = size_y;
 
@@ -138,7 +138,7 @@ int sprite_height(Sprite* sprite) {
 }
 
 int sprite_horizontal_frame_size(Sprite* sprite) {
-    return sprite->width / sprite->vertical_slices;
+    return sprite->width / sprite->horizontal_slices;
 }
 
 int sprite_vertical_frame_size(Sprite* sprite) {

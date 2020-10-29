@@ -2,7 +2,6 @@
 
 #include <math.h>
 #include <stdlib.h>
-#include <stdio.h>
 
 #define PLAYER_SPEED 8.0f
 
@@ -19,9 +18,17 @@ typedef struct {
 
 static void player_query_init(PlayerQuery* query, Player* player) {
     query->max_x = (int)floor(player->position.x + player_hit_sizes[player->size].x / 2.0f); // right
+    if (query->max_x >= player->_level->width) query->max_x = player->_level->width - 1;
+
     query->max_y = (int)floor(player->position.y + player_hit_sizes[player->size].y); // top
+    if (query->max_y >= player->_level->height) query->max_x = player->_level->height - 1;
+
     query->min_y = (int)floor(player->position.y); // bottom
+    if (query->min_y < 0) query->min_y = 0;
+
     query->min_x = (int)floor(player->position.x - player_hit_sizes[player->size].x / 2.0f); // left
+    if (query->min_x < 0) query->min_x = 0;
+
 }
 
 Player* player_create(Level* level, Renderer* renderer, Camera* camera, Input* input) {
@@ -55,19 +62,21 @@ static void check_floor(Player* player, PlayerQuery* query) {
 
         if (tile == NULL) continue;
 
-        // if the player has fallen into a solid tile, update their position so that they are standing on it
-        if ((tile->bits & TILE_BIT_SOLID) == TILE_BIT_SOLID) {
-            player->position.y = ceil(player->position.y);
-            player->on_ground = 1;
-            player->velocity.y = 0.0f;
+        switch (tile->type) {
+            // if the player has fallen into a solid tile, update their position so that they are standing on it
+            case TILE_TYPE_SOLID:
+                player->position.y = ceil(player->position.y);
+                player->on_ground = 1;
+                player->velocity.y = 0.0f;
 
-            // need to update the query
-            query->min_y = (int)player->position.y;
-            query->max_y = (int)floor(player->position.y + player_hit_sizes[player->size].y);
-            return;
-        }
-        else if ((tile->bits & TILE_BIT_KILL) == TILE_BIT_KILL) {
-            player_kill(player);
+                // need to update the query
+                query->min_y = (int)player->position.y;
+                query->max_y = (int)floor(player->position.y + player_hit_sizes[player->size].y);
+                return;
+
+            case TILE_TYPE_KILL:
+                player_kill(player);
+                return;
         }
     }
 }
@@ -81,9 +90,28 @@ static void check_collisions(Player* player, PlayerQuery* query) {
         Tile* tile = level_get_tile(player->_level, query->max_x, y);
 
         if (tile == NULL) continue;
-        if ((tile->bits & TILE_BIT_SOLID) == TILE_BIT_SOLID) {
-            player_kill(player);
-            return;
+        switch (tile->type) {
+            case TILE_TYPE_SOLID:
+            case TILE_TYPE_KILL:
+                player_kill(player);
+                return;
+
+            case TILE_TYPE_TUNNEL:
+                if (player->size != PLAYER_SIZE_SMALL) {
+                    player_kill(player);
+                    return;
+                }
+                break;
+
+            case TILE_TYPE_BRICK:
+                if (player->size == PLAYER_SIZE_LARGE) {
+                    level_set_tile(player->_level, query->max_x, y, TILE_EMPTY);
+                    break;
+                }
+                else {
+                    player_kill(player);
+                    return;
+                }
         }
     }
 }
