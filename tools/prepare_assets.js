@@ -1,8 +1,13 @@
 const fs = require("fs");
 const path = require("path");
 
-const TileSetAttributes = {
-    solid: 1
+// Note: This should match up with the TileType enum in level.h
+const TileTypeValues = {
+    none: 0,
+    solid: 1,
+    kill: 2,
+    tunnel: 3,
+    brick: 4
 }
 
 function writeUint32(value, buffer, offset, littleEndian) {
@@ -11,7 +16,6 @@ function writeUint32(value, buffer, offset, littleEndian) {
     else
         return buffer.writeUInt32BE(value, offset);
 }
-
 
 function prepareTileSet(srcPath, destPath, littleEndian) {
     const sourceFile = fs.readFileSync(srcPath, "utf8");
@@ -25,23 +29,17 @@ function prepareTileSet(srcPath, destPath, littleEndian) {
     offset += buffer.write(tileSet.sprite, offset, spriteLength, "utf8");
 
     offset = writeUint32(tileSet.tiles.length, buffer, offset, littleEndian);
-    for (const tile of tileSet.tiles) {
-        offset = writeUint32(tile.index, buffer, offset, littleEndian);
-
-        let bitmask = 0;
-
-        for (const attribute of tile.attributes) {
-            switch(attribute) {
-                case "solid":
-                    bitmask |= TileSetAttributes.solid;
-                break;
-            }
-            
-        }
-
-        offset = writeUint32(bitmask, buffer, offset, littleEndian);
-    }
     
+    for (let i = 0; i < tileSet.tiles.length; i++) {
+        const tile = tileSet.tiles[i];
+        offset = writeUint32(i, buffer, offset, littleEndian);
+
+        if (TileTypeValues.hasOwnProperty(tile))
+            offset = writeUint32(TileTypeValues[tile], buffer, offset, littleEndian);
+        else
+            throw new Error(`Unexpected attribute for tile ${i}: ${tile}`)
+    }
+
     fs.writeFileSync(destPath, buffer);
 }
 
@@ -69,11 +67,12 @@ function prepareLevel(srcPath, destPath, littleEndian) {
     offset = writeUint32(level.width, buffer, offset, littleEndian);
     offset = writeUint32(level.height, buffer, offset, littleEndian);
 
-    for (const char of levelTiles) {
-        if (char === ' ')
+    for (let i = 0; i < levelTiles.length; i++){
+        const char = levelTiles.charCodeAt(i);
+        if (char === 32)
             offset = buffer.writeUInt8(255, offset);
-        else if (char >= '0' && char <= '9')
-            offset = buffer.writeUInt8(parseInt(char), offset);
+        else if (char >= 65 && char <= 90)
+            offset = buffer.writeUInt8(parseInt(char - 65), offset);
     }
 
     fs.writeFileSync(destPath, buffer);
