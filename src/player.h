@@ -21,7 +21,7 @@ typedef struct {
     Vec2 velocity;
     int on_ground;
 
-    Sprite*_sprites[3];
+    Sprite* _sprite;
     Level* _level;
     Renderer* _renderer;
     Input* _input;

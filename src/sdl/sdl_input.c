@@ -43,6 +43,10 @@ static void sdl_update_keyboard(Input* input) {
     rr_sdl_input_update_button(input, CONTROLLER_BUTTON_A, keyboard_state[SDL_SCANCODE_X], 0);
     rr_sdl_input_update_button(input, CONTROLLER_BUTTON_L, keyboard_state[SDL_SCANCODE_A], 0);
     rr_sdl_input_update_button(input, CONTROLLER_BUTTON_R, keyboard_state[SDL_SCANCODE_S], 0);
+    rr_sdl_input_update_button(input, CONTROLLER_BUTTON_C_UP, keyboard_state[SDL_SCANCODE_T], 0);
+    rr_sdl_input_update_button(input, CONTROLLER_BUTTON_C_DOWN, keyboard_state[SDL_SCANCODE_G], 0);
+    rr_sdl_input_update_button(input, CONTROLLER_BUTTON_C_LEFT, keyboard_state[SDL_SCANCODE_F], 0);
+    rr_sdl_input_update_button(input, CONTROLLER_BUTTON_C_RIGHT, keyboard_state[SDL_SCANCODE_H], 0);
 }
 
 void sdl_input_update(Input* input) {

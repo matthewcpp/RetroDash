@@ -36,7 +36,7 @@ Player* player_create(Level* level, Renderer* renderer, Camera* camera, Input* i
 
     Sprite* sprite = renderer_load_sprite(player->_renderer, "/player");
     for (int i = 0; i < 3; i++) {
-        player->_sprites[i] = sprite;
+        player->_sprite = sprite;
     }
 
     return player;
@@ -77,7 +77,7 @@ static void check_floor(Player* player, PlayerQuery* query) {
  */
 static void check_collisions(Player* player, PlayerQuery* query) {
     // check to see if the player has collided with the world
-    for (int y = query->min_y; y < query->max_y; y++) {
+    for (int y = query->min_y; y <= query->max_y; y++) {
         Tile* tile = level_get_tile(player->_level, query->max_x, y);
 
         if (tile == NULL) continue;
@@ -112,6 +112,15 @@ void player_update(Player* player, float time_delta) {
     if (input_button_is_down(player->_input, CONTROLLER_1, CONTROLLER_BUTTON_A)) {
         try_jump(player);
     }
+    if (input_button_is_down(player->_input, CONTROLLER_1, CONTROLLER_BUTTON_C_LEFT)) {
+        player->size = PLAYER_SIZE_SMALL;
+    }
+    if (input_button_is_down(player->_input, CONTROLLER_1, CONTROLLER_BUTTON_C_UP)) {
+        player->size = PLAYER_SIZE_MEDIUM;
+    }
+    if (input_button_is_down(player->_input, CONTROLLER_1, CONTROLLER_BUTTON_C_RIGHT)) {
+        player->size = PLAYER_SIZE_LARGE;
+    }
 
     player->bounding_box.x = player->position.x;
     player->bounding_box.y = player->position.y;
@@ -123,12 +132,10 @@ void player_draw(Player* player) {
     Point draw_pos;
     camera_world_pos_to_screen_pos(player->_camera, &player->position, &draw_pos);
 
+    draw_pos.x -= (int)((sprite_width(player->_sprite) *  player_hit_sizes[player->size].x) / 2.0f);
+    draw_pos.y -= (int)((sprite_height(player->_sprite) * player_hit_sizes[player->size].y));
 
-    Sprite* sprite = player->_sprites[player->size];
-    draw_pos.x -= (sprite_width(sprite) / 2);
-    draw_pos.y -= (sprite_height(sprite));
-
-    renderer_draw_sprite(player->_renderer, sprite, draw_pos.x, draw_pos.y, 0);
+    renderer_draw_scaled_sprite(player->_renderer, player->_sprite, draw_pos.x, draw_pos.y, player_hit_sizes[player->size].x, player_hit_sizes[player->size].y, 0);
 }
 
 //TODO: This will probably have more logic in the future.
