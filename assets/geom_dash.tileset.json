@@ -1,7 +1,5 @@
 {
     "sprite": "/geom_dash",
-    "horizontalCount": 2,
-    "verticalCount": 2,
     "tiles": [
         {
             "index": 0,

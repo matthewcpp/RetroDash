@@ -15,7 +15,7 @@ Renderer* sdl_renderer_create(SDL_Window* window, const char* asset_dir) {
     strcpy(renderer->asset_dir, asset_dir);
 
     renderer->sdl_renderer = SDL_CreateRenderer(window, -1, 0);
-    SDL_GetRendererOutputSize(renderer->sdl_renderer, &renderer->screen_size_x, &renderer->screen_size_y);
+    SDL_GetRendererOutputSize(renderer->sdl_renderer, &renderer->screen_size.x, &renderer->screen_size.y);
 
     renderer_set_clear_color(renderer, 255, 255, 255);
     renderer_end_tile_drawing(renderer);
@@ -23,8 +23,13 @@ Renderer* sdl_renderer_create(SDL_Window* window, const char* asset_dir) {
     return renderer;
 }
 
+void renderer_get_screen_size(Renderer* renderer, Point* screen_size) {
+    screen_size->x = renderer->screen_size.x;
+    screen_size->y = renderer->screen_size.y;
+}
+
 Sprite* renderer_load_sprite(Renderer* renderer, const char* sprite_base_path) {
-    char* path_buffer = malloc(strlen(renderer->asset_dir) + strlen(sprite_base_path) + 12);
+    char* path_buffer = malloc(strlen(renderer->asset_dir) + strlen(sprite_base_path) + 12); //.sprite
     sprintf(path_buffer, "%s%s.png", renderer->asset_dir, sprite_base_path);
 
     SDL_Surface* surface = IMG_Load(path_buffer);
@@ -36,6 +41,12 @@ Sprite* renderer_load_sprite(Renderer* renderer, const char* sprite_base_path) {
     Sprite* sprite = malloc(sizeof(Sprite));
     sprite->texture = texture;
     SDL_QueryTexture(sprite->texture, NULL, NULL, &sprite->width, &sprite->height);
+
+    sprintf(path_buffer, "%s%s.sprite", renderer->asset_dir, sprite_base_path);
+    FILE* sprite_info_file = fopen(path_buffer, "rb");
+    fread(&sprite->horizontal_slices, sizeof(uint32_t), 1, sprite_info_file);
+    fread(&sprite->vertical_slices, sizeof(uint32_t), 1, sprite_info_file);
+    fclose(sprite_info_file);
 
     free(path_buffer);
 
@@ -50,16 +61,16 @@ void renderer_draw_filled_rect(Renderer* renderer, Rect* rect) {
     SDL_RenderFillRect(renderer->sdl_renderer, (SDL_Rect*)rect);
 }
 
-void renderer_begin_tile_drawing(Renderer* renderer, Sprite* sprite, int horizontal_slices, int vertical_slices) {
+void renderer_begin_tile_drawing(Renderer* renderer, Sprite* sprite) {
     renderer->tile_sprite = sprite;
-    renderer->tile_sprite_horizontal_slices = horizontal_slices;
-    renderer->tile_sprite_vertical_slices = vertical_slices;
+    renderer->tile_size_x = sprite_horizontal_frame_size(sprite);
+    renderer->tile_size_y = sprite_vertical_frame_size(sprite);
 }
 
 static void _draw_sprite(Renderer* renderer, Sprite* sprite, int index, int size_x, int size_y, int dst_x, int dst_y) {
     SDL_Rect source_rect;
-    source_rect.x = (index % renderer->tile_sprite_horizontal_slices) * size_x;
-    source_rect.y = (index / renderer->tile_sprite_vertical_slices) * size_y;
+    source_rect.x = (index % sprite->horizontal_slices) * size_x;
+    source_rect.y = (index / sprite->vertical_slices) * size_y;
     source_rect.w = size_x;
     source_rect.h = size_y;
 
@@ -69,21 +80,21 @@ static void _draw_sprite(Renderer* renderer, Sprite* sprite, int index, int size
     dest_rect.w = size_x;
     dest_rect.h = size_y;
 
-    SDL_RenderCopy(renderer->sdl_renderer, renderer->tile_sprite->texture, &source_rect, &dest_rect);
+    SDL_RenderCopy(renderer->sdl_renderer, sprite->texture, &source_rect, &dest_rect);
 }
 
 void renderer_draw_sprite(Renderer* renderer, Sprite* sprite, int x, int y, int frame) {
-    _draw_sprite(renderer, sprite, frame, sprite->width, sprite->height, x, y);
+    _draw_sprite(renderer, sprite, frame, sprite_horizontal_frame_size(sprite), sprite_vertical_frame_size(sprite), x, y);
 }
 
 void renderer_draw_tile(Renderer* renderer, int index, int x, int y) {
-    _draw_sprite(renderer, renderer->tile_sprite, index, renderer->tile_sprite->width, renderer->tile_sprite->height, x, y);
+    _draw_sprite(renderer, renderer->tile_sprite, index, renderer->tile_size_x, renderer->tile_size_y, x, y);
 }
 
 void renderer_end_tile_drawing(Renderer* renderer) {
     renderer->tile_sprite = NULL;
-    renderer->tile_sprite_horizontal_slices = 0;
-    renderer->tile_sprite_vertical_slices = 0;
+    renderer->tile_size_x = 0;
+    renderer->tile_size_y = 0;
 }
 
 void sdl_renderer_begin(Renderer * renderer) {
@@ -108,4 +119,12 @@ int sprite_width(Sprite* sprite) {
 
 int sprite_height(Sprite* sprite) {
     return sprite->height;
+}
+
+int sprite_horizontal_frame_size(Sprite* sprite) {
+    return sprite->width / sprite->vertical_slices;
+}
+
+int sprite_vertical_frame_size(Sprite* sprite) {
+    return sprite->height / sprite->vertical_slices;
 }

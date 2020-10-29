@@ -18,14 +18,11 @@ function prepareTileSet(srcPath, destPath, littleEndian) {
     const tileSet = JSON.parse(sourceFile);
 
     const spriteLength = Buffer.byteLength(tileSet.sprite, "utf8");
-    const bufferSize = 4 + spriteLength + 8 + 4 + (tileSet.tiles.length * 8);
+    const bufferSize = 4 + spriteLength + 4 + (tileSet.tiles.length * 8);
     const buffer = Buffer.alloc(bufferSize);
 
     let offset = writeUint32(spriteLength, buffer, 0, littleEndian);
     offset += buffer.write(tileSet.sprite, offset, spriteLength, "utf8");
-
-    offset = writeUint32(tileSet.horizontalCount, buffer, offset, littleEndian);
-    offset = writeUint32(tileSet.verticalCount, buffer, offset, littleEndian);
 
     offset = writeUint32(tileSet.tiles.length, buffer, offset, littleEndian);
     for (const tile of tileSet.tiles) {
@@ -82,12 +79,26 @@ function prepareLevel(srcPath, destPath, littleEndian) {
     fs.writeFileSync(destPath, buffer);
 }
 
+function prepareSprite(srcPath, destPath, littleEndian) {
+    const baseName = path.basename(srcPath, ".png");
+    const spriteJsonFile = path.join(path.dirname(srcPath), `${baseName}.sprite.json`);
+    const sprite = JSON.parse(fs.readFileSync(spriteJsonFile, "utf8"));
+
+    const buffer = Buffer.alloc(8);
+    writeUint32(parseInt(sprite.horizonalFrames), buffer, 0, littleEndian);
+    writeUint32(parseInt(sprite.verticalFrames), buffer, 4, littleEndian);
+
+    fs.writeFileSync(path.join(path.dirname(destPath), `${baseName}.sprite`), buffer);
+
+    fs.copyFileSync(srcPath, destPath);
+}
+
 function prepareAssets(sourceDir, destDir, params) {
     let options = {
         littleEndian: true,
         spriteFunc: (sourceFile, destDir, assetName) => {
             const buildPath = path.join(destDir, assetName);
-            fs.copyFileSync(sourceFile, buildPath);
+            prepareSprite(sourceFile, buildPath, options.littleEndian);
         },
         levelFunc: (sourceFile, destDir, assetName) =>  {
             const baseName = path.basename(assetName, ".level.json");

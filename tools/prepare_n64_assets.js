@@ -32,7 +32,11 @@ prepareAssets(assetsFolder, buildFolder,  {
     littleEndian: false,
     spriteFunc: (srcPath, destDir, assetName) => {
         const baseName = path.basename(assetName, ".png");
+        const spriteFile = path.join(path.dirname(srcPath), `${baseName}.sprite.json`);
+        const sprite = JSON.parse(fs.readFileSync(spriteFile, "utf8"));
+
         const buildPath = path.join(destDir, `${baseName}.sprite`);
-        childProcess.spawnSync(mksprite, [16, 1, 1, srcPath, buildPath], {stdio: 'pipe'});
+        
+        childProcess.spawnSync(mksprite, [16, sprite.horizonalFrames, sprite.verticalFrames, srcPath, buildPath], {stdio: 'pipe'});
     }
 });

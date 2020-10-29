@@ -23,8 +23,9 @@ struct Renderer {
     Sprite* tile_sprite;
     TileBatch* tile_batches[BATCH_COUNT];
     DrawMode draw_mode;
+    Point screen_size;
 };
 
-Renderer* n64_renderer_create();
+Renderer* n64_renderer_create(int screen_width, int screen_height);
 
 #endif
