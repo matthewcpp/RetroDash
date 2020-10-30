@@ -12,6 +12,10 @@ TileBatch* tile_batch_create() {
     return tilebatch;
 }
 
+void tile_batch_destroy(TileBatch* tile_batch) {
+    free(tile_batch->positions);
+    free(tile_batch);
+}
 
 void tile_batch_add(TileBatch* batch, int x, int y) {
     if (batch->count == batch->capacity) {

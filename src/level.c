@@ -126,6 +126,7 @@ static int load_tile_set(Level* level, const char* path) {
     filesystem_close(tilemap_file);
 
     camera_set_tile_size(level->_camera, sprite_horizontal_frame_size(level->tile_set.sprite), sprite_vertical_frame_size(level->tile_set.sprite));
+    renderer_set_tile_batch_size(level->_renderer, level->tile_set.palette_size);
     return 1;
 }
 

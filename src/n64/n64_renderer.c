@@ -16,9 +16,8 @@ Renderer* n64_renderer_create(int screen_width, int screen_height) {
     renderer->screen_size.x = screen_width;
     renderer->screen_size.y = screen_height;
 
-    for (int i = 0; i < BATCH_COUNT; i++) {
-        renderer->tile_batches[i] = tile_batch_create();
-    }
+    renderer->tile_batches = NULL;
+    renderer->tile_batch_count = 0;
 
     return renderer;
 }
@@ -64,6 +63,14 @@ void renderer_draw_sprite(Renderer* renderer, Sprite* sprite, int x, int y, int 
     rdp_draw_sprite( 0, x, y, MIRROR_DISABLED );
 }
 
+void renderer_draw_scaled_sprite(Renderer* renderer, Sprite* sprite,  int x, int y, float scale_x, float scale_y, int frame) {
+    renderer_enable_texture_mode(renderer);
+
+    rdp_sync( SYNC_PIPE );
+    rdp_load_texture_stride( 0, 0, MIRROR_DISABLED, sprite->libdragon_sprite, frame);
+    rdp_draw_sprite_scaled( 0, x, y, scale_x, scale_y, MIRROR_DISABLED );
+}
+
 void renderer_set_color(Renderer* renderer, int r, int g, int b, int a) {
     uint32_t color = graphics_make_color(r, g, b, a);
     rdp_set_primitive_color(color);
@@ -74,8 +81,29 @@ void renderer_draw_filled_rect(Renderer* renderer, Rect* rect) {
     rdp_draw_filled_rectangle(rect->x, rect->y, rect->x + rect->w, rect->y + rect->w);
 }
 
+static void renderer_clear_tile_batches(Renderer* renderer) {
+    for (int i = 0; i < renderer->tile_batch_count; i++)
+        tile_batch_destroy(renderer->tile_batches[i]);
+
+    free(renderer->tile_batches);
+    renderer->tile_batch_count = 0;
+    renderer->tile_batches = NULL;
+}
+
+// TODO: Only deallocate if necessary?
+void renderer_set_tile_batch_size(Renderer* renderer, int size) {
+    if (renderer->tile_batches) {
+        renderer_clear_tile_batches(renderer);
+    }
+
+    renderer->tile_batch_count = size;
+    renderer->tile_batches = calloc(renderer->tile_batch_count, sizeof(TileBatch*));
+    for (int i = 0; i < renderer->tile_batch_count; i++)
+        renderer->tile_batches[i] = tile_batch_create();
+}
+
 void renderer_begin_tile_drawing(Renderer* renderer, Sprite* sprite) {
-    for (int i = 0; i < BATCH_COUNT; i++) {
+    for (int i = 0; i < renderer->tile_batch_count; i++) {
         renderer->tile_batches[i]->count = 0;
     }
 
@@ -89,7 +117,7 @@ void renderer_draw_tile(Renderer* renderer, int index, int x, int y) {
 void renderer_end_tile_drawing(Renderer* renderer) {
     renderer_enable_texture_mode(renderer);
 
-    for (int b = 0; b < BATCH_COUNT; b++) {
+    for (int b = 0; b < renderer->tile_batch_count; b++) {
         TileBatch* batch = renderer->tile_batches[b];
 
         if (batch->count == 0) continue;

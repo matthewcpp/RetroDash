@@ -61,6 +61,11 @@ void renderer_draw_filled_rect(Renderer* renderer, Rect* rect) {
     SDL_RenderFillRect(renderer->sdl_renderer, (SDL_Rect*)rect);
 }
 
+void renderer_set_tile_batch_size(Renderer* renderer, int size) {
+    (void)renderer;
+    (void)size;
+}
+
 void renderer_begin_tile_drawing(Renderer* renderer, Sprite* sprite) {
     renderer->tile_sprite = sprite;
     renderer->tile_size_x = sprite_horizontal_frame_size(sprite);

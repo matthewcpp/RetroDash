@@ -6,8 +6,6 @@
 
 #include <libdragon.h>
 
-#define BATCH_COUNT 4
-
 struct Sprite {
     sprite_t* libdragon_sprite;
 };
@@ -21,7 +19,8 @@ typedef enum {
 struct Renderer {
     uint32_t clear_color;
     Sprite* tile_sprite;
-    TileBatch* tile_batches[BATCH_COUNT];
+    TileBatch** tile_batches;
+    int tile_batch_count;
     DrawMode draw_mode;
     Point screen_size;
 };
