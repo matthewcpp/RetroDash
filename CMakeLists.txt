@@ -3,6 +3,7 @@ cmake_minimum_required(VERSION 3.11)
 project (n64-game-jam C)
 
 set(game_src
+    src/animation_player.h src/animation_player.c
     src/camera.h src/camera.c
     src/filesystem.h
     src/input.h
