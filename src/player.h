@@ -1,6 +1,7 @@
 #ifndef PLAYER_H
 #define PLAYER_H
 
+#include "animation_player.h"
 #include "camera.h"
 #include "input.h"
 #include "level.h"
@@ -29,6 +30,7 @@ typedef struct {
     Renderer* _renderer;
     Input* _input;
     Camera* _camera;
+    AnimationPlayer _animation;
 } Player;
 
 Player* player_create(Level* level, Renderer* renderer, Camera* camera, Input* input);

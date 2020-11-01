@@ -41,10 +41,6 @@ int main(void)
     Level* level = level_create(renderer, camera);
     level_load(level, "/level01.level");
 
-    if (level->goal_dist == 103.0f) {
-        renderer_set_clear_color(renderer, 0, 255, 0);
-    }
-
     Player* player = player_create(level, renderer, camera, input);
     camera_set_target(camera, &player->bounding_box);
     camera_set_safe_margins(camera, -3.0f, 3.0f);

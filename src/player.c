@@ -5,6 +5,11 @@
 
 #define PLAYER_SPEED 8.0f
 
+typedef enum {
+    PLAYER_ANIMATION_RUN,
+    PLAYER_ANIMATION_COUNT
+} PlayerAnimation;
+
 typedef struct {
     int min_x, min_y;
     int max_x, max_y;
@@ -16,20 +21,7 @@ static Vec2 starting_pos = {3.0f, 3.0f};
 
 void reset_player(Player* player);
 
-static void player_query_init(PlayerQuery* query, Player* player) {
-    query->max_x = (int)floor(player->position.x + player_hit_sizes[player->size].x / 2.0f); // right
-    if (query->max_x >= player->_level->width) query->max_x = player->_level->width - 1;
-
-    query->max_y = (int)floor(player->position.y + player_hit_sizes[player->size].y); // top
-    if (query->max_y >= player->_level->height) query->max_y = player->_level->height - 1;
-
-    query->min_y = (int)floor(player->position.y); // bottom
-    if (query->min_y < 0) query->min_y = 0;
-
-    query->min_x = (int)floor(player->position.x - player_hit_sizes[player->size].x / 2.0f); // left
-    if (query->min_x < 0) query->min_x = 0;
-
-}
+static void player_query_init(PlayerQuery* query, Player* player);
 
 Player* player_create(Level* level, Renderer* renderer, Camera* camera, Input* input) {
     Player* player = malloc(sizeof(Player));
@@ -39,6 +31,8 @@ Player* player_create(Level* level, Renderer* renderer, Camera* camera, Input* i
     player->_input = input;
     player->_camera = camera;
 
+    animation_player_init(&player->_animation, PLAYER_ANIMATION_COUNT, 0.1f);
+    animation_player_add_animation(&player->_animation, PLAYER_ANIMATION_RUN, 0, 12, 1);
     reset_player(player);
 
     Sprite* sprite = renderer_load_sprite(player->_renderer, "/player");
@@ -165,21 +159,27 @@ void player_update(Player* player, float time_delta) {
 
     if (player->position.x >= player->_level->goal_dist)
         player->velocity.x = 0.0f;
+
+    animation_player_update(&player->_animation, time_delta);
 }
 
 void player_draw(Player* player) {
     Point draw_pos;
     camera_world_pos_to_screen_pos(player->_camera, &player->position, &draw_pos);
 
-    draw_pos.x -= (int)((sprite_width(player->_sprite) *  player_hit_sizes[player->size].x) / 2.0f);
-    draw_pos.y -= (int)((sprite_height(player->_sprite) * player_hit_sizes[player->size].y));
+    draw_pos.x -= (int)((sprite_horizontal_frame_size(player->_sprite) *  player_hit_sizes[player->size].x) / 2.0f);
+    draw_pos.y -= (int)((sprite_vertical_frame_size(player->_sprite) * player_hit_sizes[player->size].y));
 
-    renderer_draw_scaled_sprite(player->_renderer, player->_sprite, draw_pos.x, draw_pos.y, player_hit_sizes[player->size].x, player_hit_sizes[player->size].y, 0);
+    renderer_draw_scaled_sprite(player->_renderer, player->_sprite,
+                                draw_pos.x, draw_pos.y,
+                                player_hit_sizes[player->size].x, player_hit_sizes[player->size].y,
+                                player->_animation.frame);
 }
 
 //TODO: This will probably have more logic in the future.
 void player_start(Player* player) {
     player->velocity.x = PLAYER_SPEED;
+    animation_player_set_current(&player->_animation, PLAYER_ANIMATION_RUN);
 }
 
 //TODO: This will probably have more logic in the future.
@@ -197,4 +197,19 @@ void reset_player(Player* player) {
 
     player->velocity.x = 0.0f;
     player->velocity.y = 0.0f;
+}
+
+// TODO: This should take previous position into account to prevent "falling through tiles"
+void player_query_init(PlayerQuery* query, Player* player) {
+    query->max_x = (int)floor(player->position.x + player_hit_sizes[player->size].x / 2.0f); // right
+    if (query->max_x >= player->_level->width) query->max_x = player->_level->width - 1;
+
+    query->max_y = (int)floor(player->position.y + player_hit_sizes[player->size].y); // top
+    if (query->max_y >= player->_level->height) query->max_y = player->_level->height - 1;
+
+    query->min_y = (int)floor(player->position.y); // bottom
+    if (query->min_y < 0) query->min_y = 0;
+
+    query->min_x = (int)floor(player->position.x - player_hit_sizes[player->size].x / 2.0f); // left
+    if (query->min_x < 0) query->min_x = 0;
 }
