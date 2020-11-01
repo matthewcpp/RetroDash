@@ -5,23 +5,23 @@
 
 #define PLAYER_SPEED 8.0f
 
+typedef struct {
+    int min_x, min_y;
+    int max_x, max_y;
+} PlayerQuery;
+
 static Vec2 player_hit_sizes[3] = { {0.66f, 0.66f}, {1.0f, 1.0f}, {1.33, 1.33} };
 static float player_jump_velocity[3] = {6.0f, 10.0f, 14.0f};
 static Vec2 starting_pos = {3.0f, 3.0f};
 
 void reset_player(Player* player);
 
-typedef struct {
-    int min_x, min_y;
-    int max_x, max_y;
-} PlayerQuery;
-
 static void player_query_init(PlayerQuery* query, Player* player) {
     query->max_x = (int)floor(player->position.x + player_hit_sizes[player->size].x / 2.0f); // right
     if (query->max_x >= player->_level->width) query->max_x = player->_level->width - 1;
 
     query->max_y = (int)floor(player->position.y + player_hit_sizes[player->size].y); // top
-    if (query->max_y >= player->_level->height) query->max_x = player->_level->height - 1;
+    if (query->max_y >= player->_level->height) query->max_y = player->_level->height - 1;
 
     query->min_y = (int)floor(player->position.y); // bottom
     if (query->min_y < 0) query->min_y = 0;
@@ -92,6 +92,7 @@ static void check_floor(Player* player, PlayerQuery* query) {
 static void check_collisions(Player* player, PlayerQuery* query) {
     // check to see if the player has collided with the world
     for (int y = query->min_y; y <= query->max_y; y++) {
+
         Tile* tile = level_get_tile(player->_level, query->max_x, y);
 
         if (tile == NULL) continue;
@@ -129,6 +130,8 @@ static void try_jump(Player* player) {
 }
 
 void player_update(Player* player, float time_delta) {
+    player->prev_pos = player->position;
+
     // step vertical
     player->velocity.y -= player->_level->gravity * time_delta;
     player->position.y += player->velocity.y * time_delta;
@@ -186,6 +189,7 @@ void reset_player(Player* player) {
     player->size = PLAYER_SIZE_MEDIUM;
     player->position.x = starting_pos.x;
     player->position.y = starting_pos.y;
+    player->prev_pos = player->position;
     player->on_ground = 1;
 
     player->velocity.x = 0.0f;

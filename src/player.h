@@ -17,9 +17,12 @@ typedef struct {
     PlayerSize size;
 
     Vec2 position;
-    Box bounding_box;
     Vec2 velocity;
+
+    Box bounding_box;
     int on_ground;
+
+    Vec2 prev_pos;
 
     Sprite* _sprite;
     Level* _level;

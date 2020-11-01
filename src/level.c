@@ -41,7 +41,13 @@ void level_destroy(Level* level) {
 }
 
 Tile* level_get_tile(Level* level, int x, int y) {
-    uint8_t tile_index = level->_tile_map[(level->height - 1 - y) * level->width + x];
+    uint32_t map_pos = (level->height - 1 - y) * level->width + x;
+
+    if (map_pos > level->width * level->height) {
+        return NULL;
+    }
+
+    uint8_t tile_index = level->_tile_map[map_pos];
 
     if (tile_index != TILE_EMPTY)
         return &level->tile_set.palette[tile_index];
@@ -50,7 +56,13 @@ Tile* level_get_tile(Level* level, int x, int y) {
 }
 
 void level_set_tile(Level* level, int x, int y, uint8_t tile_palette_index) {
-    level->_tile_map[(level->height - 1 - y) * level->width + x] = tile_palette_index;
+    uint32_t map_pos = (level->height - 1 - y) * level->width + x;
+
+    if (map_pos > level->width * level->height) {
+        renderer_set_clear_color(level->_renderer, 255, 255, 0);
+    }
+
+    level->_tile_map[map_pos] = tile_palette_index;
 }
 
 static void bound_vector(Level* level, Vec2* vec) {
