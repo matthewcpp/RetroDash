@@ -17,6 +17,13 @@ function writeUint32(value, buffer, offset, littleEndian) {
         return buffer.writeUInt32BE(value, offset);
 }
 
+function writeFloat(value, buffer, offset, littleEndian) {
+    if (littleEndian)
+        return buffer.writeFloatLE(value, offset);
+    else
+        return buffer.writeFloatBE(value, offset);
+}
+
 function prepareTileSet(srcPath, destPath, littleEndian) {
     const sourceFile = fs.readFileSync(srcPath, "utf8");
     const tileSet = JSON.parse(sourceFile);
@@ -57,7 +64,7 @@ function prepareLevel(srcPath, destPath, littleEndian) {
 
     const nameLength = Buffer.byteLength(level.name, "utf8");
     const tileSetLength = Buffer.byteLength(level.tileSet, "utf8");
-    const bufferSize = 8 + nameLength + tileSetLength + 8 + (level.width * level.height);
+    const bufferSize = 8 + nameLength + tileSetLength + 8 + (level.width * level.height) + 4 + level.goal;
 
     const buffer = Buffer.alloc(bufferSize);
     let offset = writeUint32(nameLength, buffer, 0, littleEndian);
@@ -66,6 +73,7 @@ function prepareLevel(srcPath, destPath, littleEndian) {
     offset += buffer.write(level.tileSet, offset, tileSetLength, "utf8");
     offset = writeUint32(level.width, buffer, offset, littleEndian);
     offset = writeUint32(level.height, buffer, offset, littleEndian);
+    offset = writeFloat(level.goal, buffer, offset, littleEndian);
 
     for (let i = 0; i < levelTiles.length; i++){
         const char = levelTiles.charCodeAt(i);

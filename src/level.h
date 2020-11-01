@@ -14,6 +14,7 @@
 typedef struct {
     uint32_t width;
     uint32_t height;
+    float goal_dist;
     char* name;
     float gravity;
 

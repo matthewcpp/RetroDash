@@ -1,6 +1,7 @@
 {
     "name": "Level 1",
     "tileSet": "/geom_dash.tileset",
-    "width": 103,
-    "height": 10
+    "width": 109,
+    "height": 10,
+    "goal": 103.0
 }

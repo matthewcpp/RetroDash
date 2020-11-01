@@ -12,6 +12,7 @@ Level* level_create(Renderer* renderer, Camera* camera) {
     level->_camera = camera;
     level->name = NULL;
     level->_tile_map = NULL;
+    level->goal_dist = 0.0f;
 
     level->tile_set.sprite = NULL;
     level->tile_set.palette_size = 0;
@@ -158,6 +159,8 @@ int level_load(Level* level, const char* path) {
     // Read Tiles
     filesystem_read(&level->width, sizeof(uint32_t), 1, level_file);
     filesystem_read(&level->height, sizeof(uint32_t), 1, level_file);
+
+    filesystem_read(&level->goal_dist, sizeof(float), 1, level_file);
 
     level->_tile_map = malloc(level->width * level->height);
     filesystem_read(level->_tile_map, 1, level->width * level->height, level_file);

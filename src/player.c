@@ -162,6 +162,9 @@ void player_update(Player* player, float time_delta) {
     player->bounding_box.y = player->position.y;
     player->bounding_box.w = player_hit_sizes[player->size].x;
     player->bounding_box.h = player_hit_sizes[player->size].y;
+
+    if (player->position.x >= player->_level->goal_dist)
+        player->velocity.x = 0.0f;
 }
 
 void player_draw(Player* player) {
