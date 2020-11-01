@@ -119,7 +119,7 @@ void renderer_draw_scaled_sprite(Renderer* renderer, Sprite* sprite,  int x, int
     if (sprite->vertical_slices == 1)
         source_rect.y = 0;
     else
-        source_rect.y = (frame / sprite->vertical_slices) * vertical_size;
+        source_rect.y = (frame / sprite->horizontal_slices) * vertical_size;
 
     source_rect.w = horizontal_size;
     source_rect.h = vertical_size;

@@ -7,6 +7,7 @@
 
 typedef enum {
     PLAYER_ANIMATION_RUN,
+    PLAYER_ANIMATION_JUMP,
     PLAYER_ANIMATION_COUNT
 } PlayerAnimation;
 
@@ -33,6 +34,7 @@ Player* player_create(Level* level, Renderer* renderer, Camera* camera, Input* i
 
     animation_player_init(&player->_animation, PLAYER_ANIMATION_COUNT, 0.1f);
     animation_player_add_animation(&player->_animation, PLAYER_ANIMATION_RUN, 0, 12, 1);
+    animation_player_add_animation(&player->_animation, PLAYER_ANIMATION_JUMP, 19, 7, 0);
     reset_player(player);
 
     Sprite* sprite = renderer_load_sprite(player->_renderer, "/player");
@@ -71,6 +73,11 @@ static void check_floor(Player* player, PlayerQuery* query) {
                 // need to update the query
                 query->min_y = (int)player->position.y;
                 query->max_y = (int)floor(player->position.y + player_hit_sizes[player->size].y);
+
+                if (player->is_jumping) {
+                    player->is_jumping = 0;
+                    animation_player_set_current(&player->_animation, PLAYER_ANIMATION_RUN);
+                }
                 return;
 
             case TILE_TYPE_KILL:
@@ -120,6 +127,8 @@ static void try_jump(Player* player) {
     if (player->on_ground) {
         player->velocity.y = player_jump_velocity[player->size];
         player->on_ground = 0;
+        player->is_jumping = 1;
+        animation_player_set_current(&player->_animation, PLAYER_ANIMATION_JUMP);
     }
 }
 
@@ -194,6 +203,7 @@ void reset_player(Player* player) {
     player->position.y = starting_pos.y;
     player->prev_pos = player->position;
     player->on_ground = 1;
+    player->is_jumping = 0;
 
     player->velocity.x = 0.0f;
     player->velocity.y = 0.0f;

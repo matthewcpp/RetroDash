@@ -22,6 +22,7 @@ typedef struct {
 
     Box bounding_box;
     int on_ground;
+    int is_jumping;
 
     Vec2 prev_pos;
 

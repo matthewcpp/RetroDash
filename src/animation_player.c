@@ -26,7 +26,7 @@ void animation_player_set_current(AnimationPlayer* player, int index) {
     player->current_animation = player->animations + index;
     player->total_time = player->current_animation->frame_count * player->frame_time;
     player->current_time = 0.0f;
-    player->frame = 0;
+    player->frame = player->current_animation->beginning_frame;
 }
 
 void animation_player_update(AnimationPlayer* player, float time_delta) {
@@ -40,9 +40,11 @@ void animation_player_update(AnimationPlayer* player, float time_delta) {
             player->current_time = player->total_time;
     }
 
-    player->frame = (int)floor(player->current_time / player->frame_time);
+    int frame_index = (int)floor(player->current_time / player->frame_time);
 
     // prevent us from going beyond the frame range when current_time == total_time and we are not looping
-    if (player->frame >= player->current_animation->frame_count)
-        player->frame = player->current_animation->frame_count - 1;
+    if (frame_index >= player->current_animation->frame_count)
+        frame_index = player->current_animation->frame_count - 1;
+
+    player->frame = player->current_animation->beginning_frame + frame_index;
 }
