@@ -13,7 +13,9 @@ typedef struct {
 } TileBatch;
 
 TileBatch* tile_batch_create();
+void tile_batch_destroy(TileBatch* tile_batch);
 void tile_batch_add(TileBatch* batch, int x, int y);
+
 
 
 #endif

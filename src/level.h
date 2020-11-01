@@ -6,17 +6,19 @@
 
 #include <stdint.h>
 
-
+#define TILE_EMPTY UINT8_MAX
 
 typedef enum {
-    TILE_BIT_NONE = 0,
-    TILE_BIT_SOLID = 1,
-    TILE_BIT_KILL = 2
-} TileBits;
+    TILE_TYPE_NONE = 0,
+    TILE_TYPE_SOLID = 1,
+    TILE_TYPE_KILL = 2,
+    TILE_TYPE_TUNNEL = 3,
+    TILE_TYPE_BRICK = 4
+} TileType;
 
 typedef struct {
     uint32_t sprite_index;
-    uint32_t bits;
+    uint32_t type;
 } Tile;
 
 typedef struct {
@@ -43,5 +45,6 @@ Level* level_create(Renderer* renderer, Camera* camera);
 int level_load(Level* level, const char* path);
 Tile* level_get_tile(Level* level, int x, int y);
 void level_draw(Level* level);
+void level_set_tile(Level* level, int x, int y, uint8_t tile_palette_index);
 
 #endif

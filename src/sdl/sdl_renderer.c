@@ -61,6 +61,11 @@ void renderer_draw_filled_rect(Renderer* renderer, Rect* rect) {
     SDL_RenderFillRect(renderer->sdl_renderer, (SDL_Rect*)rect);
 }
 
+void renderer_set_tile_batch_size(Renderer* renderer, int size) {
+    (void)renderer;
+    (void)size;
+}
+
 void renderer_begin_tile_drawing(Renderer* renderer, Sprite* sprite) {
     renderer->tile_sprite = sprite;
     renderer->tile_size_x = sprite_horizontal_frame_size(sprite);
@@ -70,7 +75,7 @@ void renderer_begin_tile_drawing(Renderer* renderer, Sprite* sprite) {
 static void _draw_sprite(Renderer* renderer, Sprite* sprite, int index, int size_x, int size_y, int dst_x, int dst_y) {
     SDL_Rect source_rect;
     source_rect.x = (index % sprite->horizontal_slices) * size_x;
-    source_rect.y = (index / sprite->vertical_slices) * size_y;
+    source_rect.y = (index / sprite->horizontal_slices) * size_y;
     source_rect.w = size_x;
     source_rect.h = size_y;
 
@@ -85,6 +90,22 @@ static void _draw_sprite(Renderer* renderer, Sprite* sprite, int index, int size
 
 void renderer_draw_sprite(Renderer* renderer, Sprite* sprite, int x, int y, int frame) {
     _draw_sprite(renderer, sprite, frame, sprite_horizontal_frame_size(sprite), sprite_vertical_frame_size(sprite), x, y);
+}
+
+void renderer_draw_scaled_sprite(Renderer* renderer, Sprite* sprite,  int x, int y, float scale_x, float scale_y, int frame) {
+    SDL_Rect source_rect;
+    source_rect.x = (frame % sprite->horizontal_slices) * sprite->width;
+    source_rect.y = (frame / sprite->vertical_slices) * sprite->height;
+    source_rect.w = sprite_horizontal_frame_size(sprite);
+    source_rect.h = sprite_vertical_frame_size(sprite);
+
+    SDL_Rect dest_rect;
+    dest_rect.x = x;
+    dest_rect.y = y;
+    dest_rect.w = sprite->width * scale_x;
+    dest_rect.h = sprite->height * scale_y;
+
+    SDL_RenderCopy(renderer->sdl_renderer, sprite->texture, &source_rect, &dest_rect);
 }
 
 void renderer_draw_tile(Renderer* renderer, int index, int x, int y) {
@@ -122,7 +143,7 @@ int sprite_height(Sprite* sprite) {
 }
 
 int sprite_horizontal_frame_size(Sprite* sprite) {
-    return sprite->width / sprite->vertical_slices;
+    return sprite->width / sprite->horizontal_slices;
 }
 
 int sprite_vertical_frame_size(Sprite* sprite) {

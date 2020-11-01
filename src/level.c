@@ -4,9 +4,6 @@
 
 #include <math.h>
 #include <stdlib.h>
-#include <stdio.h>
-
-#define TILE_EMPTY UINT8_MAX
 
 Level* level_create(Renderer* renderer, Camera* camera) {
     Level* level = malloc(sizeof(Level));
@@ -30,6 +27,10 @@ Tile* level_get_tile(Level* level, int x, int y) {
         return &level->tile_set.palette[tile_index];
     else
         return NULL;
+}
+
+void level_set_tile(Level* level, int x, int y, uint8_t tile_palette_index) {
+    level->_tile_map[(level->height - 1 - y) * level->width + x] = tile_palette_index;
 }
 
 static void bound_vector(Level* level, Vec2* vec) {
@@ -125,6 +126,7 @@ static int load_tile_set(Level* level, const char* path) {
     filesystem_close(tilemap_file);
 
     camera_set_tile_size(level->_camera, sprite_horizontal_frame_size(level->tile_set.sprite), sprite_vertical_frame_size(level->tile_set.sprite));
+    renderer_set_tile_batch_size(level->_renderer, level->tile_set.palette_size);
     return 1;
 }
 

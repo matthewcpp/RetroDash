@@ -2,7 +2,6 @@
 
 #include <math.h>
 #include <stdlib.h>
-#include <stdio.h>
 
 #define PLAYER_SPEED 8.0f
 
@@ -19,9 +18,17 @@ typedef struct {
 
 static void player_query_init(PlayerQuery* query, Player* player) {
     query->max_x = (int)floor(player->position.x + player_hit_sizes[player->size].x / 2.0f); // right
+    if (query->max_x >= player->_level->width) query->max_x = player->_level->width - 1;
+
     query->max_y = (int)floor(player->position.y + player_hit_sizes[player->size].y); // top
+    if (query->max_y >= player->_level->height) query->max_x = player->_level->height - 1;
+
     query->min_y = (int)floor(player->position.y); // bottom
+    if (query->min_y < 0) query->min_y = 0;
+
     query->min_x = (int)floor(player->position.x - player_hit_sizes[player->size].x / 2.0f); // left
+    if (query->min_x < 0) query->min_x = 0;
+
 }
 
 Player* player_create(Level* level, Renderer* renderer, Camera* camera, Input* input) {
@@ -36,7 +43,7 @@ Player* player_create(Level* level, Renderer* renderer, Camera* camera, Input* i
 
     Sprite* sprite = renderer_load_sprite(player->_renderer, "/player");
     for (int i = 0; i < 3; i++) {
-        player->_sprites[i] = sprite;
+        player->_sprite = sprite;
     }
 
     return player;
@@ -55,19 +62,21 @@ static void check_floor(Player* player, PlayerQuery* query) {
 
         if (tile == NULL) continue;
 
-        // if the player has fallen into a solid tile, update their position so that they are standing on it
-        if ((tile->bits & TILE_BIT_SOLID) == TILE_BIT_SOLID) {
-            player->position.y = ceil(player->position.y);
-            player->on_ground = 1;
-            player->velocity.y = 0.0f;
+        switch (tile->type) {
+            // if the player has fallen into a solid tile, update their position so that they are standing on it
+            case TILE_TYPE_SOLID:
+                player->position.y = ceil(player->position.y);
+                player->on_ground = 1;
+                player->velocity.y = 0.0f;
 
-            // need to update the query
-            query->min_y = (int)player->position.y;
-            query->max_y = (int)floor(player->position.y + player_hit_sizes[player->size].y);
-            return;
-        }
-        else if ((tile->bits & TILE_BIT_KILL) == TILE_BIT_KILL) {
-            player_kill(player);
+                // need to update the query
+                query->min_y = (int)player->position.y;
+                query->max_y = (int)floor(player->position.y + player_hit_sizes[player->size].y);
+                return;
+
+            case TILE_TYPE_KILL:
+                player_kill(player);
+                return;
         }
     }
 }
@@ -77,13 +86,32 @@ static void check_floor(Player* player, PlayerQuery* query) {
  */
 static void check_collisions(Player* player, PlayerQuery* query) {
     // check to see if the player has collided with the world
-    for (int y = query->min_y; y < query->max_y; y++) {
+    for (int y = query->min_y; y <= query->max_y; y++) {
         Tile* tile = level_get_tile(player->_level, query->max_x, y);
 
         if (tile == NULL) continue;
-        if ((tile->bits & TILE_BIT_SOLID) == TILE_BIT_SOLID) {
-            player_kill(player);
-            return;
+        switch (tile->type) {
+            case TILE_TYPE_SOLID:
+            case TILE_TYPE_KILL:
+                player_kill(player);
+                return;
+
+            case TILE_TYPE_TUNNEL:
+                if (player->size != PLAYER_SIZE_SMALL) {
+                    player_kill(player);
+                    return;
+                }
+                break;
+
+            case TILE_TYPE_BRICK:
+                if (player->size == PLAYER_SIZE_LARGE) {
+                    level_set_tile(player->_level, query->max_x, y, TILE_EMPTY);
+                    break;
+                }
+                else {
+                    player_kill(player);
+                    return;
+                }
         }
     }
 }
@@ -112,6 +140,15 @@ void player_update(Player* player, float time_delta) {
     if (input_button_is_down(player->_input, CONTROLLER_1, CONTROLLER_BUTTON_A)) {
         try_jump(player);
     }
+    if (input_button_is_down(player->_input, CONTROLLER_1, CONTROLLER_BUTTON_C_LEFT)) {
+        player->size = PLAYER_SIZE_SMALL;
+    }
+    if (input_button_is_down(player->_input, CONTROLLER_1, CONTROLLER_BUTTON_C_UP)) {
+        player->size = PLAYER_SIZE_MEDIUM;
+    }
+    if (input_button_is_down(player->_input, CONTROLLER_1, CONTROLLER_BUTTON_C_RIGHT)) {
+        player->size = PLAYER_SIZE_LARGE;
+    }
 
     player->bounding_box.x = player->position.x;
     player->bounding_box.y = player->position.y;
@@ -123,12 +160,10 @@ void player_draw(Player* player) {
     Point draw_pos;
     camera_world_pos_to_screen_pos(player->_camera, &player->position, &draw_pos);
 
+    draw_pos.x -= (int)((sprite_width(player->_sprite) *  player_hit_sizes[player->size].x) / 2.0f);
+    draw_pos.y -= (int)((sprite_height(player->_sprite) * player_hit_sizes[player->size].y));
 
-    Sprite* sprite = player->_sprites[player->size];
-    draw_pos.x -= (sprite_width(sprite) / 2);
-    draw_pos.y -= (sprite_height(sprite));
-
-    renderer_draw_sprite(player->_renderer, sprite, draw_pos.x, draw_pos.y, 0);
+    renderer_draw_scaled_sprite(player->_renderer, player->_sprite, draw_pos.x, draw_pos.y, player_hit_sizes[player->size].x, player_hit_sizes[player->size].y, 0);
 }
 
 //TODO: This will probably have more logic in the future.

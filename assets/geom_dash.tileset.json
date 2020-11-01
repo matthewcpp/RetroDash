@@ -1,21 +1,25 @@
 {
     "sprite": "/geom_dash",
     "tiles": [
-        {
-            "index": 0,
-            "attributes": ["solid"]
-        },
-        {
-            "index": 1,
-            "attributes": ["solid"]
-        },
-        {
-            "index": 2,
-            "attributes": ["solid"]
-        },
-        {
-            "index": 3,
-            "attributes": ["solid"]
-        }
+        "solid",
+        "solid",
+        "solid",
+        "tunnel",
+        "tunnel",
+        "tunnel",
+
+        "solid",
+        "solid",
+        "solid",
+        "solid",
+        "solid",
+        "solid",
+
+        "kill",
+        "kill",
+        "brick",
+        "solid",
+        "solid",
+        "solid"
     ]
 }
