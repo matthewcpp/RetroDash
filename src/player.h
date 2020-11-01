@@ -29,6 +29,8 @@ typedef struct {
 } Player;
 
 Player* player_create(Level* level, Renderer* renderer, Camera* camera, Input* input);
+void player_destroy(Player* player);
+
 void player_update(Player* player, float time_delta);
 void player_draw(Player* player);
 

@@ -63,6 +63,12 @@ void renderer_draw_sprite(Renderer* renderer, Sprite* sprite, int x, int y, int 
     rdp_draw_sprite( 0, x, y, MIRROR_DISABLED );
 }
 
+void renderer_destroy_sprite(Renderer* renderer, Sprite* sprite) {
+    free(sprite);
+    (void)renderer;
+}
+
+
 void renderer_draw_scaled_sprite(Renderer* renderer, Sprite* sprite,  int x, int y, float scale_x, float scale_y, int frame) {
     renderer_enable_texture_mode(renderer);
 

@@ -12,6 +12,10 @@ Camera* camera_create(int screen_width, int screen_height) {
     return camera;
 }
 
+void camera_destroy(Camera* camera) {
+    free(camera);
+}
+
 void camera_update(Camera* camera) {
     camera->_origin.x = camera->_target->x + camera->_offset.x;
     camera->_origin.y = camera->_target->y + + camera->_target->h + camera->_offset.y;

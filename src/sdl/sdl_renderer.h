@@ -23,6 +23,7 @@ struct Renderer {
 };
 
 Renderer* sdl_renderer_create(SDL_Window* window, const char* asset_dir);
+void sdl_renderer_destroy(Renderer* renderer);
 
 void sdl_renderer_begin(Renderer* renderer);
 void sdl_renderer_end(Renderer* renderer);

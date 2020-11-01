@@ -18,3 +18,7 @@ void filesystem_close(uint32_t handle) {
 int filesystem_read(void* buf, int size, int count, int handle) {
     return dfs_read(buf, size, count, handle);
 }
+
+void filesystem_uninit() {
+    // nothing to do here.
+}

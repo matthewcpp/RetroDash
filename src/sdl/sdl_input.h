@@ -6,6 +6,7 @@
 #include <SDL.h>
 
 Input* sdl_input_create();
+void sdl_input_destory(Input* input);
 void sdl_input_update(Input* input);
 
 

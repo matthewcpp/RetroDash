@@ -49,6 +49,11 @@ Player* player_create(Level* level, Renderer* renderer, Camera* camera, Input* i
     return player;
 }
 
+void player_destroy(Player* player) {
+    renderer_destroy_sprite(player->_renderer, player->_sprite);
+    free(player);
+}
+
 /**
  * Checks to see if the player is standing on safe ground.
  * In the event they are, it will update the position such that they are standing on the top of the tile.

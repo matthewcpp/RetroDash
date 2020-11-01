@@ -9,7 +9,8 @@ set(game_src
     src/level.h src/level.c
     src/player.h src/player.c
     src/rect.h src/rect.c
-    src/renderer.h)
+    src/renderer.h
+    src/tile_set.h src/tile_set.c)
 
 set(sdl_src
     src/sdl/sdl_filesystem.c

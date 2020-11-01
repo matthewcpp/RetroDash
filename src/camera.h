@@ -12,6 +12,8 @@ typedef struct {
 } Camera;
 
 Camera* camera_create(int screen_width, int screen_height);
+void camera_destroy(Camera* camera);
+
 /**
  * Updates camera origin based on the target.  This should be called after the target (the player) has been updated.
  */
