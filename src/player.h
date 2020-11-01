@@ -17,9 +17,12 @@ typedef struct {
     PlayerSize size;
 
     Vec2 position;
-    Box bounding_box;
     Vec2 velocity;
+
+    Box bounding_box;
     int on_ground;
+
+    Vec2 prev_pos;
 
     Sprite* _sprite;
     Level* _level;
@@ -29,6 +32,8 @@ typedef struct {
 } Player;
 
 Player* player_create(Level* level, Renderer* renderer, Camera* camera, Input* input);
+void player_destroy(Player* player);
+
 void player_update(Player* player, float time_delta);
 void player_draw(Player* player);
 

@@ -17,6 +17,12 @@
 #define SCREEN_WIDTH 320
 #define SCREEN_HEIGHT 240
 
+static volatile int tick_count = 0;
+
+void timer_tick(int overflow) {
+    tick_count += 1;
+}
+
 int main(void)
 {
     init_interrupts();
@@ -40,22 +46,26 @@ int main(void)
     camera_set_safe_margins(camera, -3.0f, 3.0f);
     player_start(player);
 
-
-    unsigned long prev_time = get_ticks_ms();
+    new_timer(TIMER_TICKS(1000), TF_CONTINUOUS, timer_tick);
+    //unsigned long prev_time = get_ticks_ms();
 
 
     /* Main loop test */
     while(1) 
     {
-        unsigned long current_time = get_ticks_ms();
-        float time_delta = (current_time - prev_time) / 1000.0f;
-        (void)time_delta;
+        //unsigned long current_time = get_ticks_ms();
+        //float time_delta = (current_time - prev_time) / 1000.0f;
+        //(void)time_delta;
 
-        n64_input_update(input);
-        player_update(player, time_delta);
-        camera_update(camera);
-        if (input_button_is_down(player->_input, CONTROLLER_1, CONTROLLER_BUTTON_L)) {
-            player_kill(player);
+        if (tick_count >= 16) {
+            n64_input_update(input);
+            player_update(player, 60.0f / 1000.0f);
+            camera_update(camera);
+            if (input_button_is_down(player->_input, CONTROLLER_1, CONTROLLER_BUTTON_L)) {
+                player_kill(player);
+            }
+
+            tick_count = 0;
         }
 
         static display_context_t disp = 0;
@@ -87,6 +97,6 @@ int main(void)
         /* Force backbuffer flip */
         display_show(disp);
 
-        prev_time = current_time;
+        //prev_time = current_time;
     }
 }

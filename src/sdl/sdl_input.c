@@ -23,6 +23,14 @@ Input* sdl_input_create() {
     return input;
 }
 
+void sdl_input_destory(Input* input) {
+    if (input->controller) {
+        SDL_GameControllerClose(input->controller);
+    }
+
+    free(input);
+}
+
 void rr_sdl_input_update_button(Input* input, ControllerButton button, int value, int time) {
     rrSDLButtonInfo* button_info = &input->controller_buttons[button];
     button_info->prev_state = button_info->cur_state;

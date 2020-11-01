@@ -68,5 +68,14 @@ int main(int argc, char** argv) {
         SDL_Delay(1);
     }
 
+    level_destroy(level);
+    camera_destroy(camera);
+    sdl_input_destory(input);
+    player_destroy(player);
+    sdl_renderer_destroy(renderer);
+    filesystem_uninit();
+
+    SDL_Quit();
+
     return 0;
 }

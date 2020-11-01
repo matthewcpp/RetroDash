@@ -23,6 +23,13 @@ Renderer* sdl_renderer_create(SDL_Window* window, const char* asset_dir) {
     return renderer;
 }
 
+void sdl_renderer_destroy(Renderer* renderer) {
+    SDL_DestroyRenderer(renderer->sdl_renderer);
+    free(renderer->asset_dir);
+
+    free(renderer);
+}
+
 void renderer_get_screen_size(Renderer* renderer, Point* screen_size) {
     screen_size->x = renderer->screen_size.x;
     screen_size->y = renderer->screen_size.y;
@@ -51,6 +58,12 @@ Sprite* renderer_load_sprite(Renderer* renderer, const char* sprite_base_path) {
     free(path_buffer);
 
     return sprite;
+}
+
+void renderer_destroy_sprite(Renderer* renderer, Sprite* sprite) {
+    SDL_DestroyTexture(sprite->texture);
+    free(sprite);
+    (void)renderer;
 }
 
 void renderer_set_color(Renderer* renderer, int r, int g, int b, int a) {

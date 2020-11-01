@@ -10,7 +10,8 @@ Level* level_create(Renderer* renderer, Camera* camera) {
 
     level->_renderer = renderer;
     level->_camera = camera;
-    level->name = "";
+    level->name = NULL;
+    level->_tile_map = NULL;
 
     level->tile_set.sprite = NULL;
     level->tile_set.palette_size = 0;
@@ -20,8 +21,33 @@ Level* level_create(Renderer* renderer, Camera* camera) {
     return level;
 }
 
+void level_clear(Level* level) {
+    tile_set_clear(&level->tile_set, level->_renderer);
+
+    if (level->name){
+        free(level->name);
+        level->name = NULL;
+    }
+
+    if (level->_tile_map) {
+        free(level->_tile_map);
+        level->_tile_map = NULL;
+    }
+}
+
+void level_destroy(Level* level) {
+    level_clear(level);
+    free(level);
+}
+
 Tile* level_get_tile(Level* level, int x, int y) {
-    uint8_t tile_index = level->_tile_map[(level->height - 1 - y) * level->width + x];
+    uint32_t map_pos = (level->height - 1 - y) * level->width + x;
+
+    if (map_pos > level->width * level->height) {
+        return NULL;
+    }
+
+    uint8_t tile_index = level->_tile_map[map_pos];
 
     if (tile_index != TILE_EMPTY)
         return &level->tile_set.palette[tile_index];
@@ -30,7 +56,13 @@ Tile* level_get_tile(Level* level, int x, int y) {
 }
 
 void level_set_tile(Level* level, int x, int y, uint8_t tile_palette_index) {
-    level->_tile_map[(level->height - 1 - y) * level->width + x] = tile_palette_index;
+    uint32_t map_pos = (level->height - 1 - y) * level->width + x;
+
+    if (map_pos > level->width * level->height) {
+        renderer_set_clear_color(level->_renderer, 255, 255, 0);
+    }
+
+    level->_tile_map[map_pos] = tile_palette_index;
 }
 
 static void bound_vector(Level* level, Vec2* vec) {
@@ -103,34 +135,10 @@ void level_draw(Level* level) {
     renderer_end_tile_drawing(level->_renderer);
 }
 
-static int load_tile_set(Level* level, const char* path) {
-    uint32_t tilemap_file = filesystem_open(path);
-    if (tilemap_file < 0) return 0;
-
-    uint32_t sprite_name_size;
-    filesystem_read(&sprite_name_size, sizeof(uint32_t), 1, tilemap_file);
-    char* sprite_name = malloc(sprite_name_size + 1);
-    filesystem_read(sprite_name, 1, sprite_name_size, tilemap_file);
-    sprite_name[sprite_name_size] = '\0';
-
-    level->tile_set.sprite = renderer_load_sprite(level->_renderer, sprite_name);
-    free(sprite_name);
-
-    if (level->tile_set.sprite == NULL)
-        return 0;
-
-    filesystem_read(&level->tile_set.palette_size, sizeof(uint32_t), 1, tilemap_file);
-    level->tile_set.palette = malloc(sizeof(Tile) * level->tile_set.palette_size);
-    filesystem_read(level->tile_set.palette, sizeof(Tile), level->tile_set.palette_size, tilemap_file);
-
-    filesystem_close(tilemap_file);
-
-    camera_set_tile_size(level->_camera, sprite_horizontal_frame_size(level->tile_set.sprite), sprite_vertical_frame_size(level->tile_set.sprite));
-    renderer_set_tile_batch_size(level->_renderer, level->tile_set.palette_size);
-    return 1;
-}
 
 int level_load(Level* level, const char* path) {
+    level_clear(level);
+
     uint32_t level_file = filesystem_open(path);
     if (level_file < 0) return 0;
 
@@ -156,7 +164,10 @@ int level_load(Level* level, const char* path) {
 
     filesystem_close(level_file);
 
-    int loaded_tile_set = load_tile_set(level, tile_set_name);
+    int loaded_tile_set = tile_set_load(&level->tile_set, tile_set_name, level->_renderer);
+    camera_set_tile_size(level->_camera, sprite_horizontal_frame_size(level->tile_set.sprite), sprite_vertical_frame_size(level->tile_set.sprite));
+    renderer_set_tile_batch_size(level->_renderer, level->tile_set.palette_size);
+
     free(tile_set_name);
 
     return loaded_tile_set;

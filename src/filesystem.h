@@ -10,6 +10,7 @@
  * @param filesystem_path_prefix prefix to be prepended to all calls to filesystem_open.  This path should not end with `/`.
  */
 void filesystem_init(const char* filesystem_path_prefix);
+void filesystem_uninit();
 int filesystem_open(const char* path);
 void filesystem_close(uint32_t handle);
 int filesystem_read(void* buf, int size, int count, int handle);

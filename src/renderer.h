@@ -30,5 +30,6 @@ void renderer_end_tile_drawing(Renderer* renderer);
 void renderer_set_clear_color(Renderer* renderer, uint8_t r, uint8_t g, uint8_t b);
 
 Sprite* renderer_load_sprite(Renderer* renderer, const char* sprite_base_path);
+void renderer_destroy_sprite(Renderer* renderer, Sprite* sprite);
 
 #endif

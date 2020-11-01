@@ -3,30 +3,13 @@
 
 #include "camera.h"
 #include "renderer.h"
+#include "tile_set.h"
 
 #include <stdint.h>
 
 #define TILE_EMPTY UINT8_MAX
 
-typedef enum {
-    TILE_TYPE_NONE = 0,
-    TILE_TYPE_SOLID = 1,
-    TILE_TYPE_KILL = 2,
-    TILE_TYPE_TUNNEL = 3,
-    TILE_TYPE_BRICK = 4
-} TileType;
 
-typedef struct {
-    uint32_t sprite_index;
-    uint32_t type;
-} Tile;
-
-typedef struct {
-    uint32_t palette_size;
-    Tile* palette;
-    Sprite* sprite;
-    Point tile_size;
-} TileSet;
 
 typedef struct {
     uint32_t width;
@@ -42,6 +25,8 @@ typedef struct {
 } Level;
 
 Level* level_create(Renderer* renderer, Camera* camera);
+void level_destroy(Level* level);
+
 int level_load(Level* level, const char* path);
 Tile* level_get_tile(Level* level, int x, int y);
 void level_draw(Level* level);

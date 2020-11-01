@@ -4,8 +4,8 @@
 #include <stdlib.h>
 #include <string.h>
 
-char* path_prefix;
-size_t path_prefix_len;
+char* path_prefix = NULL;
+size_t path_prefix_len = 0;
 
 FILE* handles[FILESYSTEM_MAX_OPEN_FILES];
 
@@ -15,6 +15,13 @@ void filesystem_init(const char* filesystem_path_prefix) {
     strcpy(path_prefix, filesystem_path_prefix);
 
     memset(handles, 0, sizeof(FILE*) * (FILESYSTEM_MAX_OPEN_FILES));
+}
+
+void filesystem_uninit() {
+    if (path_prefix) {
+        free(path_prefix);
+        path_prefix = NULL;
+    }
 }
 
 int filesystem_open(const char* path) {
