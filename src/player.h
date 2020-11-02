@@ -14,8 +14,19 @@ typedef enum {
     PLAYER_SIZE_LARGE
 } PlayerSize;
 
+typedef enum {
+    PLAYER_STATE_INACTIVE,
+    PLAYER_STATE_APPEARING,
+    PLAYER_STATE_RUNNING,
+    PLAYER_STATE_CHANGE_SIZE,
+    PLAYER_DISAPPEARING,
+    PLAYER_STATE_DYING
+} PlayerState;
+
 typedef struct {
     PlayerSize size;
+    PlayerState state;
+    float state_time;
 
     Vec2 position;
     Vec2 velocity;
