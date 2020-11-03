@@ -5,7 +5,7 @@ const path = require("path");
 const TileTypeValues = {
     none: 0,
     solid: 1,
-    kill: 2,
+    triangle: 2,
     tunnel: 3,
     brick: 4
 }

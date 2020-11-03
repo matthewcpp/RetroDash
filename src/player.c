@@ -107,7 +107,7 @@ static void check_collisions(Player* player, PlayerQuery* query) {
 
         if (tile == NULL) continue;
         switch (tile->type) {
-            case TILE_TYPE_KILL:
+            case TILE_TYPE_TRIANGLE:
                 if (tile_collision_spike(&player->entity, query->max_x, y)) {
                     player_kill(player);
                     return;
@@ -119,7 +119,7 @@ static void check_collisions(Player* player, PlayerQuery* query) {
                 return;
 
             case TILE_TYPE_TUNNEL:
-                if (player->current_size != PLAYER_SIZE_SMALL) {
+                if (player->target_size != PLAYER_SIZE_SMALL) {
                     player_kill(player);
                     return;
                 }
