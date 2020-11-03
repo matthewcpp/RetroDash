@@ -1,5 +1,7 @@
 #include "player.h"
 
+#include "tile_collision.h"
+
 #include <math.h>
 #include <stdlib.h>
 
@@ -17,9 +19,19 @@ typedef struct {
     int max_x, max_y;
 } PlayerQuery;
 
-static Vec2 player_hit_sizes[3] = { {0.66f, 0.66f}, {1.0f, 1.0f}, {1.33, 1.33} };
+#define PLAYER_HIT_W 0.5f
+#define PLAYER_HIT_H 0.75
+
+// world space size of the players hit box
+static Vec2 player_hit_sizes[3] = {
+        {PLAYER_HIT_W * 0.66f, PLAYER_HIT_H * 0.66f},
+        {PLAYER_HIT_W, PLAYER_HIT_H},
+        {PLAYER_HIT_W * 1.33f, PLAYER_HIT_H * 1.33f} };
+
 static float player_jump_velocity[3] = {6.0f, 10.0f, 14.0f};
-static Vec2 starting_pos = {3.0f, 3.0f};
+
+static Vec2 starting_pos = {3.0f, 3.0f}; // todo move into level data
+static Point sprite_draw_offset = {0, 2};
 
 void reset_player(Player* player);
 
@@ -80,10 +92,6 @@ static void check_floor(Player* player, PlayerQuery* query) {
                     animation_player_set_current(&player->_animation, PLAYER_ANIMATION_RUN, 1);
                 }
                 return;
-
-            case TILE_TYPE_KILL:
-                player_kill(player);
-                return;
         }
     }
 }
@@ -99,8 +107,14 @@ static void check_collisions(Player* player, PlayerQuery* query) {
 
         if (tile == NULL) continue;
         switch (tile->type) {
-            case TILE_TYPE_SOLID:
             case TILE_TYPE_KILL:
+                if (tile_collision_spike(&player->entity, query->max_x, y)) {
+                    player_kill(player);
+                    return;
+                }
+                break;
+
+            case TILE_TYPE_SOLID:
                 player_kill(player);
                 return;
 
@@ -256,12 +270,18 @@ void player_draw(Player* player) {
     Point draw_pos;
     camera_world_pos_to_screen_pos(player->_camera, &player->entity.position, &draw_pos);
 
-    draw_pos.x -= (int)((sprite_horizontal_frame_size(player->_sprite) *  player->entity.size.x) / 2.0f);
-    draw_pos.y -= (int)((sprite_vertical_frame_size(player->_sprite) * player->entity.size.y));
+    float sprite_scale_x = player->entity.size.x / PLAYER_HIT_W;
+    float sprite_scale_y = player->entity.size.y / PLAYER_HIT_H;
+
+    draw_pos.x -= (int)((sprite_horizontal_frame_size(player->_sprite) *  sprite_scale_x) / 2.0f);
+    draw_pos.y -= (int)((sprite_vertical_frame_size(player->_sprite) * sprite_scale_y));
+
+    draw_pos.x += sprite_draw_offset.x;
+    draw_pos.y += sprite_draw_offset.y;
 
     renderer_draw_scaled_sprite(player->_renderer, player->_sprite,
                                 draw_pos.x, draw_pos.y,
-                                player->entity.size.x, player->entity.size.y,
+                                sprite_scale_x, sprite_scale_y,
                                 player->_animation.frame);
 }
 
