@@ -17,10 +17,8 @@ typedef enum {
 
 typedef enum {
     PLAYER_STATE_INACTIVE,
-    PLAYER_STATE_APPEARING,
     PLAYER_STATE_RUNNING,
     PLAYER_STATE_CHANGING_SIZE,
-    PLAYER_DISAPPEARING,
     PLAYER_STATE_DYING
 } PlayerState;
 
@@ -30,7 +28,12 @@ typedef struct {
     PlayerSize target_size;
 
     PlayerState state;
+
+    // amount of time the player has been in thier current state
     float state_time;
+
+    // holds the time of the previous animation when the player begins changing sizes
+    float prev_animation_time;
 
     Vec2 prev_pos;
     Vec2 velocity;

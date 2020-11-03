@@ -124,6 +124,10 @@ static void check_collisions(Player* player, PlayerQuery* query) {
     }
 }
 
+/**
+ * Attempts to start jumping.
+ * If the player is changing size at this point, the jump animation will not begin until the size change is complete
+ */
 static void try_jump(Player* player) {
     if (!player->on_ground)
         return;
@@ -131,9 +135,17 @@ static void try_jump(Player* player) {
     player->velocity.y = player_jump_velocity[player->target_size];
     player->on_ground = 0;
     player->is_jumping = 1;
-    animation_player_set_current(&player->_animation, PLAYER_ANIMATION_JUMP, 0);
+
+    if (player->state == PLAYER_STATE_CHANGING_SIZE)
+        player->prev_animation_time = 0.0f;
+    else
+        animation_player_set_current(&player->_animation, PLAYER_ANIMATION_JUMP, 0);
 }
 
+/**
+ * Attempts to change the players size.
+ * If the player is jumping that animation will be overridden and then restored if player still hasn't touched ground when size change is complete.
+ */
 static void try_set_size(Player* player, PlayerSize size) {
     if (player->state != PLAYER_STATE_RUNNING || size == player->current_size)
         return;
@@ -141,6 +153,10 @@ static void try_set_size(Player* player, PlayerSize size) {
     player->state = PLAYER_STATE_CHANGING_SIZE;
     player->target_size = size;
     player->state_time = 0.0f;
+
+    if (player->is_jumping)
+        player->prev_animation_time = player->_animation.current_time;
+
     animation_player_set_current(&player->_animation, PLAYER_ANIMATION_CHANGE_SIZE, 0);
 }
 
@@ -191,12 +207,21 @@ void player_update_dying(Player* player, float time_delta) {
 void player_update_changing_size(Player* player, float time_delta) {
     player->state_time += time_delta;
     animation_player_update(&player->_animation, time_delta);
+    player->prev_animation_time += time_delta;
     player_update_movement(player, time_delta);
 
-    // If player has reached target size, return status to running
+    // If player has reached target size, return to previous state
     if (animation_player_is_complete(&player->_animation)) {
         player->state = PLAYER_STATE_RUNNING;
-        animation_player_set_current(&player->_animation, PLAYER_ANIMATION_RUN, 1);
+
+        if (player->is_jumping) {
+            animation_player_set_current(&player->_animation, PLAYER_ANIMATION_JUMP, 0);
+            player->_animation.current_time = player->prev_animation_time;
+        }
+        else {
+            animation_player_set_current(&player->_animation, PLAYER_ANIMATION_RUN, 1);
+        }
+
         player->current_size = player->target_size;
         player->entity.size = player_hit_sizes[player->current_size];
         return;
@@ -231,8 +256,8 @@ void player_draw(Player* player) {
     Point draw_pos;
     camera_world_pos_to_screen_pos(player->_camera, &player->entity.position, &draw_pos);
 
-    draw_pos.x -= (int)((sprite_horizontal_frame_size(player->_sprite) *  player_hit_sizes[player->current_size].x) / 2.0f);
-    draw_pos.y -= (int)((sprite_vertical_frame_size(player->_sprite) * player_hit_sizes[player->current_size].y));
+    draw_pos.x -= (int)((sprite_horizontal_frame_size(player->_sprite) *  player->entity.size.x) / 2.0f);
+    draw_pos.y -= (int)((sprite_vertical_frame_size(player->_sprite) * player->entity.size.y));
 
     renderer_draw_scaled_sprite(player->_renderer, player->_sprite,
                                 draw_pos.x, draw_pos.y,
@@ -261,6 +286,7 @@ void reset_player(Player* player) {
 
     player->state = PLAYER_STATE_INACTIVE;
     player->state_time = 0.0f;
+    player->prev_animation_time = 0.0f;
 
     player->entity.position.x = starting_pos.x;
     player->entity.position.y = starting_pos.y;
