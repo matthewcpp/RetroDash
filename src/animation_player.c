@@ -70,3 +70,7 @@ void animation_player_update(AnimationPlayer* player, float time_delta) {
 
     player->frame = player->current_animation->frames[frame_index];
 }
+
+int animation_player_is_complete(AnimationPlayer* player) {
+    return player->current_time == player->total_time && !player->loop;
+}

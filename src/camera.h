@@ -1,10 +1,11 @@
 #ifndef CAMERA_H
 #define CAMERA_H
 
+#include "entity.h"
 #include "rect.h"
 
 typedef struct {
-    Box* _target;
+    Entity * _entity;
     Vec2 _offset;
     Vec2 _screen_size;
     Vec2 _tile_size;
@@ -20,9 +21,9 @@ void camera_destroy(Camera* camera);
 void camera_update(Camera* camera);
 
 /**
- * Sets the target to track.  This should be set to the player's bounding box.
+ * Sets the target to track.  This should be set to the player's entity.
  */
-void camera_set_target(Camera* camera, Box* target);
+void camera_set_target(Camera* camera, Entity* entity);
 
 /**
  * Set this to the tile size of the level.  This is used for internal calculations.

@@ -23,5 +23,6 @@ void animation_player_uninit(AnimationPlayer* player);
 int animation_player_load(AnimationPlayer* player, const char* path);
 void animation_player_set_current(AnimationPlayer* player, int index, int loop);
 void animation_player_update(AnimationPlayer* player, float time_delta);
+int animation_player_is_complete(AnimationPlayer* player);
 
 #endif

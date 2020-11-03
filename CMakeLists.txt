@@ -5,6 +5,7 @@ project (n64-game-jam C)
 set(game_src
     src/animation_player.h src/animation_player.c
     src/camera.h src/camera.c
+    src/entity.h
     src/filesystem.h
     src/input.h
     src/level.h src/level.c

@@ -3,6 +3,7 @@
 
 #include "animation_player.h"
 #include "camera.h"
+#include "entity.h"
 #include "input.h"
 #include "level.h"
 #include "rect.h"
@@ -18,24 +19,26 @@ typedef enum {
     PLAYER_STATE_INACTIVE,
     PLAYER_STATE_APPEARING,
     PLAYER_STATE_RUNNING,
-    PLAYER_STATE_CHANGE_SIZE,
+    PLAYER_STATE_CHANGING_SIZE,
     PLAYER_DISAPPEARING,
     PLAYER_STATE_DYING
 } PlayerState;
 
 typedef struct {
-    PlayerSize size;
+    Entity entity;
+    PlayerSize current_size;
+    PlayerSize target_size;
+
     PlayerState state;
     float state_time;
 
-    Vec2 position;
+    Vec2 prev_pos;
     Vec2 velocity;
 
-    Box bounding_box;
+    //TODO: roll this into flags?
     int on_ground;
     int is_jumping;
 
-    Vec2 prev_pos;
 
     Sprite* _sprite;
     Level* _level;
