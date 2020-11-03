@@ -33,10 +33,8 @@ Player* player_create(Level* level, Renderer* renderer, Camera* camera, Input* i
     player->_input = input;
     player->_camera = camera;
 
-    animation_player_init(&player->_animation, PLAYER_ANIMATION_COUNT, 0.1f);
-    animation_player_add_animation(&player->_animation, PLAYER_ANIMATION_RUN, 0, 12, 1);
-    animation_player_add_animation(&player->_animation, PLAYER_ANIMATION_JUMP, 19, 7, 0);
-    animation_player_add_animation(&player->_animation, PLAYER_ANIMATION_DEATH, 13, 6, 0);
+    animation_player_init(&player->_animation);
+    animation_player_load(&player->_animation, "/player.animation");
     reset_player(player);
 
     Sprite* sprite = renderer_load_sprite(player->_renderer, "/player");
@@ -48,6 +46,7 @@ Player* player_create(Level* level, Renderer* renderer, Camera* camera, Input* i
 }
 
 void player_destroy(Player* player) {
+    animation_player_uninit(&player->_animation);
     renderer_destroy_sprite(player->_renderer, player->_sprite);
     free(player);
 }
@@ -78,7 +77,7 @@ static void check_floor(Player* player, PlayerQuery* query) {
 
                 if (player->is_jumping) {
                     player->is_jumping = 0;
-                    animation_player_set_current(&player->_animation, PLAYER_ANIMATION_RUN);
+                    animation_player_set_current(&player->_animation, PLAYER_ANIMATION_RUN, 1);
                 }
                 return;
 
@@ -130,7 +129,7 @@ static void try_jump(Player* player) {
         player->velocity.y = player_jump_velocity[player->size];
         player->on_ground = 0;
         player->is_jumping = 1;
-        animation_player_set_current(&player->_animation, PLAYER_ANIMATION_JUMP);
+        animation_player_set_current(&player->_animation, PLAYER_ANIMATION_JUMP, 0);
     }
 }
 
@@ -192,6 +191,9 @@ void player_update(Player* player, float time_delta) {
         case PLAYER_STATE_DYING:
             player_update_dying(player, time_delta);
             break;
+
+        default:
+            break;
     }
 }
 
@@ -213,13 +215,13 @@ void player_start(Player* player) {
 
     player->state = PLAYER_STATE_RUNNING;
     player->velocity.x = PLAYER_SPEED;
-    animation_player_set_current(&player->_animation, PLAYER_ANIMATION_RUN);
+    animation_player_set_current(&player->_animation, PLAYER_ANIMATION_RUN, 1);
 }
 
 void player_kill(Player* player) {
     player->state_time = 0.0f;
     player->state = PLAYER_STATE_DYING;
-    animation_player_set_current(&player->_animation, PLAYER_ANIMATION_DEATH);
+    animation_player_set_current(&player->_animation, PLAYER_ANIMATION_DEATH, 0);
 }
 
 void reset_player(Player* player) {
