@@ -100,6 +100,28 @@ function prepareSprite(srcPath, destPath, littleEndian) {
     fs.copyFileSync(srcPath, destPath);
 }
 
+function prepareAnimation(srcPath, destPath){
+    const animations = JSON.parse(fs.readFileSync(srcPath, "utf8"));
+
+    let bufferSize = 1;
+    for (const animation of animations) {
+        bufferSize += 1 + animation.frames.length;
+    }
+
+    const buffer = Buffer.alloc(bufferSize);
+
+    let offset = buffer.writeUInt8(animations.length, 0);
+    for (const animation of animations) {
+        offset = buffer.writeUInt8(animation.frames.length, offset); // write frame count
+
+        for (const frame of animation.frames) {
+            offset = buffer.writeUInt8(frame, offset); // write frames
+        }
+    }
+
+    fs.writeFileSync(destPath, buffer);
+}
+
 function prepareAssets(sourceDir, destDir, params) {
     let options = {
         littleEndian: true,
@@ -116,6 +138,11 @@ function prepareAssets(sourceDir, destDir, params) {
             const baseName = path.basename(assetName, ".tileset.json");
             const buildPath = path.join(destDir, `${baseName}.tileset`);
             prepareTileSet(sourceFile, buildPath, options.littleEndian);
+        },
+        animationFunc: (sourceFile, destDir, assetName) => {
+            const baseName = path.basename(assetName, ".animation.json");
+            const buildPath = path.join(destDir, `${baseName}.animation`);
+            prepareAnimation(sourceFile, buildPath);
         }
     };
 
@@ -131,6 +158,8 @@ function prepareAssets(sourceDir, destDir, params) {
             options.tilesetFunc(sourceFile, destDir, asset);
         else if (asset.endsWith(".level.json")) 
             options.levelFunc(sourceFile, destDir, asset);
+        else if (asset.endsWith(".animation.json")) 
+            options.animationFunc(sourceFile, destDir, asset);
         else if (asset.endsWith(".png")) {
             options.spriteFunc(sourceFile, destDir, asset);
         }

@@ -1,4 +1,5 @@
 #include "camera.h"
+#include "player.h"
 
 #include <math.h>
 #include <stdlib.h>
@@ -17,14 +18,14 @@ void camera_destroy(Camera* camera) {
 }
 
 void camera_update(Camera* camera) {
-    camera->_origin.x = camera->_target->x + camera->_offset.x;
-    camera->_origin.y = camera->_target->y + + camera->_target->h + camera->_offset.y;
+    camera->_origin.x = camera->_entity->position.x + camera->_offset.x;
+    camera->_origin.y = camera->_entity->position.y + camera->_entity->size.y + camera->_offset.y;
     if (camera->_origin.y < 10.0f)
         camera->_origin.y = 10.0f;
 }
 
-void camera_set_target(Camera* camera, Box* target) {
-    camera->_target = target;
+void camera_set_target(Camera* camera, Entity* entity) {
+    camera->_entity = entity;
 }
 
 void camera_set_tile_size(Camera* camera, int width, int height) {

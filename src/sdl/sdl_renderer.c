@@ -85,6 +85,7 @@ void renderer_begin_tile_drawing(Renderer* renderer, Sprite* sprite) {
     renderer->tile_size_y = sprite_vertical_frame_size(sprite);
 }
 
+// TODO: Fix this as below
 static void _draw_sprite(Renderer* renderer, Sprite* sprite, int index, int size_x, int size_y, int dst_x, int dst_y) {
     SDL_Rect source_rect;
     source_rect.x = (index % sprite->horizontal_slices) * size_x;
@@ -106,17 +107,28 @@ void renderer_draw_sprite(Renderer* renderer, Sprite* sprite, int x, int y, int 
 }
 
 void renderer_draw_scaled_sprite(Renderer* renderer, Sprite* sprite,  int x, int y, float scale_x, float scale_y, int frame) {
+    int horizontal_size = sprite_horizontal_frame_size(sprite);
+    int vertical_size = sprite_vertical_frame_size(sprite);
     SDL_Rect source_rect;
-    source_rect.x = (frame % sprite->horizontal_slices) * sprite->width;
-    source_rect.y = (frame / sprite->vertical_slices) * sprite->height;
-    source_rect.w = sprite_horizontal_frame_size(sprite);
-    source_rect.h = sprite_vertical_frame_size(sprite);
+
+    if (sprite->horizontal_slices == 1)
+        source_rect.x = 0;
+    else
+        source_rect.x = (frame % sprite->horizontal_slices) * horizontal_size;
+
+    if (sprite->vertical_slices == 1)
+        source_rect.y = 0;
+    else
+        source_rect.y = (frame / sprite->horizontal_slices) * vertical_size;
+
+    source_rect.w = horizontal_size;
+    source_rect.h = vertical_size;
 
     SDL_Rect dest_rect;
     dest_rect.x = x;
     dest_rect.y = y;
-    dest_rect.w = sprite->width * scale_x;
-    dest_rect.h = sprite->height * scale_y;
+    dest_rect.w = horizontal_size * scale_x;
+    dest_rect.h = vertical_size * scale_y;
 
     SDL_RenderCopy(renderer->sdl_renderer, sprite->texture, &source_rect, &dest_rect);
 }

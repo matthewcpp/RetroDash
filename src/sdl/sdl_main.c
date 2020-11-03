@@ -26,7 +26,7 @@ int main(int argc, char** argv) {
     level_load(level, "/level01.level");
 
     Player* player = player_create(level, renderer, camera, input);
-    camera_set_target(camera, &player->bounding_box);
+    camera_set_target(camera, &player->entity);
     camera_set_safe_margins(camera, -3.0f, 3.0f);
     player_start(player);
 
