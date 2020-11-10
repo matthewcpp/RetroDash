@@ -223,6 +223,7 @@ void player_update_dying(Player* player, float time_delta) {
     animation_player_update(&player->_animation, time_delta);
 
     if (player->state_time >= 1.0f) {
+        level_reset(player->_level);
         player_start(player);
     }
 }

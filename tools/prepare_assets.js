@@ -64,7 +64,7 @@ function prepareLevel(srcPath, destPath, littleEndian) {
 
     const nameLength = Buffer.byteLength(level.name, "utf8");
     const tileSetLength = Buffer.byteLength(level.tileSet, "utf8");
-    const bufferSize = 8 + nameLength + tileSetLength + 8 + (level.width * level.height) + 4 + level.goal;
+    const bufferSize = 8 + nameLength + tileSetLength + 8 + (level.width * level.height) + 4 /*level.goal*/;
 
     const buffer = Buffer.alloc(bufferSize);
     let offset = writeUint32(nameLength, buffer, 0, littleEndian);

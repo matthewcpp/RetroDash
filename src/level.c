@@ -3,6 +3,7 @@
 #include "filesystem.h"
 
 #include <math.h>
+#include <stdio.h>
 #include <stdlib.h>
 
 Level* level_create(Renderer* renderer, Camera* camera) {
@@ -18,6 +19,7 @@ Level* level_create(Renderer* renderer, Camera* camera) {
     level->tile_set.palette_size = 0;
     level->tile_set.palette = NULL;
     level->gravity = 30.0f;
+    level->_file_handle;
 
     brick_particles_init(&level->brick_particles, level->_camera, level->_renderer);
 
@@ -35,6 +37,11 @@ void level_clear(Level* level) {
     if (level->_tile_map) {
         free(level->_tile_map);
         level->_tile_map = NULL;
+    }
+
+    if (level->_file_handle >= 0) {
+        filesystem_close(level->_file_handle);
+        level->_file_handle = -1;
     }
 }
 
@@ -149,32 +156,30 @@ void level_update(Level* level, float time_delta) {
 int level_load(Level* level, const char* path) {
     level_clear(level);
 
-    uint32_t level_file = filesystem_open(path);
-    if (level_file < 0) return 0;
+    level->_file_handle = filesystem_open(path);
+    if (level->_file_handle < 0) return 0;
 
     // Read level name
     uint32_t size;
-    filesystem_read(&size, sizeof(uint32_t), 1, level_file);
+    filesystem_read(&size, sizeof(uint32_t), 1, level->_file_handle);
     level->name = malloc(size + 1);
-    filesystem_read(level->name, 1, size, level_file);
+    filesystem_read(level->name, 1, size, level->_file_handle);
     level->name[size] = '\0';
 
     // Read tile map
-    filesystem_read(&size, sizeof(uint32_t), 1, level_file);
+    filesystem_read(&size, sizeof(uint32_t), 1, level->_file_handle);
     char* tile_set_name = malloc(size + 1);
-    filesystem_read(tile_set_name, 1, size, level_file);
+    filesystem_read(tile_set_name, 1, size, level->_file_handle);
     tile_set_name[size] = '\0';
 
     // Read Tiles
-    filesystem_read(&level->width, sizeof(uint32_t), 1, level_file);
-    filesystem_read(&level->height, sizeof(uint32_t), 1, level_file);
+    filesystem_read(&level->width, sizeof(uint32_t), 1, level->_file_handle);
+    filesystem_read(&level->height, sizeof(uint32_t), 1, level->_file_handle);
 
-    filesystem_read(&level->goal_dist, sizeof(float), 1, level_file);
+    filesystem_read(&level->goal_dist, sizeof(float), 1, level->_file_handle);
 
     level->_tile_map = malloc(level->width * level->height);
-    filesystem_read(level->_tile_map, 1, level->width * level->height, level_file);
-
-    filesystem_close(level_file);
+    filesystem_read(level->_tile_map, 1, level->width * level->height, level->_file_handle);
 
     int loaded_tile_set = tile_set_load(&level->tile_set, tile_set_name, level->_renderer);
     camera_set_tile_size(level->_camera, sprite_horizontal_frame_size(level->tile_set.sprite), sprite_vertical_frame_size(level->tile_set.sprite));
@@ -186,4 +191,13 @@ int level_load(Level* level, const char* path) {
     level->brick_particles._frame = 14;
 
     return loaded_tile_set;
+}
+
+void level_reset(Level* level) {
+    if (level->_file_handle < 0) return;
+
+    int size = (int)(level->width * level->height);
+
+    filesystem_seek(level->_file_handle, -size, SEEK_END);
+    filesystem_read(level->_tile_map, 1, size, level->_file_handle);
 }

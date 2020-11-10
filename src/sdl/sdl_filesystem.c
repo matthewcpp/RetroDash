@@ -60,9 +60,18 @@ void filesystem_close(uint32_t handle) {
 
 int filesystem_read(void* buf, int size, int count, int handle) {
     int bytes_read = 0;
+    long int pos = ftell(handles[handle]);
 
     if (handles[handle] != NULL)
         bytes_read =  fread(buf, size, count, handles[handle]);
 
+    pos = ftell(handles[handle]);
     return bytes_read;
+}
+
+int filesystem_seek(int handle, int offset, int origin) {
+    long int pos = ftell(handles[handle]);
+    fseek(handles[handle], offset, origin);
+    pos = ftell(handles[handle]);
+    return pos;
 }
