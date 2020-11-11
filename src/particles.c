@@ -68,7 +68,8 @@ void brick_particles_update(BrickParticles* brick_particles, float time_delta) {
         Particle* particle = brick_particles->_group.particles + current;
 
         // particle has gone off screen
-        if (particle->position.x + PARTICLE_SIZE < brick_particles->_camera->_origin.x) {
+        if (particle->position.x + PARTICLE_SIZE < brick_particles->_camera->_origin.x ||
+            particle->position.y - PARTICLE_SIZE < 0.0f) {
             particle_group_pop_start(&brick_particles->_group);
             current = brick_particles->_group.start;
         }
@@ -98,11 +99,16 @@ void brick_particles_draw(BrickParticles* brick_particles) {
     float sprite_scale_y = particle_screen_size / (float)sprite_vertical_frame_size(brick_particles->_sprite);
 
     while(current != brick_particles->_group.end) {
-        Point screen_pos;
-        camera_world_pos_to_screen_pos(brick_particles->_camera, &brick_particles->_group.particles[current].position, &screen_pos);
+        Particle * particle = brick_particles->_group.particles + current;
 
-        renderer_draw_scaled_sprite(brick_particles->_renderer, brick_particles->_sprite,
-                                    screen_pos.x, screen_pos.y, sprite_scale_x, sprite_scale_y, brick_particles->_frame);
+
+        if (particle->position.x >= brick_particles->_camera->_origin.x && particle->position.y - PARTICLE_SIZE >= 0.0f) {
+            Point screen_pos;
+            camera_world_pos_to_screen_pos(brick_particles->_camera, &particle->position, &screen_pos);
+
+            renderer_draw_scaled_sprite(brick_particles->_renderer, brick_particles->_sprite,
+                        screen_pos.x, screen_pos.y, sprite_scale_x, sprite_scale_y, brick_particles->_frame);
+        }
 
         current = (current + 1) % brick_particles->_group.count;
     }

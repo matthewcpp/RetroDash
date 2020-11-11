@@ -19,7 +19,7 @@ int filesystem_read(void* buf, int size, int count, int handle) {
     return dfs_read(buf, size, count, handle);
 }
 
-int filesystem_seek(int handle, int offset, int origin) {
+void filesystem_seek(int handle, int offset, int origin) {
     dfs_seek(handle, offset, origin);
 }
 

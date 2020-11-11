@@ -18,6 +18,6 @@ int filesystem_read(void* buf, int size, int count, int handle);
 /**
  * Seek the underlying source.  Use SEEK_SET, SEEK_CUR, SEEK_END.
  */
-int filesystem_seek(int handle, int offset, int origin);
+void filesystem_seek(int handle, int offset, int origin);
 
 #endif

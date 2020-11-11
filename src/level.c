@@ -19,7 +19,7 @@ Level* level_create(Renderer* renderer, Camera* camera) {
     level->tile_set.palette_size = 0;
     level->tile_set.palette = NULL;
     level->gravity = 30.0f;
-    level->_file_handle;
+    level->_file_handle = -1;
 
     brick_particles_init(&level->brick_particles, level->_camera, level->_renderer);
 
@@ -200,4 +200,5 @@ void level_reset(Level* level) {
 
     filesystem_seek(level->_file_handle, -size, SEEK_END);
     filesystem_read(level->_tile_map, 1, size, level->_file_handle);
+    brick_particles_clear(&level->brick_particles);
 }

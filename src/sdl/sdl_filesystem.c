@@ -69,9 +69,6 @@ int filesystem_read(void* buf, int size, int count, int handle) {
     return bytes_read;
 }
 
-int filesystem_seek(int handle, int offset, int origin) {
-    long int pos = ftell(handles[handle]);
+void filesystem_seek(int handle, int offset, int origin) {
     fseek(handles[handle], offset, origin);
-    pos = ftell(handles[handle]);
-    return pos;
 }
