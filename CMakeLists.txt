@@ -10,6 +10,7 @@ set(game_src
     src/input.h
     src/intersection.h src/intersection.c
     src/level.h src/level.c
+    src/particles.h src/particles.c
     src/player.h src/player.c
     src/rect.h src/rect.c
     src/renderer.h

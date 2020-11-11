@@ -72,5 +72,8 @@ void animation_player_update(AnimationPlayer* player, float time_delta) {
 }
 
 int animation_player_is_complete(AnimationPlayer* player) {
-    return player->current_time == player->total_time && !player->loop;
+    if (player->loop)
+        return 0;
+
+    return player->current_time >= player->total_time;
 }

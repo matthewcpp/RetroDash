@@ -89,11 +89,23 @@ static void check_floor(Player* player, PlayerQuery* query) {
 
                 if (player->is_jumping) {
                     player->is_jumping = 0;
-                    animation_player_set_current(&player->_animation, PLAYER_ANIMATION_RUN, 1);
+
+                    // Animation will be set to running when size change animation completes
+                    if (player->state != PLAYER_STATE_CHANGING_SIZE)
+                        animation_player_set_current(&player->_animation, PLAYER_ANIMATION_RUN, 1);
                 }
                 return;
         }
     }
+}
+
+static void player_break_brick(Player* player, int tile_x, int tile_y) {
+    Vec2 debris_pos;
+    debris_pos.x = (float)tile_x + 0.75f;
+    debris_pos.y = (float)tile_y + 0.75f;
+
+    level_set_tile(player->_level, tile_x, tile_y, TILE_EMPTY);
+    brick_particles_add(&player->_level->brick_particles, &debris_pos);
 }
 
 /**
@@ -127,7 +139,7 @@ static void check_collisions(Player* player, PlayerQuery* query) {
 
             case TILE_TYPE_BRICK:
                 if (player->current_size == PLAYER_SIZE_LARGE) {
-                    level_set_tile(player->_level, query->max_x, y, TILE_EMPTY);
+                    player_break_brick(player, query->max_x, y);
                     break;
                 }
                 else {
@@ -214,6 +226,7 @@ void player_update_dying(Player* player, float time_delta) {
     animation_player_update(&player->_animation, time_delta);
 
     if (player->state_time >= 1.0f) {
+        level_reset(player->_level);
         player_start(player);
     }
 }
@@ -242,7 +255,7 @@ void player_update_changing_size(Player* player, float time_delta) {
     }
 
     // LERP player size towards the target size
-    float t = player->state_time / player->_animation.total_time;
+    float t = player->_animation.current_time / player->_animation.total_time;
     player->entity.size.x = player_hit_sizes[player->current_size].x + t * (player_hit_sizes[player->target_size].x - player_hit_sizes[player->current_size].x);
     player->entity.size.y = player_hit_sizes[player->current_size].y + t * (player_hit_sizes[player->target_size].y - player_hit_sizes[player->current_size].y);
 }
