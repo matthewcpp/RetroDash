@@ -89,7 +89,10 @@ static void check_floor(Player* player, PlayerQuery* query) {
 
                 if (player->is_jumping) {
                     player->is_jumping = 0;
-                    animation_player_set_current(&player->_animation, PLAYER_ANIMATION_RUN, 1);
+
+                    // Animation will be set to running when size change animation completes
+                    if (player->state != PLAYER_STATE_CHANGING_SIZE)
+                        animation_player_set_current(&player->_animation, PLAYER_ANIMATION_RUN, 1);
                 }
                 return;
         }
@@ -252,7 +255,7 @@ void player_update_changing_size(Player* player, float time_delta) {
     }
 
     // LERP player size towards the target size
-    float t = player->state_time / player->_animation.total_time;
+    float t = player->_animation.current_time / player->_animation.total_time;
     player->entity.size.x = player_hit_sizes[player->current_size].x + t * (player_hit_sizes[player->target_size].x - player_hit_sizes[player->current_size].x);
     player->entity.size.y = player_hit_sizes[player->current_size].y + t * (player_hit_sizes[player->target_size].y - player_hit_sizes[player->current_size].y);
 }

@@ -75,5 +75,5 @@ int animation_player_is_complete(AnimationPlayer* player) {
     if (player->loop)
         return 0;
 
-    return player->current_time == player->total_time;
+    return player->current_time >= player->total_time;
 }
