@@ -96,6 +96,15 @@ static void check_floor(Player* player, PlayerQuery* query) {
     }
 }
 
+static void player_break_brick(Player* player, int tile_x, int tile_y) {
+    Vec2 debris_pos;
+    debris_pos.x = (float)tile_x + 0.75f;
+    debris_pos.y = (float)tile_y + 0.75f;
+
+    level_set_tile(player->_level, tile_x, tile_y, TILE_EMPTY);
+    brick_particles_add(&player->_level->brick_particles, &debris_pos);
+}
+
 /**
  * Check to see if the player has collided with any tile besides a safe ground tile.
  */
@@ -127,7 +136,7 @@ static void check_collisions(Player* player, PlayerQuery* query) {
 
             case TILE_TYPE_BRICK:
                 if (player->current_size == PLAYER_SIZE_LARGE) {
-                    level_set_tile(player->_level, query->max_x, y, TILE_EMPTY);
+                    player_break_brick(player, query->max_x, y);
                     break;
                 }
                 else {

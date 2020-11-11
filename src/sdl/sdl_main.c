@@ -51,8 +51,10 @@ int main(int argc, char** argv) {
         now = SDL_GetTicks();
         time_delta = now - last_update;
         if (time_delta >= 32) {
+            float update_time = (float)time_delta / 1000.0f;
             sdl_input_update(input);
-            player_update(player, (float)time_delta / 1000.0f);
+            player_update(player, update_time);
+            level_update(level, update_time);
             camera_update(camera);
             if (input_button_is_down(player->_input, CONTROLLER_1, CONTROLLER_BUTTON_L)) {
                 player_kill(player);

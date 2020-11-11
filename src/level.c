@@ -19,6 +19,8 @@ Level* level_create(Renderer* renderer, Camera* camera) {
     level->tile_set.palette = NULL;
     level->gravity = 30.0f;
 
+    brick_particles_init(&level->brick_particles, level->_camera, level->_renderer);
+
     return level;
 }
 
@@ -38,6 +40,7 @@ void level_clear(Level* level) {
 
 void level_destroy(Level* level) {
     level_clear(level);
+    brick_particles_uninit(&level->brick_particles);
     free(level);
 }
 
@@ -134,6 +137,12 @@ void level_draw(Level* level) {
     }
 
     renderer_end_tile_drawing(level->_renderer);
+
+    brick_particles_draw(&level->brick_particles);
+}
+
+void level_update(Level* level, float time_delta) {
+    brick_particles_update(&level->brick_particles, time_delta);
 }
 
 
@@ -172,6 +181,9 @@ int level_load(Level* level, const char* path) {
     renderer_set_tile_batch_size(level->_renderer, level->tile_set.palette_size);
 
     free(tile_set_name);
+
+    level->brick_particles._sprite = level->tile_set.sprite;
+    level->brick_particles._frame = 14;
 
     return loaded_tile_set;
 }

@@ -42,7 +42,7 @@ int main(void)
     level_load(level, "/level01.level");
 
     Player* player = player_create(level, renderer, camera, input);
-    camera_set_target(camera, &player->bounding_box);
+    camera_set_target(camera, &player->entity);
     camera_set_safe_margins(camera, -3.0f, 3.0f);
     player_start(player);
 
@@ -58,8 +58,10 @@ int main(void)
         //(void)time_delta;
 
         if (tick_count >= 16) {
+            float time_delta = 60.0f / 1000.0f;
             n64_input_update(input);
-            player_update(player, 60.0f / 1000.0f);
+            player_update(player, time_delta);
+            level_update(level, time_delta);
             camera_update(camera);
             if (input_button_is_down(player->_input, CONTROLLER_1, CONTROLLER_BUTTON_L)) {
                 player_kill(player);
