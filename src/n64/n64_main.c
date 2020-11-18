@@ -1,11 +1,8 @@
 #include "n64_renderer.h"
 #include "n64_input.h"
 
-#include "../camera.h"
 #include "../filesystem.h"
-#include "../level.h"
-#include "../player.h"
-#include "../renderer.h"
+#include "../game.h"
 
 #include <libdragon.h>
 
@@ -33,18 +30,9 @@ int main(void)
     timer_init();
 
     Input* input = n64_input_create();
-
     Renderer* renderer = n64_renderer_create(SCREEN_WIDTH, SCREEN_HEIGHT);
-    renderer_set_clear_color(renderer, 10, 7, 53);
 
-    Camera* camera = camera_create(SCREEN_WIDTH, SCREEN_HEIGHT);
-    Level* level = level_create(renderer, camera);
-    level_load(level, "/level01.level");
-
-    Player* player = player_create(level, renderer, camera, input);
-    camera_set_target(camera, &player->entity);
-    camera_set_safe_margins(camera, -3.0f, 3.0f);
-    player_start(player);
+    Game* game = game_create(renderer, input);
 
     new_timer(TIMER_TICKS(1000), TF_CONTINUOUS, timer_tick);
     //unsigned long prev_time = get_ticks_ms();
@@ -60,12 +48,7 @@ int main(void)
         if (tick_count >= 16) {
             float time_delta = 60.0f / 1000.0f;
             n64_input_update(input);
-            player_update(player, time_delta);
-            level_update(level, time_delta);
-            camera_update(camera);
-            if (input_button_is_down(player->_input, CONTROLLER_1, CONTROLLER_BUTTON_L)) {
-                player_kill(player);
-            }
+            game_update(game, time_delta);
 
             tick_count = 0;
         }
@@ -89,8 +72,7 @@ int main(void)
 
         rdp_sync( SYNC_PIPE );
 
-        level_draw(level);
-        player_draw(player);
+        game_draw(game);
 
         /* Inform the RDP we are finished drawing and that any pending operations should be flushed */
         rdp_sync( SYNC_PIPE );

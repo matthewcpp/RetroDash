@@ -1,4 +1,4 @@
-SRC_FILES = $(wildcard src/*.c) $(wildcard src/n64/*.c)
+SRC_FILES = $(wildcard src/*.c) $(wildcard src/state/*.c) $(wildcard src/n64/*.c)
 HEADER_FILES = $(wildcard src/*.h) $(wildcard src/n64/*.h)
 
 OBJ_FILES = $(SRC_FILES:.c=.o)
