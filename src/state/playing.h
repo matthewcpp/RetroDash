@@ -9,6 +9,9 @@ typedef struct {
     Camera* camera;
     Level* level;
     Player* player;
+
+    Input* _input;
+    int _paused;
 } StatePlaying;
 
 StatePlaying* state_playing_create(Renderer* renderer, Input* input, const char* level_path);

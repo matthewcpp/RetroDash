@@ -60,6 +60,9 @@ int get_input_value(struct controller_data* controller_state, ControllerIndex co
         case CONTROLLER_BUTTON_R:
             return controller_state->c[controller].R;
 
+        case CONTROLLER_BUTTON_START:
+            return controller_state->c[controller].start;
+
         default:
             return 0;
     }

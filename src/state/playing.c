@@ -7,6 +7,9 @@
 StatePlaying* state_playing_create(Renderer* renderer, Input* input, const char* level_path) {
     StatePlaying* state = malloc(sizeof(StatePlaying));
 
+    state->_input = input;
+    state->_paused = 0;
+
     Point screen_size;
     renderer_get_screen_size(renderer, &screen_size);
 
@@ -31,6 +34,12 @@ void state_playing_destroy(StatePlaying* state){
 }
 
 void state_playing_update(StatePlaying* state, float time_delta){
+    if (input_button_is_down(state->_input, CONTROLLER_1, CONTROLLER_BUTTON_START))
+        state->_paused = !state->_paused;
+
+    if (state->_paused)
+        return;
+
     player_update(state->player, time_delta);
     level_update(state->level, time_delta);
     camera_update(state->camera);
