@@ -19,6 +19,7 @@ void renderer_draw_sprite(Renderer* renderer, Sprite* sprite, int x, int y, int 
 void renderer_draw_scaled_sprite(Renderer* renderer, Sprite* sprite,  int x, int y, float scale_x, float scale_y, int frame);
 void renderer_set_color(Renderer* renderer, int r, int g, int b, int a);
 void renderer_draw_filled_rect(Renderer* renderer, Rect* rect);
+void renderer_draw_line(Renderer* renderer, int x0, int y0, int x1, int y1);
 
 /**
  * Sets the number of tile batches to allocate.

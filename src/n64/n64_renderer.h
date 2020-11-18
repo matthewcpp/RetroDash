@@ -17,7 +17,9 @@ typedef enum {
 } DrawMode;
 
 struct Renderer {
+    display_context_t display_context;
     uint32_t clear_color;
+    uint32_t primitive_color;
     Sprite* tile_sprite;
     TileBatch** tile_batches;
     int tile_batch_count;

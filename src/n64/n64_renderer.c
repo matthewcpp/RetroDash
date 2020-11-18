@@ -10,7 +10,9 @@
 
 Renderer* n64_renderer_create(int screen_width, int screen_height) {
     Renderer* renderer = calloc(1, sizeof(Renderer));
+    renderer->display_context = 0;
     renderer->clear_color = graphics_make_color(255, 255, 255, 255);
+    renderer->primitive_color = graphics_make_color(0, 0, 0, 255);
     renderer->draw_mode = DDRAW_MODE_UNSPECIFIED;
 
     renderer->screen_size.x = screen_width;
@@ -78,13 +80,17 @@ void renderer_draw_scaled_sprite(Renderer* renderer, Sprite* sprite,  int x, int
 }
 
 void renderer_set_color(Renderer* renderer, int r, int g, int b, int a) {
-    uint32_t color = graphics_make_color(r, g, b, a);
-    rdp_set_primitive_color(color);
+    renderer->primitive_color = graphics_make_color(r, g, b, a);
+    rdp_set_primitive_color(renderer->primitive_color);
 }
 
 void renderer_draw_filled_rect(Renderer* renderer, Rect* rect) {
     rdp_sync( SYNC_PIPE );
     rdp_draw_filled_rectangle(rect->x, rect->y, rect->x + rect->w, rect->y + rect->w);
+}
+
+void renderer_draw_line(Renderer* renderer, int x0, int y0, int x1, int y1) {
+    graphics_draw_line(renderer->display_context, x0, y0, x1, y1, renderer->primitive_color);
 }
 
 static void renderer_clear_tile_batches(Renderer* renderer) {

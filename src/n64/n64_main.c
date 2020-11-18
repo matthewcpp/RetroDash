@@ -53,13 +53,11 @@ int main(void)
             tick_count = 0;
         }
 
-        static display_context_t disp = 0;
-
         /* Grab a render buffer */
-        while( !(disp = display_lock()) );
+        while( !(renderer->display_context = display_lock()) );
        
         /*Fill the screen */
-        graphics_fill_screen( disp, renderer->clear_color);
+        graphics_fill_screen( renderer->display_context, renderer->clear_color);
 
         /* Assure RDP is ready for new commands */
         rdp_sync( SYNC_PIPE );
@@ -68,7 +66,7 @@ int main(void)
         rdp_set_default_clipping();
 
         /* Attach RDP to display */
-        rdp_attach_display( disp );
+        rdp_attach_display( renderer->display_context );
 
         rdp_sync( SYNC_PIPE );
 
@@ -79,7 +77,7 @@ int main(void)
         rdp_detach_display();
 
         /* Force backbuffer flip */
-        display_show(disp);
+        display_show(renderer->display_context);
 
         //prev_time = current_time;
     }

@@ -74,6 +74,10 @@ void renderer_draw_filled_rect(Renderer* renderer, Rect* rect) {
     SDL_RenderFillRect(renderer->sdl_renderer, (SDL_Rect*)rect);
 }
 
+void renderer_draw_line(Renderer* renderer, int x0, int y0, int x1, int y1) {
+    SDL_RenderDrawLine(renderer->sdl_renderer, x0, y0, x1, y1);
+}
+
 void renderer_set_tile_batch_size(Renderer* renderer, int size) {
     (void)renderer;
     (void)size;
