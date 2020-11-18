@@ -7,6 +7,7 @@ set(game_src
     src/camera.h src/camera.c
     src/entity.h
     src/filesystem.h
+    src/game.h src/game.c
     src/input.h
     src/intersection.h src/intersection.c
     src/level.h src/level.c
@@ -15,7 +16,10 @@ set(game_src
     src/rect.h src/rect.c
     src/renderer.h
     src/tile_collision.h src/tile_collision.c
-    src/tile_set.h src/tile_set.c)
+    src/tile_set.h src/tile_set.c
+
+    src/state/playing.h src/state/playing.c
+    )
 
 set(sdl_src
     src/sdl/sdl_filesystem.c
