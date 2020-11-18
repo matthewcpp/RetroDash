@@ -1,12 +1,9 @@
 #ifndef GAME_H
 #define GAME_H
 
-#include "renderer.h"
 #include "input.h"
-
-typedef enum {
-    GAME_STATE_PLAYING
-} GameState;
+#include "renderer.h"
+#include "state/states.h"
 
 typedef struct Game Game;
 

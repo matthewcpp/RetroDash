@@ -19,14 +19,13 @@ set(game_src
     src/tile_set.h src/tile_set.c
 
     src/state/playing.h src/state/playing.c
-    )
+    src/state/title.h src/state/title.c)
 
 set(sdl_src
     src/sdl/sdl_filesystem.c
     src/sdl/sdl_input.h src/sdl/sdl_input.c
     src/sdl/sdl_main.c
-    src/sdl/sdl_renderer.h src/sdl/sdl_renderer.c
-)
+    src/sdl/sdl_renderer.h src/sdl/sdl_renderer.c)
 
 add_executable(n64-game-jam ${game_src} ${sdl_src})
 target_compile_definitions(n64-game-jam PUBLIC PLATFORM_DESKTOP)
