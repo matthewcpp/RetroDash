@@ -1,6 +1,7 @@
 #ifndef TITLE_H
 #define TITLE_H
 
+#include "../animation_player.h"
 #include "../input.h"
 #include "../renderer.h"
 #include "states.h"
@@ -9,7 +10,12 @@ typedef struct {
     Input* _input;
     Renderer* _renderer;
     GameState transition;
+
     Sprite* _title_sprite;
+    Sprite* _character_top;
+    Sprite* _character_bottom;
+    Sprite* _platform;
+    AnimationPlayer _animation;
 } StateTitle;
 
 StateTitle* state_title_create(Renderer* renderer, Input* input);

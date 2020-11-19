@@ -11,6 +11,7 @@ typedef struct {
 typedef struct {
     Animation* animations;
     Animation* current_animation;
+    float frame_time;
     float current_time;
     float total_time;
     int animation_count;

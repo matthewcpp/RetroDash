@@ -4,12 +4,13 @@
 #include <math.h>
 #include <stdlib.h>
 
-#define FRAME_TIME 0.1f
+#define DEFAULT_FRAME_TIME 0.1f
 
 void animation_player_init(AnimationPlayer* player) {
     player->animations = NULL;
     player->current_animation = NULL;
     player->current_time = 0.0f;
+    player->frame_time = DEFAULT_FRAME_TIME;
     player->frame = 0;
     player->loop = 0;
 }
@@ -46,7 +47,7 @@ int animation_player_load(AnimationPlayer* player, const char* path) {
 
 void animation_player_set_current(AnimationPlayer* player, int index, int loop) {
     player->current_animation = player->animations + index;
-    player->total_time = player->current_animation->frame_count * FRAME_TIME;
+    player->total_time = player->current_animation->frame_count * player->frame_time;
     player->current_time = 0.0f;
     player->frame = player->current_animation->frames[0];
     player->loop = loop;
@@ -62,7 +63,7 @@ void animation_player_update(AnimationPlayer* player, float time_delta) {
             player->current_time = player->total_time;
     }
 
-    int frame_index = (int)floor(player->current_time / FRAME_TIME);
+    int frame_index = (int)floor(player->current_time / player->frame_time);
 
     // prevent us from going beyond the frame range when current_time == total_time and we are not looping
     if (frame_index >= player->current_animation->frame_count)
