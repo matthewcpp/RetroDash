@@ -65,6 +65,24 @@ static void renderer_enable_texture_mode(Renderer* renderer) {
     }
 }
 
+void renderer_draw_sprite_row(Renderer* renderer, Sprite* sprite, int row, int x, int y) {
+    renderer_enable_texture_mode(renderer);
+
+    int pos_x = x;
+    int pos_y = y;
+
+    int stride_x = sprite->libdragon_sprite->width / sprite->libdragon_sprite->hslices;
+    int base_index = sprite->libdragon_sprite->hslices * row;
+
+    for (int i = 0; i < sprite->libdragon_sprite->hslices; i++) {
+        rdp_sync( SYNC_PIPE );
+        rdp_load_texture_stride( 0, 0, MIRROR_DISABLED, sprite->libdragon_sprite, base_index + i);
+        rdp_draw_sprite( 0, pos_x, pos_y, MIRROR_DISABLED );
+
+        pos_x += stride_x;
+    }
+}
+
 void renderer_draw_sprite(Renderer* renderer, Sprite* sprite, int x, int y) {
     renderer_enable_texture_mode(renderer);
 
