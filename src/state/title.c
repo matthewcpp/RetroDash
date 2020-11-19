@@ -2,18 +2,31 @@
 
 #include <stdlib.h>
 
+typedef enum{
+    TITLE_MENU_START,
+    TITLE_MENU_CREDITS,
+    TITLE_MENU_COUNT
+} TitleMenuItem;
+
+#define START_SPRITE_INDEX 0
+#define CREDIT_SPRITE_INDEX 2
+
+#define CHARACTER_SCALE 1.25f
+
 StateTitle* state_title_create(Renderer* renderer, Input* input){
     StateTitle* state = malloc(sizeof(StateTitle));
 
     state->_input = input;
     state->_renderer = renderer;
     state->transition = GAME_STATE_NONE;
+    state->menu_selection = TITLE_MENU_START;
 
     state->_title_sprite = NULL;
     state->_title_sprite = renderer_load_sprite(state->_renderer, "/title");
     state->_character_top = renderer_load_sprite(state->_renderer, "/title_idle_top");
     state->_character_bottom = renderer_load_sprite(state->_renderer, "/title_idle_bottom");
     state->_platform = renderer_load_sprite(state->_renderer, "/title_platform");
+    state->_menu = renderer_load_sprite(state->_renderer, "/title_menu");
 
     animation_player_init(&state->_animation);
     animation_player_load(&state->_animation, "/title_idle.animation");
@@ -35,11 +48,20 @@ void state_title_destroy(StateTitle* state){
 void state_title_update(StateTitle* state, float time_delta){
     animation_player_update(&state->_animation, time_delta);
 
-    if (input_button_is_down(state->_input, CONTROLLER_1, CONTROLLER_BUTTON_START))
-        state->transition = GAME_STATE_PLAYING;
+    if (input_button_is_down(state->_input, CONTROLLER_1, CONTROLLER_BUTTON_DPAD_DOWN)) {
+        if (state->menu_selection < TITLE_MENU_COUNT - 1)
+            state->menu_selection += 1;
+    }
+    else if (input_button_is_down(state->_input, CONTROLLER_1, CONTROLLER_BUTTON_DPAD_UP)) {
+        if (state->menu_selection > 0)
+            state->menu_selection -= 1;
+    }
+    if (input_button_is_down(state->_input, CONTROLLER_1, CONTROLLER_BUTTON_START) ||
+        input_button_is_down(state->_input, CONTROLLER_1, CONTROLLER_BUTTON_A)){
+        if (state->menu_selection == TITLE_MENU_START)
+            state->transition = GAME_STATE_PLAYING;
+    }
 }
-
-#define CHARACTER_SCALE 1.25f
 
 static void draw_character(StateTitle* state, Point* screen_size) {
     int platform_top = screen_size->y - (int)(sprite_vertical_frame_size(state->_platform) * CHARACTER_SCALE);
@@ -61,6 +83,20 @@ static void draw_character(StateTitle* state, Point* screen_size) {
                                 state->_animation.frame);
 }
 
+static void draw_menu(StateTitle* state, Point* screen_size) {
+    int height = sprite_vertical_frame_size(state->_menu);
+
+    int y_pos = screen_size->y - height - 30;
+    int x_pos = screen_size->x - sprite_width(state->_menu) - 10;
+
+    int row = state->menu_selection == TITLE_MENU_CREDITS ? CREDIT_SPRITE_INDEX + 1 : CREDIT_SPRITE_INDEX;
+    renderer_draw_sprite_row(state->_renderer, state->_menu, row, x_pos, y_pos);
+
+    y_pos -= 2 * height;
+    row = state->menu_selection == TITLE_MENU_START ? START_SPRITE_INDEX + 1 : START_SPRITE_INDEX;
+    renderer_draw_sprite_row(state->_renderer, state->_menu, row, x_pos, y_pos);
+}
+
 void state_title_draw(StateTitle* state){
     Point screen_size;
     renderer_get_screen_size(state->_renderer, &screen_size);
@@ -74,4 +110,5 @@ void state_title_draw(StateTitle* state){
     renderer_draw_sprite(state->_renderer, state->_title_sprite, title_x, title_y);
 
     draw_character(state, &screen_size);
+    draw_menu(state, &screen_size);
 }

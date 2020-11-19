@@ -15,7 +15,9 @@ typedef struct {
     Sprite* _character_top;
     Sprite* _character_bottom;
     Sprite* _platform;
+    Sprite* _menu;
     AnimationPlayer _animation;
+    int menu_selection;
 } StateTitle;
 
 StateTitle* state_title_create(Renderer* renderer, Input* input);
