@@ -43,26 +43,51 @@ Sprite* renderer_load_sprite(Renderer* renderer, const char* path) {
     dfs_read(libdragon_sprite, 1, dfs_size( handle ), handle);
     dfs_close(handle);
 
-    Sprite* sprite = malloc(sizeof(Sprite*));
+    Sprite* sprite = malloc(sizeof(Sprite));
     sprite->libdragon_sprite = libdragon_sprite;
 
     return sprite;
 }
 
+static void renderer_enable_filled_mode(Renderer* renderer) {
+    if (renderer->draw_mode != DRAW_MODE_FILLED) {
+        rdp_sync( SYNC_PIPE );
+        rdp_enable_primitive_fill();
+        renderer->draw_mode = DRAW_MODE_FILLED;
+    }
+}
+
 static void renderer_enable_texture_mode(Renderer* renderer) {
     if (renderer->draw_mode != DRAW_MODE_TEXTURED) {
-        rdp_enable_texture_copy();
         rdp_sync( SYNC_PIPE );
+        rdp_enable_texture_copy();
         renderer->draw_mode = DRAW_MODE_TEXTURED;
     }
 }
 
-void renderer_draw_sprite(Renderer* renderer, Sprite* sprite, int x, int y, int frame) {
+void renderer_draw_sprite(Renderer* renderer, Sprite* sprite, int x, int y) {
     renderer_enable_texture_mode(renderer);
 
-    rdp_sync( SYNC_PIPE );
-    rdp_load_texture_stride( 0, 0, MIRROR_DISABLED, sprite->libdragon_sprite, frame);
-    rdp_draw_sprite( 0, x, y, MIRROR_DISABLED );
+    int pos_x = x;
+    int pos_y = y;
+
+    int stride_x = sprite->libdragon_sprite->width / sprite->libdragon_sprite->hslices;
+    int stride_y = sprite->libdragon_sprite->height / sprite->libdragon_sprite->vslices;
+
+    for (int v = 0; v < sprite->libdragon_sprite->vslices; v++) {
+        for (int h = 0; h < sprite->libdragon_sprite->hslices; h++) {
+            int frame = v * sprite->libdragon_sprite->hslices + h;
+
+            rdp_sync( SYNC_PIPE );
+            rdp_load_texture_stride( 0, 0, MIRROR_DISABLED, sprite->libdragon_sprite, frame);
+            rdp_draw_sprite( 0, pos_x, pos_y, MIRROR_DISABLED );
+
+            pos_x += stride_x;
+        }
+
+        pos_x = x;
+        pos_y += stride_y;
+    }
 }
 
 void renderer_destroy_sprite(Renderer* renderer, Sprite* sprite) {
@@ -89,8 +114,25 @@ void renderer_draw_filled_rect(Renderer* renderer, Rect* rect) {
     rdp_draw_filled_rectangle(rect->x, rect->y, rect->x + rect->w, rect->y + rect->w);
 }
 
-void renderer_draw_line(Renderer* renderer, int x0, int y0, int x1, int y1) {
-    graphics_draw_line(renderer->display_context, x0, y0, x1, y1, renderer->primitive_color);
+#define GRID_SIZE 32
+
+void renderer_draw_grid(Renderer* renderer) {
+    renderer_enable_filled_mode(renderer);
+
+    Rect rect;
+    rect_set(&rect, 0, GRID_SIZE, renderer->screen_size.x, 0);
+
+    while (rect.y < renderer->screen_size.y) {
+        rdp_draw_filled_rectangle(rect.x, rect.y, rect.x + rect.w, rect.y + rect.h);
+        rect.y += GRID_SIZE;
+    }
+
+    rect_set(&rect, GRID_SIZE, 0, 0, renderer->screen_size.y);
+
+    while (rect.x < renderer->screen_size.x) {
+        rdp_draw_filled_rectangle(rect.x, rect.y, rect.x + rect.w, rect.y + rect.h);
+        rect.x += GRID_SIZE;
+    }
 }
 
 static void renderer_clear_tile_batches(Renderer* renderer) {
