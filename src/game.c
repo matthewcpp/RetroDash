@@ -52,14 +52,15 @@ static void game_set_state(Game* game, GameState state) {
 }
 
 Game* game_create(Renderer* renderer, Input* input){
-    Game* game = malloc(sizeof(Game));
 
+
+    Game* game = malloc(sizeof(Game));
     game->_renderer = renderer;
     game->_input = input;
     game->current_state = GAME_STATE_NONE;
-    game_set_state(game, GAME_STATE_TITLE);
 
-    renderer_set_clear_color(renderer, 10, 7, 53);
+    renderer_set_clear_color(game->_renderer, 10, 7, 53);
+    game_set_state(game , GAME_STATE_TITLE);
 
     return game;
 }

@@ -9,6 +9,7 @@ typedef struct {
     Input* _input;
     Renderer* _renderer;
     GameState transition;
+    Sprite* _title_sprite;
 } StateTitle;
 
 StateTitle* state_title_create(Renderer* renderer, Input* input);

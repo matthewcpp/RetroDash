@@ -22,6 +22,7 @@ typedef struct {
     float x, y;
 } Vec2;
 
+void point_set(Point* p, int x, int y);
 void point_set_from_vec2(Point* p, const Vec2* v);
 
 #endif
