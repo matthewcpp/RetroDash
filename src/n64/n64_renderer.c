@@ -10,7 +10,9 @@
 
 Renderer* n64_renderer_create(int screen_width, int screen_height) {
     Renderer* renderer = calloc(1, sizeof(Renderer));
+    renderer->display_context = 0;
     renderer->clear_color = graphics_make_color(255, 255, 255, 255);
+    renderer->primitive_color = graphics_make_color(0, 0, 0, 255);
     renderer->draw_mode = DDRAW_MODE_UNSPECIFIED;
 
     renderer->screen_size.x = screen_width;
@@ -41,26 +43,69 @@ Sprite* renderer_load_sprite(Renderer* renderer, const char* path) {
     dfs_read(libdragon_sprite, 1, dfs_size( handle ), handle);
     dfs_close(handle);
 
-    Sprite* sprite = malloc(sizeof(Sprite*));
+    Sprite* sprite = malloc(sizeof(Sprite));
     sprite->libdragon_sprite = libdragon_sprite;
 
     return sprite;
 }
 
+static void renderer_enable_filled_mode(Renderer* renderer) {
+    if (renderer->draw_mode != DRAW_MODE_FILLED) {
+        rdp_sync( SYNC_PIPE );
+        rdp_enable_primitive_fill();
+        renderer->draw_mode = DRAW_MODE_FILLED;
+    }
+}
+
 static void renderer_enable_texture_mode(Renderer* renderer) {
     if (renderer->draw_mode != DRAW_MODE_TEXTURED) {
-        rdp_enable_texture_copy();
         rdp_sync( SYNC_PIPE );
+        rdp_enable_texture_copy();
         renderer->draw_mode = DRAW_MODE_TEXTURED;
     }
 }
 
-void renderer_draw_sprite(Renderer* renderer, Sprite* sprite, int x, int y, int frame) {
+void renderer_draw_sprite_row(Renderer* renderer, Sprite* sprite, int row, int x, int y) {
     renderer_enable_texture_mode(renderer);
 
-    rdp_sync( SYNC_PIPE );
-    rdp_load_texture_stride( 0, 0, MIRROR_DISABLED, sprite->libdragon_sprite, frame);
-    rdp_draw_sprite( 0, x, y, MIRROR_DISABLED );
+    int pos_x = x;
+    int pos_y = y;
+
+    int stride_x = sprite->libdragon_sprite->width / sprite->libdragon_sprite->hslices;
+    int base_index = sprite->libdragon_sprite->hslices * row;
+
+    for (int i = 0; i < sprite->libdragon_sprite->hslices; i++) {
+        rdp_sync( SYNC_PIPE );
+        rdp_load_texture_stride( 0, 0, MIRROR_DISABLED, sprite->libdragon_sprite, base_index + i);
+        rdp_draw_sprite( 0, pos_x, pos_y, MIRROR_DISABLED );
+
+        pos_x += stride_x;
+    }
+}
+
+void renderer_draw_sprite(Renderer* renderer, Sprite* sprite, int x, int y) {
+    renderer_enable_texture_mode(renderer);
+
+    int pos_x = x;
+    int pos_y = y;
+
+    int stride_x = sprite->libdragon_sprite->width / sprite->libdragon_sprite->hslices;
+    int stride_y = sprite->libdragon_sprite->height / sprite->libdragon_sprite->vslices;
+
+    for (int v = 0; v < sprite->libdragon_sprite->vslices; v++) {
+        for (int h = 0; h < sprite->libdragon_sprite->hslices; h++) {
+            int frame = v * sprite->libdragon_sprite->hslices + h;
+
+            rdp_sync( SYNC_PIPE );
+            rdp_load_texture_stride( 0, 0, MIRROR_DISABLED, sprite->libdragon_sprite, frame);
+            rdp_draw_sprite( 0, pos_x, pos_y, MIRROR_DISABLED );
+
+            pos_x += stride_x;
+        }
+
+        pos_x = x;
+        pos_y += stride_y;
+    }
 }
 
 void renderer_destroy_sprite(Renderer* renderer, Sprite* sprite) {
@@ -78,13 +123,34 @@ void renderer_draw_scaled_sprite(Renderer* renderer, Sprite* sprite,  int x, int
 }
 
 void renderer_set_color(Renderer* renderer, int r, int g, int b, int a) {
-    uint32_t color = graphics_make_color(r, g, b, a);
-    rdp_set_primitive_color(color);
+    renderer->primitive_color = graphics_make_color(r, g, b, a);
+    rdp_set_primitive_color(renderer->primitive_color);
 }
 
 void renderer_draw_filled_rect(Renderer* renderer, Rect* rect) {
     rdp_sync( SYNC_PIPE );
     rdp_draw_filled_rectangle(rect->x, rect->y, rect->x + rect->w, rect->y + rect->w);
+}
+
+#define GRID_SIZE 32
+
+void renderer_draw_grid(Renderer* renderer) {
+    renderer_enable_filled_mode(renderer);
+
+    Rect rect;
+    rect_set(&rect, 0, GRID_SIZE, renderer->screen_size.x, 0);
+
+    while (rect.y < renderer->screen_size.y) {
+        rdp_draw_filled_rectangle(rect.x, rect.y, rect.x + rect.w, rect.y + rect.h);
+        rect.y += GRID_SIZE;
+    }
+
+    rect_set(&rect, GRID_SIZE, 0, 0, renderer->screen_size.y);
+
+    while (rect.x < renderer->screen_size.x) {
+        rdp_draw_filled_rectangle(rect.x, rect.y, rect.x + rect.w, rect.y + rect.h);
+        rect.x += GRID_SIZE;
+    }
 }
 
 static void renderer_clear_tile_batches(Renderer* renderer) {

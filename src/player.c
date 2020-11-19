@@ -49,10 +49,7 @@ Player* player_create(Level* level, Renderer* renderer, Camera* camera, Input* i
     animation_player_load(&player->_animation, "/player.animation");
     reset_player(player);
 
-    Sprite* sprite = renderer_load_sprite(player->_renderer, "/player");
-    for (int i = 0; i < 3; i++) {
-        player->_sprite = sprite;
-    }
+    player->_sprite = renderer_load_sprite(player->_renderer, "/player");
 
     return player;
 }

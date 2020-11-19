@@ -74,6 +74,29 @@ void renderer_draw_filled_rect(Renderer* renderer, Rect* rect) {
     SDL_RenderFillRect(renderer->sdl_renderer, (SDL_Rect*)rect);
 }
 
+#define GRID_SIZE 32
+
+void renderer_draw_grid(Renderer* renderer) {
+    Point p0 = {0, GRID_SIZE};
+    Point p1;
+    point_set(&p1, renderer->screen_size.x, GRID_SIZE);
+
+    while (p1.y < renderer->screen_size.y) {
+        SDL_RenderDrawLine(renderer->sdl_renderer, p0.x, p0.y, p1.x, p1.y);
+        p0.y += GRID_SIZE;
+        p1.y += GRID_SIZE;
+    }
+
+    point_set(&p0, GRID_SIZE, 0);
+    point_set(&p1, GRID_SIZE, renderer->screen_size.y);
+
+    while (p1.x < renderer->screen_size.x) {
+        SDL_RenderDrawLine(renderer->sdl_renderer, p0.x, p0.y, p1.x, p1.y);
+        p0.x += GRID_SIZE;
+        p1.x += GRID_SIZE;
+    }
+}
+
 void renderer_set_tile_batch_size(Renderer* renderer, int size) {
     (void)renderer;
     (void)size;
@@ -102,8 +125,38 @@ static void _draw_sprite(Renderer* renderer, Sprite* sprite, int index, int size
     SDL_RenderCopy(renderer->sdl_renderer, sprite->texture, &source_rect, &dest_rect);
 }
 
-void renderer_draw_sprite(Renderer* renderer, Sprite* sprite, int x, int y, int frame) {
-    _draw_sprite(renderer, sprite, frame, sprite_horizontal_frame_size(sprite), sprite_vertical_frame_size(sprite), x, y);
+void renderer_draw_sprite(Renderer* renderer, Sprite* sprite, int x, int y) {
+    SDL_Rect source_rect;
+    source_rect.x = 0;
+    source_rect.y = 0;
+    source_rect.w = sprite->width;
+    source_rect.h = sprite->height;
+
+    SDL_Rect dest_rect;
+    dest_rect.x = x;
+    dest_rect.y = y;
+    dest_rect.w = sprite->width;
+    dest_rect.h = sprite->height;
+
+    SDL_RenderCopy(renderer->sdl_renderer, sprite->texture, &source_rect, &dest_rect);
+}
+
+void renderer_draw_sprite_row(Renderer* renderer, Sprite* sprite, int row, int x, int y) {
+    int frame_height = sprite_vertical_frame_size(sprite);
+
+    SDL_Rect source_rect;
+    source_rect.x = 0;
+    source_rect.y = row * frame_height;
+    source_rect.w = sprite->width;
+    source_rect.h = frame_height;
+
+    SDL_Rect dest_rect;
+    dest_rect.x = x;
+    dest_rect.y = y;
+    dest_rect.w = sprite->width;
+    dest_rect.h = sprite_vertical_frame_size(sprite);
+
+    SDL_RenderCopy(renderer->sdl_renderer, sprite->texture, &source_rect, &dest_rect);
 }
 
 void renderer_draw_scaled_sprite(Renderer* renderer, Sprite* sprite,  int x, int y, float scale_x, float scale_y, int frame) {

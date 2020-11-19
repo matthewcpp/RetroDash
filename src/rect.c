@@ -25,6 +25,11 @@ void rect_set(Rect* r, int x, int y, int w, int h) {
     r->h = h;
 }
 
+void point_set(Point* p, int x, int y) {
+    p->x = x;
+    p->y = y;
+}
+
 void point_set_from_vec2(Point* p, const Vec2* v) {
     p->x = (int)v->x;
     p->y = (int)v->y;
