@@ -11,8 +11,9 @@ typedef union {
 } State;
 
 struct Game {
-    Renderer* _renderer;
+    Audio* _audio;
     Input* _input;
+    Renderer* _renderer;
     GameState current_state;
     State state;
 };
@@ -37,7 +38,7 @@ static void game_set_state(Game* game, GameState state) {
 
     switch (state) {
         case GAME_STATE_TITLE:
-            game->state.title = state_title_create(game->_renderer, game->_input);
+            game->state.title = state_title_create(game->_audio, game->_input, game->_renderer);
             break;
 
         case GAME_STATE_PLAYING:
@@ -51,12 +52,11 @@ static void game_set_state(Game* game, GameState state) {
     game->current_state = state;
 }
 
-Game* game_create(Renderer* renderer, Input* input){
-
-
+Game* game_create(Audio* audio, Input* input, Renderer* renderer){
     Game* game = malloc(sizeof(Game));
-    game->_renderer = renderer;
+    game->_audio = audio;
     game->_input = input;
+    game->_renderer = renderer;
     game->current_state = GAME_STATE_NONE;
 
     renderer_set_clear_color(game->_renderer, 10, 7, 53);

@@ -4,6 +4,7 @@ project (n64-game-jam C)
 
 set(game_src
     src/animation_player.h src/animation_player.c
+    src/audio.h
     src/camera.h src/camera.c
     src/entity.h
     src/filesystem.h
@@ -22,6 +23,7 @@ set(game_src
     src/state/title.h src/state/title.c)
 
 set(sdl_src
+    src/sdl/sdl_audio.h src/sdl/sdl_audio.c
     src/sdl/sdl_filesystem.c
     src/sdl/sdl_input.h src/sdl/sdl_input.c
     src/sdl/sdl_main.c
@@ -46,8 +48,8 @@ else()
     list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/lib/sdl2-cmake-modules)
     find_package(SDL2 REQUIRED)
     find_package(SDL2_image REQUIRED)
-    find_package(SDL2_ttf REQUIRED)
+    find_package(SDL2_mixer REQUIRED)
 
-    target_link_libraries(n64-game-jam SDL2::Main SDL2::Image SDL2::TTF)
+    target_link_libraries(n64-game-jam SDL2::Main SDL2::Image SDL2::Mixer)
     target_link_libraries(n64-game-jam m)
 endif()

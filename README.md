@@ -31,7 +31,7 @@ Test the game by invoking the emulator from an `xQuartz` terminal window:
 You will need to have cmake, nodejs, and sdl installed.
 
 MacOS: `brew install sdl2 sdl2_image sdl2_ttf`  
-Ubuntu Linux: `sudo apt-get -y install libsdl2-dev libsdl2-image-dev libsdl2-ttf-dev`
+Ubuntu Linux: `sudo apt-get -y install libsdl2-dev libsdl2-image-dev libsdl2-mixer-dev`
 
 ```shell script
 node tools/prepare_sdl_assets.js

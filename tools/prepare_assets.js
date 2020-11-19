@@ -10,6 +10,8 @@ const TileTypeValues = {
     brick: 4
 }
 
+const musicFormats = new Set([".mod"]);
+
 function writeUint32(value, buffer, offset, littleEndian) {
     if (littleEndian)
         return buffer.writeUInt32LE(value, offset);
@@ -143,6 +145,10 @@ function prepareAssets(sourceDir, destDir, params) {
             const baseName = path.basename(assetName, ".animation.json");
             const buildPath = path.join(destDir, `${baseName}.animation`);
             prepareAnimation(sourceFile, buildPath);
+        },
+        musicFunc: (sourceFile, destDir, assetName) => {
+            const buildPath = path.join(destDir, assetName);
+            fs.copyFileSync(sourceFile, buildPath);
         }
     };
 
@@ -160,9 +166,10 @@ function prepareAssets(sourceDir, destDir, params) {
             options.levelFunc(sourceFile, destDir, asset);
         else if (asset.endsWith(".animation.json")) 
             options.animationFunc(sourceFile, destDir, asset);
-        else if (asset.endsWith(".png")) {
+        else if (asset.endsWith(".png"))
             options.spriteFunc(sourceFile, destDir, asset);
-        }
+        else if (musicFormats.has(path.extname(asset)))
+            options.musicFunc(sourceFile, destDir, asset);
     }
 }
 

@@ -3,6 +3,7 @@
 #include "../filesystem.h"
 #include "../game.h"
 
+#include "sdl_audio.h"
 #include "sdl_input.h"
 #include "sdl_renderer.h"
 
@@ -17,8 +18,9 @@ int main(int argc, char** argv) {
     filesystem_init(ASSET_DIRECTORY);
     Input* input = sdl_input_create();
     Renderer* renderer = sdl_renderer_create(window, ASSET_DIRECTORY);
+    Audio* audio = sdl_audio_create();
 
-    Game* game = game_create(renderer, input);
+    Game* game = game_create(audio, input, renderer);
 
     SDL_Event event;
     int keep_going = 1;
@@ -57,6 +59,7 @@ int main(int argc, char** argv) {
     game_destroy(game);
     sdl_input_destory(input);
     sdl_renderer_destroy(renderer);
+    sdl_audio_destroy(audio);
     filesystem_uninit();
 
     SDL_Quit();
