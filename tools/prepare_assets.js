@@ -127,6 +127,25 @@ function prepareAnimation(srcPath, destPath){
     fs.writeFileSync(destPath, buffer);
 }
 
+function prepareFont(srcPath, destPath, littleEndian) {
+    const fontInfo = JSON.parse(fs.readFileSync(srcPath, "utf8"));
+
+    // char count + 3 bytes for each char
+    let bufferSize = 4 + (fontInfo.length * 3);
+
+    const buffer = Buffer.alloc(bufferSize);
+
+    let offset = writeUint32(fontInfo.length, buffer, 0, littleEndian);
+
+    for (const char of fontInfo) {
+        offset = buffer.writeInt8(char.top, offset);
+        offset = buffer.writeInt8(char.left, offset);
+        offset = buffer.writeInt8(char.right, offset);
+    }
+
+    fs.writeFileSync(destPath, buffer);
+}
+
 function prepareAssets(sourceDir, destDir, params) {
     let options = {
         littleEndian: true,
@@ -152,6 +171,11 @@ function prepareAssets(sourceDir, destDir, params) {
         musicFunc: (sourceFile, destDir, assetName) => {
             const buildPath = path.join(destDir, assetName);
             fs.copyFileSync(sourceFile, buildPath);
+        },
+        fontFunc: (sourceFile, destDir, assetName) => {
+            const baseName = path.basename(assetName, ".font.json");
+            const buildPath = path.join(destDir, `${baseName}.font`);
+            prepareFont(sourceFile, buildPath, options.littleEndian);
         }
     };
 
@@ -171,6 +195,8 @@ function prepareAssets(sourceDir, destDir, params) {
             options.animationFunc(sourceFile, destDir, asset);
         else if (asset.endsWith(".png"))
             options.spriteFunc(sourceFile, destDir, asset);
+        else if (asset.endsWith(".font.json"))
+            options.fontFunc(sourceFile, destDir, asset);
         else if (musicFormats.has(path.extname(asset)))
             options.musicFunc(sourceFile, destDir, asset);
     }

@@ -1,0 +1,135 @@
+<html>
+<head>
+    <title>Sprite Font Generator</title>
+
+    <style>
+        body {
+            background-color: black;
+            color: white;
+        }
+
+        #canvas-div {
+            margin-bottom:10px;
+        }
+
+        canvas, img {
+            border: 1px solid white;
+        }
+
+    </style>
+
+    <script type="text/javascript">
+
+
+    const fontSize = 32;
+    const fontFace = "Basic_LAZER"
+
+    const columnCount = 12;
+    const rowCount = 5;
+
+    const fontInfo = [];
+
+
+    window.onload = function(){
+        const fontCanvas = document.getElementById("font-canvas");
+        const context2d = fontCanvas.getContext("2d");
+
+        context2d.textBaseline = "top";
+        context2d.font         = `${fontSize}px "${fontFace}"`;
+        context2d.fillStyle = 'white';
+
+        let frameWidth = 0;
+        let frameHeight = 0;
+
+        for (let i = 32; i < 91; i++) {
+            const metrics = context2d.measureText(String.fromCharCode(i));
+            const charInfo = {
+                ch: String.fromCharCode(i),
+                top: metrics.actualBoundingBoxAscent,
+                left: metrics.actualBoundingBoxLeft,
+                right: Math.max(metrics.width, metrics.actualBoundingBoxRight)
+            };
+
+            fontInfo.push(charInfo)
+
+            frameWidth = Math.max(frameWidth, parseInt(charInfo.right));
+            frameHeight = Math.max(frameHeight, parseInt(metrics.actualBoundingBoxDescent + metrics.actualBoundingBoxAscent));
+        }
+
+        console.log(`FrameSize: ${frameWidth}x${frameHeight}`);
+
+
+        fontCanvas.width = frameWidth * columnCount;
+        fontCanvas.height = frameHeight * rowCount;
+
+        context2d.textBaseline = "top";
+        context2d.font         = `${fontSize}px "${fontFace}"`;
+        context2d.fillStyle = 'white';
+
+        let col = 0;
+        let row = 0;
+        
+        for (let i  =0; i < fontInfo.length; i++) {
+            if (i > 0 && i % columnCount == 0) {
+                col = 0;
+                row += 1;
+            }
+
+            const char = fontInfo[i];
+
+            const drawX = col * frameWidth + char.left;
+            const drawY = row * frameHeight + char.top;
+            context2d.fillText(char.ch, drawX, drawY);
+            col += 1;
+        }
+    };
+
+    function saveMetrics() {
+        const metrics = [];
+
+        for (const char of fontInfo) {
+            metrics.push({
+                char: char.ch,
+                top: parseInt(char.top),
+                left: parseInt(char.left),
+                right: parseInt(char.right)
+            })
+        }
+
+        const dataBlob = new Blob([JSON.stringify(metrics, null, 2)], {type: "application/json"})
+        const downloadLink = document.createElement("a");
+        downloadLink.download = `${fontFace}.font.json`;
+        downloadLink.href = URL.createObjectURL(dataBlob);
+        downloadLink.click();
+    }
+
+    function savePNG() {
+        const fontCanvas = document.getElementById("font-canvas");
+        const downloadLink = document.createElement("a");
+        downloadLink.download = `${fontFace}.png`;
+        downloadLink.href = fontCanvas.toDataURL("image/png")
+        downloadLink.click();
+    }
+
+    function saveSpriteInfo() {
+        const spriteInfo = {
+            horizonalFrames: columnCount,
+            verticalFrames: rowCount
+        }
+
+        const dataBlob = new Blob([JSON.stringify(spriteInfo, null, 2)], {type: "application/json"})
+        const downloadLink = document.createElement("a");
+        downloadLink.download = `${fontFace}.sprite.json`;
+        downloadLink.href = URL.createObjectURL(dataBlob);
+        downloadLink.click();
+    }
+
+    </script>
+</head>
+<body>
+    <h1>Sprite Font</h1>
+    <div id="canvas-div"><canvas id="font-canvas"> </div>
+    <div><button onclick="savePNG();">Save PNG</button><button onclick="saveSpriteInfo();">Save SpriteInfo</button><button onclick="saveMetrics();">Save Metrics</button></div>
+
+</body>
+</html>

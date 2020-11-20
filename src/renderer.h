@@ -7,6 +7,7 @@
 
 typedef struct Sprite Sprite;
 typedef struct Renderer Renderer;
+typedef struct Font Font;
 
 int sprite_width(Sprite* sprite);
 int sprite_height(Sprite* sprite);
@@ -16,6 +17,7 @@ int sprite_vertical_frame_size(Sprite* sprite);
 
 void renderer_get_screen_size(Renderer* renderer, Point* screen_size);
 void renderer_draw_sprite(Renderer* renderer, Sprite* sprite, int x, int y);
+void renderer_draw_sprite_frame(Renderer* renderer, Sprite* sprite, int frame, int x, int y);
 void renderer_draw_sprite_row(Renderer* renderer, Sprite* sprite, int row, int x, int y);
 void renderer_draw_scaled_sprite(Renderer* renderer, Sprite* sprite,  int x, int y, float scale_x, float scale_y, int frame);
 void renderer_set_color(Renderer* renderer, int r, int g, int b, int a);
@@ -33,5 +35,10 @@ void renderer_set_clear_color(Renderer* renderer, uint8_t r, uint8_t g, uint8_t 
 
 Sprite* renderer_load_sprite(Renderer* renderer, const char* sprite_base_path);
 void renderer_destroy_sprite(Renderer* renderer, Sprite* sprite);
+
+Font* renderer_load_font(Renderer* renderer, const char* sprite_base_path, const char* font_path);
+void renderer_destroy_font(Renderer* renderer, Font* font);
+void renderer_draw_text_string(Renderer* renderer, Font* font, const char* str, int x, int y);
+int renderer_measure_text_width(Renderer* renderer, Font* font, const char* str);
 
 #endif

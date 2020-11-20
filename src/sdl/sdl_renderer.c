@@ -159,6 +159,25 @@ void renderer_draw_sprite_row(Renderer* renderer, Sprite* sprite, int row, int x
     SDL_RenderCopy(renderer->sdl_renderer, sprite->texture, &source_rect, &dest_rect);
 }
 
+void renderer_draw_sprite_frame(Renderer* renderer, Sprite* sprite, int frame, int x, int y) {
+    int horizontal_size = sprite_horizontal_frame_size(sprite);
+    int vertical_size = sprite_vertical_frame_size(sprite);
+    SDL_Rect source_rect;
+
+    source_rect.x = (frame % sprite->horizontal_slices) * horizontal_size;
+    source_rect.y = source_rect.y = (frame / sprite->horizontal_slices) * vertical_size;
+    source_rect.w = horizontal_size;
+    source_rect.h = vertical_size;
+
+    SDL_Rect dest_rect;
+    dest_rect.x = x;
+    dest_rect.y = y;
+    dest_rect.w = horizontal_size;
+    dest_rect.h = vertical_size;
+
+    SDL_RenderCopy(renderer->sdl_renderer, sprite->texture, &source_rect, &dest_rect);
+}
+
 void renderer_draw_scaled_sprite(Renderer* renderer, Sprite* sprite,  int x, int y, float scale_x, float scale_y, int frame) {
     int horizontal_size = sprite_horizontal_frame_size(sprite);
     int vertical_size = sprite_vertical_frame_size(sprite);

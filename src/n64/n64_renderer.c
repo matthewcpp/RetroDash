@@ -122,6 +122,14 @@ void renderer_draw_scaled_sprite(Renderer* renderer, Sprite* sprite,  int x, int
     rdp_draw_sprite_scaled( 0, x, y, scale_x, scale_y, MIRROR_DISABLED );
 }
 
+void renderer_draw_sprite_frame(Renderer* renderer, Sprite* sprite, int frame, int x, int y) {
+    renderer_enable_texture_mode(renderer);
+
+    rdp_sync( SYNC_PIPE );
+    rdp_load_texture_stride( 0, 0, MIRROR_DISABLED, sprite->libdragon_sprite, frame);
+    rdp_draw_sprite( 0, x, y, MIRROR_DISABLED );
+}
+
 void renderer_set_color(Renderer* renderer, int r, int g, int b, int a) {
     renderer->primitive_color = graphics_make_color(r, g, b, a);
     rdp_set_primitive_color(renderer->primitive_color);
