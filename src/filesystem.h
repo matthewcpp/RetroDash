@@ -16,6 +16,12 @@ void filesystem_close(uint32_t handle);
 int filesystem_read(void* buf, int size, int count, int handle);
 
 /**
+ * Gets the asset directory base path.  This can be useful if you need an explicit absolute path.  Caller should not free or modify this path.
+ * @return Asset directory base path or NULL on systems where there is no base directory, such as N64.
+ */
+const char* filesystem_get_asset_base_path();
+
+/**
  * Seek the underlying source.  Use SEEK_SET, SEEK_CUR, SEEK_END.
  */
 void filesystem_seek(int handle, int offset, int origin);

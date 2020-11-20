@@ -6,13 +6,15 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-Level* level_create(Renderer* renderer, Camera* camera) {
+Level* level_create(Audio* audio, Renderer* renderer, Camera* camera) {
     Level* level = malloc(sizeof(Level));
 
+    level->_audio = audio;
     level->_renderer = renderer;
     level->_camera = camera;
     level->name = NULL;
     level->_tile_map = NULL;
+    level->music = NULL;
     level->goal_dist = 0.0f;
 
     level->tile_set.sprite = NULL;
@@ -28,6 +30,7 @@ Level* level_create(Renderer* renderer, Camera* camera) {
 
 void level_clear(Level* level) {
     tile_set_clear(&level->tile_set, level->_renderer);
+    brick_particles_clear(&level->brick_particles);
 
     if (level->name){
         free(level->name);
@@ -42,6 +45,11 @@ void level_clear(Level* level) {
     if (level->_file_handle >= 0) {
         filesystem_close(level->_file_handle);
         level->_file_handle = -1;
+    }
+
+    if (level->music) {
+        audio_destroy_music(level->_audio, level->music);
+        level->music = NULL;
     }
 }
 
@@ -171,6 +179,14 @@ int level_load(Level* level, const char* path) {
     char* tile_set_name = malloc(size + 1);
     filesystem_read(tile_set_name, 1, size, level->_file_handle);
     tile_set_name[size] = '\0';
+
+    //read music
+    filesystem_read(&size, sizeof(uint32_t), 1, level->_file_handle);
+    char* music_name = malloc(size + 1);
+    filesystem_read(music_name, 1, size, level->_file_handle);
+    music_name[size] = '\0';
+    level->music = audio_load_music(level->_audio, music_name);
+    free(music_name);
 
     // Read Tiles
     filesystem_read(&level->width, sizeof(uint32_t), 1, level->_file_handle);

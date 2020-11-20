@@ -1,5 +1,6 @@
-#include "n64_renderer.h"
+#include "n64_audio.h"
 #include "n64_input.h"
+#include "n64_renderer.h"
 
 #include "../filesystem.h"
 #include "../game.h"
@@ -29,10 +30,12 @@ int main(void)
     controller_init();
     timer_init();
 
+
+    Audio* audio = n64_audio_create();
     Input* input = n64_input_create();
     Renderer* renderer = n64_renderer_create(SCREEN_WIDTH, SCREEN_HEIGHT);
 
-    Game* game = game_create(renderer, input);
+    Game* game = game_create(audio, input, renderer);
 
     new_timer(TIMER_TICKS(1000), TF_CONTINUOUS, timer_tick);
     //unsigned long prev_time = get_ticks_ms();
@@ -44,6 +47,8 @@ int main(void)
         //unsigned long current_time = get_ticks_ms();
         //float time_delta = (current_time - prev_time) / 1000.0f;
         //(void)time_delta;
+
+        n64_audio_update(audio);
 
         if (tick_count >= 16) {
             float time_delta = 60.0f / 1000.0f;

@@ -225,6 +225,7 @@ void player_update_dying(Player* player, float time_delta) {
     if (player->state_time >= 1.0f) {
         level_reset(player->_level);
         player_start(player);
+        audio_restart_music(player->_level->_audio);
     }
 }
 

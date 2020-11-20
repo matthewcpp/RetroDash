@@ -24,6 +24,10 @@ void filesystem_uninit() {
     }
 }
 
+const char* filesystem_get_asset_base_path() {
+    return path_prefix;
+}
+
 int filesystem_open(const char* path) {
     size_t path_len = strlen(path);
     char* filesystem_path = malloc(path_prefix_len + path_len + 1);

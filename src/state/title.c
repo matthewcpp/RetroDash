@@ -13,9 +13,10 @@ typedef enum{
 
 #define CHARACTER_SCALE 1.25f
 
-StateTitle* state_title_create(Renderer* renderer, Input* input){
+StateTitle* state_title_create(Audio* audio, Input* input, Renderer* renderer){
     StateTitle* state = malloc(sizeof(StateTitle));
 
+    state->_audio = audio;
     state->_input = input;
     state->_renderer = renderer;
     state->transition = GAME_STATE_NONE;
@@ -27,11 +28,19 @@ StateTitle* state_title_create(Renderer* renderer, Input* input){
     state->_character_bottom = renderer_load_sprite(state->_renderer, "/title_idle_bottom");
     state->_platform = renderer_load_sprite(state->_renderer, "/title_platform");
     state->_menu = renderer_load_sprite(state->_renderer, "/title_menu");
+    state->_music = audio_load_music(state->_audio, "/title_music.mod");
+
+    if (state->_music == NULL)
+        renderer_set_clear_color(state->_renderer, 255, 0, 0);
+    else
+        audio_play_music(audio, state->_music);
 
     animation_player_init(&state->_animation);
     animation_player_load(&state->_animation, "/title_idle.animation");
     state->_animation.frame_time = 1.0f;
     animation_player_set_current(&state->_animation, 0, 1);
+
+
 
     return state;
 }
@@ -41,6 +50,7 @@ void state_title_destroy(StateTitle* state){
     renderer_destroy_sprite(state->_renderer, state->_character_top);
     renderer_destroy_sprite(state->_renderer, state->_character_bottom);
     renderer_destroy_sprite(state->_renderer, state->_platform);
+    audio_destroy_music(state->_audio, state->_music);
 
     free(state);
 }

@@ -10,6 +10,8 @@ const TileTypeValues = {
     brick: 4
 }
 
+const musicFormats = new Set([".mod", ".xm"]);
+
 function writeUint32(value, buffer, offset, littleEndian) {
     if (littleEndian)
         return buffer.writeUInt32LE(value, offset);
@@ -64,13 +66,16 @@ function prepareLevel(srcPath, destPath, littleEndian) {
 
     const nameLength = Buffer.byteLength(level.name, "utf8");
     const tileSetLength = Buffer.byteLength(level.tileSet, "utf8");
-    const bufferSize = 8 + nameLength + tileSetLength + 8 + (level.width * level.height) + 4 /*level.goal*/;
+    const musicLength = Buffer.byteLength(level.music, "utf8");
+    const bufferSize = 12 + nameLength + tileSetLength + musicLength + 8 + (level.width * level.height) + 4 /*level.goal*/;
 
     const buffer = Buffer.alloc(bufferSize);
     let offset = writeUint32(nameLength, buffer, 0, littleEndian);
     offset += buffer.write(level.name, offset, nameLength, "utf8");
     offset = writeUint32(tileSetLength, buffer, offset, littleEndian);
     offset += buffer.write(level.tileSet, offset, tileSetLength, "utf8");
+    offset = writeUint32(musicLength, buffer, offset, littleEndian);
+    offset += buffer.write(level.music, offset, tileSetLength, "utf8");
     offset = writeUint32(level.width, buffer, offset, littleEndian);
     offset = writeUint32(level.height, buffer, offset, littleEndian);
     offset = writeFloat(level.goal, buffer, offset, littleEndian);
@@ -143,6 +148,10 @@ function prepareAssets(sourceDir, destDir, params) {
             const baseName = path.basename(assetName, ".animation.json");
             const buildPath = path.join(destDir, `${baseName}.animation`);
             prepareAnimation(sourceFile, buildPath);
+        },
+        musicFunc: (sourceFile, destDir, assetName) => {
+            const buildPath = path.join(destDir, assetName);
+            fs.copyFileSync(sourceFile, buildPath);
         }
     };
 
@@ -160,9 +169,10 @@ function prepareAssets(sourceDir, destDir, params) {
             options.levelFunc(sourceFile, destDir, asset);
         else if (asset.endsWith(".animation.json")) 
             options.animationFunc(sourceFile, destDir, asset);
-        else if (asset.endsWith(".png")) {
+        else if (asset.endsWith(".png"))
             options.spriteFunc(sourceFile, destDir, asset);
-        }
+        else if (musicFormats.has(path.extname(asset)))
+            options.musicFunc(sourceFile, destDir, asset);
     }
 }
 
