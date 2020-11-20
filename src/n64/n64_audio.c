@@ -87,9 +87,18 @@ void audio_play_music(Audio* audio, Music* music){
 void audio_pause_music(Audio* audio) {
     if (!Player_Paused())
         Player_TogglePause();
+
+    (void)audio;
 }
 
 void audio_resume_music(Audio* audio) {
     if (Player_Paused())
         Player_TogglePause();
+
+    (void)audio;
+}
+
+void audio_restart_music(Audio* audio) {
+    Player_SetPosition(0);
+    (void)audio;
 }
