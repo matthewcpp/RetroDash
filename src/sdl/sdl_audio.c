@@ -60,3 +60,11 @@ void audio_play_music(Audio* audio, Music* music) {
     Mix_PlayMusic( music->sdl_music, -1);
     audio->current_music = music;
 }
+
+void audio_pause_music(Audio* audio) {
+    Mix_PauseMusic();
+}
+
+void audio_resume_music(Audio* audio) {
+    Mix_ResumeMusic();
+}

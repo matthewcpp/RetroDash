@@ -83,3 +83,13 @@ void audio_play_music(Audio* audio, Music* music){
 
     audio->current_music = music;
 }
+
+void audio_pause_music(Audio* audio) {
+    if (!Player_Paused())
+        Player_TogglePause();
+}
+
+void audio_resume_music(Audio* audio) {
+    if (Player_Paused())
+        Player_TogglePause();
+}
