@@ -1,6 +1,7 @@
 {
     "name": "Level 1",
     "tileSet": "/geom_dash.tileset",
+    "music": "/80s_reminder.xm",
     "width": 109,
     "height": 10,
     "goal": 103.0

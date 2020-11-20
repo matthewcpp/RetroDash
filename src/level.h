@@ -1,6 +1,7 @@
 #ifndef LEVEL_H
 #define LEVEL_H
 
+#include "audio.h"
 #include "camera.h"
 #include "particles.h"
 #include "renderer.h"
@@ -17,17 +18,18 @@ typedef struct {
     char* name;
     float gravity;
     BrickParticles brick_particles;
-
+    Music* music;
 
     TileSet tile_set;
     uint8_t* _tile_map;
 
     Renderer* _renderer;
+    Audio* _audio;
     Camera* _camera;
     int _file_handle;
 } Level;
 
-Level* level_create(Renderer* renderer, Camera* camera);
+Level* level_create(Audio* audio, Renderer* renderer, Camera* camera);
 void level_destroy(Level* level);
 
 int level_load(Level* level, const char* path);

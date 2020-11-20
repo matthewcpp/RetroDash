@@ -1,9 +1,10 @@
 #ifndef PLAYING_H
 #define PLAYING_H
 
-#include "../player.h"
+#include "../audio.h"
 #include "../camera.h"
 #include "../level.h"
+#include "../player.h"
 
 typedef struct {
     Camera* camera;
@@ -11,10 +12,11 @@ typedef struct {
     Player* player;
 
     Input* _input;
+    Audio* _audio;
     int _paused;
 } StatePlaying;
 
-StatePlaying* state_playing_create(Renderer* renderer, Input* input, const char* level_path);
+StatePlaying* state_playing_create(Audio* audio, Renderer* renderer, Input* input, const char* level_path);
 void state_playing_destroy(StatePlaying* state);
 
 void state_playing_update(StatePlaying* state, float time_delta);

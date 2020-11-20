@@ -42,7 +42,7 @@ static void game_set_state(Game* game, GameState state) {
             break;
 
         case GAME_STATE_PLAYING:
-            game->state.playing = state_playing_create(game->_renderer, game->_input, "/level01.level");
+            game->state.playing = state_playing_create(game->_audio, game->_renderer, game->_input, "/level01.level");
             break;
 
         case GAME_STATE_NONE:
