@@ -4,6 +4,7 @@
 #include "../audio.h"
 #include "../input.h"
 #include "../renderer.h"
+#include "states.h"
 
 typedef struct {
     char* name;
@@ -30,7 +31,7 @@ typedef struct {
     LevelList _level_list;
     int _selected_level_index;
     Point _screen_size;
-
+    GameState transition;
 } StateLevelSelect;
 
 StateLevelSelect* state_level_select_create(Audio* audio, Input* input, Renderer* renderer);
@@ -38,5 +39,7 @@ void state_level_select_destroy(StateLevelSelect* level_select);
 
 void state_level_select_update(StateLevelSelect* level_select, float time_delta);
 void state_level_select_draw(StateLevelSelect* level_select);
+
+char* state_level_select_get_selected_path(StateLevelSelect* level_select);
 
 #endif

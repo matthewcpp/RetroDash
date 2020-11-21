@@ -42,6 +42,7 @@ StateLevelSelect* state_level_select_create(Audio* audio, Input* input, Renderer
     level_select->_audio = audio;
     level_select->_input = input;
     level_select->_renderer = renderer;
+    level_select->transition = GAME_STATE_NONE;
 
     level_select->_font = renderer_load_font(renderer, "/Basic_LAZER", "/Basic_LAZER.font");
 
@@ -77,9 +78,15 @@ void state_level_select_update(StateLevelSelect* level_select, float time_delta)
             set_selected_level(level_select, level_select->_selected_level_index + 1);
     }
 
-    if (input_button_is_down(level_select->_input, CONTROLLER_1, CONTROLLER_BUTTON_DPAD_LEFT))
+    if (input_button_is_down(level_select->_input, CONTROLLER_1, CONTROLLER_BUTTON_DPAD_LEFT)) {
         if (level_select->_selected_level_index > 0)
             set_selected_level(level_select, level_select->_selected_level_index - 1);
+    }
+
+    if (input_button_is_down(level_select->_input, CONTROLLER_1, CONTROLLER_BUTTON_A) ||
+        input_button_is_down(level_select->_input, CONTROLLER_1, CONTROLLER_BUTTON_START) ) {
+        level_select->transition = GAME_STATE_PLAYING;
+    }
 }
 
 static void draw_selected_level_info(StateLevelSelect* level_select) {
@@ -129,4 +136,8 @@ void state_level_select_draw(StateLevelSelect* level_select) {
     draw_selected_level_info(level_select);
     draw_selector_arrows(level_select);
     draw_selector_dots(level_select);
+}
+
+char* state_level_select_get_selected_path(StateLevelSelect* level_select) {
+    return level_select->_level_list.levels[level_select->_selected_level_index].path;
 }
