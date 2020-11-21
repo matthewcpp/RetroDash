@@ -34,6 +34,8 @@ static void load_level_list(StateLevelSelect* level_select) {
         info->path = level_select->_level_list.data + indices[1];
         info->music = level_select->_level_list.data + indices[2];
     }
+
+    filesystem_close(level_list_handle);
 }
 
 StateLevelSelect* state_level_select_create(Audio* audio, Input* input, Renderer* renderer){

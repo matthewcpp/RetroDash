@@ -14,6 +14,7 @@ typedef struct {
     float frame_time;
     float current_time;
     float total_time;
+    float speed;
     int animation_count;
     int frame;
     int loop;
