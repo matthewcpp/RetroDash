@@ -8,6 +8,7 @@ StatePlaying* state_playing_create(Audio* audio, Renderer* renderer, Input* inpu
     state->_audio = audio;
     state->_input = input;
     state->_paused = 0;
+    state->transition = GAME_STATE_NONE;
 
     Point screen_size;
     renderer_get_screen_size(renderer, &screen_size);
@@ -54,6 +55,10 @@ void state_playing_update(StatePlaying* state, float time_delta){
     player_update(state->player, time_delta);
     level_update(state->level, time_delta);
     camera_update(state->camera);
+
+    if (state->player->state == PLAYER_STATE_REACHED_GOAL) {
+        state->transition = GAME_STATE_LEVEL_SELECT;
+    }
 }
 
 void state_playing_draw(StatePlaying* state) {

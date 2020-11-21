@@ -51,7 +51,7 @@ static void game_set_state(Game* game, GameState state) {
             char level_path[32];
             strcpy(level_path, state_level_select_get_selected_path(game->state.level_select));
             game_destroy_current_state(game);
-            game->state.playing = state_playing_create(game->_audio, game->_renderer, game->_input, "/level01.level");
+            game->state.playing = state_playing_create(game->_audio, game->_renderer, game->_input, level_path);
             break;
         }
 
@@ -75,7 +75,7 @@ Game* game_create(Audio* audio, Input* input, Renderer* renderer){
     game->current_state = GAME_STATE_NONE;
 
     renderer_set_clear_color(game->_renderer, 10, 7, 53);
-    game_set_state(game , GAME_STATE_LEVEL_SELECT);
+    game_set_state(game , GAME_STATE_TITLE);
 
     return game;
 }
@@ -96,6 +96,7 @@ void game_update(Game* game, float time_delta){
 
         case GAME_STATE_PLAYING:
             state_playing_update(game->state.playing, time_delta);
+            state_transition = game->state.playing->transition;
             break;
 
         case GAME_STATE_LEVEL_SELECT:

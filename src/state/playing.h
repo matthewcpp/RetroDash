@@ -5,6 +5,7 @@
 #include "../camera.h"
 #include "../level.h"
 #include "../player.h"
+#include "states.h"
 
 typedef struct {
     Camera* camera;
@@ -14,6 +15,7 @@ typedef struct {
     Input* _input;
     Audio* _audio;
     int _paused;
+    GameState transition;
 } StatePlaying;
 
 StatePlaying* state_playing_create(Audio* audio, Renderer* renderer, Input* input, const char* level_path);
