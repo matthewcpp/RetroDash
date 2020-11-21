@@ -19,6 +19,7 @@ set(game_src
     src/tile_collision.h src/tile_collision.c
     src/tile_set.h src/tile_set.c
 
+    src/state/level_select.h src/state/level_select.c
     src/state/playing.h src/state/playing.c
     src/state/title.h src/state/title.c)
 

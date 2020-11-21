@@ -1,8 +1,8 @@
 {
-    "name": "Level 1",
-    "order": 10,
+    "name": "Tutorial",
+    "order": 0,
     "tileSet": "/geom_dash.tileset",
-    "music": "/80s_reminder.xm",
+    "music": "/title_music.mod",
     "width": 109,
     "height": 10,
     "goal": 103.0

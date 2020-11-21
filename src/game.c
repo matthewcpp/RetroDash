@@ -1,5 +1,6 @@
 #include "game.h"
 
+#include "state/level_select.h"
 #include "state/playing.h"
 #include "state/title.h"
 
@@ -8,6 +9,7 @@
 typedef union {
     StatePlaying* playing;
     StateTitle* title;
+    StateLevelSelect* level_select;
 } State;
 
 struct Game {
@@ -28,6 +30,10 @@ static void game_destroy_current_state(Game* game) {
             state_playing_destroy(game->state.playing);
             break;
 
+        case GAME_STATE_LEVEL_SELECT:
+            state_level_select_destroy(game->state.level_select);
+            break;
+
         case GAME_STATE_NONE:
             break;
     }
@@ -45,6 +51,10 @@ static void game_set_state(Game* game, GameState state) {
             game->state.playing = state_playing_create(game->_audio, game->_renderer, game->_input, "/level01.level");
             break;
 
+        case GAME_STATE_LEVEL_SELECT:
+            game->state.level_select = state_level_select_create(game->_audio, game->_input, game->_renderer);
+            break;
+
         case GAME_STATE_NONE:
             break;
     }
@@ -60,7 +70,7 @@ Game* game_create(Audio* audio, Input* input, Renderer* renderer){
     game->current_state = GAME_STATE_NONE;
 
     renderer_set_clear_color(game->_renderer, 10, 7, 53);
-    game_set_state(game , GAME_STATE_TITLE);
+    game_set_state(game , GAME_STATE_LEVEL_SELECT);
 
     return game;
 }
@@ -83,6 +93,10 @@ void game_update(Game* game, float time_delta){
             state_playing_update(game->state.playing, time_delta);
             break;
 
+        case GAME_STATE_LEVEL_SELECT:
+            state_level_select_update(game->state.level_select, time_delta);
+            break;
+
         case GAME_STATE_NONE:
             break;
     }
@@ -99,6 +113,10 @@ void game_draw(Game* game){
 
         case GAME_STATE_PLAYING:
             state_playing_draw(game->state.playing);
+            break;
+
+        case GAME_STATE_LEVEL_SELECT:
+            state_level_select_draw(game->state.level_select);
             break;
 
         case GAME_STATE_NONE:

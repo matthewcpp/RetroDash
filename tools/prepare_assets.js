@@ -10,6 +10,8 @@ const TileTypeValues = {
     brick: 4
 }
 
+const levelList = [];
+
 const musicFormats = new Set([".mod", ".xm"]);
 
 function writeUint32(value, buffer, offset, littleEndian) {
@@ -89,6 +91,15 @@ function prepareLevel(srcPath, destPath, littleEndian) {
     }
 
     fs.writeFileSync(destPath, buffer);
+
+    const destBaseName = path.basename(destPath);
+
+    levelList.push({
+        name: level.name.toUpperCase(),
+        path: `/${destBaseName}`,
+        music: level.music,
+        order: level.order
+    })
 }
 
 function prepareSprite(srcPath, destPath, littleEndian) {
@@ -146,6 +157,57 @@ function prepareFont(srcPath, destPath, littleEndian) {
     fs.writeFileSync(destPath, buffer);
 }
 
+function prepareLevelList(destDir, littleEndian) {
+    const buildPath = path.join(destDir, "level_list");
+    levelList.sort((a,b) => {return a.order - b.order});
+
+    let dataIndices = [];
+
+    // determine the payload size and the index of all the strings within the large payload
+    let bufferPayloadSize = 0;
+    for (const level of levelList) {
+        const levelDataIndices = {};
+
+        levelDataIndices.name = bufferPayloadSize;
+        bufferPayloadSize += Buffer.byteLength(level.name, "utf8") + 1;
+
+        levelDataIndices.path = bufferPayloadSize;
+        bufferPayloadSize += Buffer.byteLength(level.path, "utf8") + 1;
+
+        levelDataIndices.music = bufferPayloadSize;
+        bufferPayloadSize += Buffer.byteLength(level.music, "utf8") + 1;
+
+        dataIndices.push(levelDataIndices);
+    }
+
+    let bufferIndicesSize = 4 + levelList.length * 12; // level count + 3 payload indicies per level info
+
+    const buffer = Buffer.alloc(4 /* payload size prefix*/ + bufferPayloadSize + bufferIndicesSize);
+
+    // write all strings into the payload
+    let offset = writeUint32(bufferPayloadSize, buffer, 0, littleEndian);
+    for (const level of levelList) {
+        offset += buffer.write(level.name, offset);
+        offset = buffer.writeUInt8(0, offset);
+
+        offset += buffer.write(level.path, offset);
+        offset = buffer.writeUInt8(0, offset);
+
+        offset += buffer.write(level.music, offset);
+        offset = buffer.writeUInt8(0, offset);
+    }
+
+    // write all indices into the payload
+    offset = writeUint32(dataIndices.length, buffer, offset, littleEndian);
+    for (const levelDataIndices of dataIndices) {
+        offset = writeUint32(levelDataIndices.name, buffer, offset, littleEndian);
+        offset = writeUint32(levelDataIndices.path, buffer, offset, littleEndian);
+        offset = writeUint32(levelDataIndices.music, buffer, offset, littleEndian);
+    }
+
+    fs.writeFileSync(buildPath, buffer);
+}
+
 function prepareAssets(sourceDir, destDir, params) {
     let options = {
         littleEndian: true,
@@ -200,6 +262,8 @@ function prepareAssets(sourceDir, destDir, params) {
         else if (musicFormats.has(path.extname(asset)))
             options.musicFunc(sourceFile, destDir, asset);
     }
+
+    prepareLevelList(destDir, options.littleEndian);
 }
 
 module.exports = prepareAssets;
