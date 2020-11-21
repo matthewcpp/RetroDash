@@ -69,7 +69,7 @@ void state_title_update(StateTitle* state, float time_delta){
     if (input_button_is_down(state->_input, CONTROLLER_1, CONTROLLER_BUTTON_START) ||
         input_button_is_down(state->_input, CONTROLLER_1, CONTROLLER_BUTTON_A)){
         if (state->menu_selection == TITLE_MENU_START)
-            state->transition = GAME_STATE_PLAYING;
+            state->transition = GAME_STATE_LEVEL_SELECT;
     }
 }
 

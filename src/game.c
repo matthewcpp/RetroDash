@@ -1,13 +1,16 @@
 #include "game.h"
 
+#include "state/level_select.h"
 #include "state/playing.h"
 #include "state/title.h"
 
 #include <stdlib.h>
+#include <string.h>
 
 typedef union {
     StatePlaying* playing;
     StateTitle* title;
+    StateLevelSelect* level_select;
 } State;
 
 struct Game {
@@ -28,21 +31,33 @@ static void game_destroy_current_state(Game* game) {
             state_playing_destroy(game->state.playing);
             break;
 
+        case GAME_STATE_LEVEL_SELECT:
+            state_level_select_destroy(game->state.level_select);
+            break;
+
         case GAME_STATE_NONE:
             break;
     }
 }
 
 static void game_set_state(Game* game, GameState state) {
-    game_destroy_current_state(game);
-
     switch (state) {
         case GAME_STATE_TITLE:
+            game_destroy_current_state(game);
             game->state.title = state_title_create(game->_audio, game->_input, game->_renderer);
             break;
 
-        case GAME_STATE_PLAYING:
-            game->state.playing = state_playing_create(game->_audio, game->_renderer, game->_input, "/level01.level");
+        case GAME_STATE_PLAYING: {
+            char level_path[32];
+            strcpy(level_path, state_level_select_get_selected_path(game->state.level_select));
+            game_destroy_current_state(game);
+            game->state.playing = state_playing_create(game->_audio, game->_renderer, game->_input, level_path);
+            break;
+        }
+
+        case GAME_STATE_LEVEL_SELECT:
+            game_destroy_current_state(game);
+            game->state.level_select = state_level_select_create(game->_audio, game->_input, game->_renderer);
             break;
 
         case GAME_STATE_NONE:
@@ -81,6 +96,12 @@ void game_update(Game* game, float time_delta){
 
         case GAME_STATE_PLAYING:
             state_playing_update(game->state.playing, time_delta);
+            state_transition = game->state.playing->transition;
+            break;
+
+        case GAME_STATE_LEVEL_SELECT:
+            state_level_select_update(game->state.level_select, time_delta);
+            state_transition = game->state.level_select->transition;
             break;
 
         case GAME_STATE_NONE:
@@ -99,6 +120,10 @@ void game_draw(Game* game){
 
         case GAME_STATE_PLAYING:
             state_playing_draw(game->state.playing);
+            break;
+
+        case GAME_STATE_LEVEL_SELECT:
+            state_level_select_draw(game->state.level_select);
             break;
 
         case GAME_STATE_NONE:

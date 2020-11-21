@@ -13,6 +13,7 @@ void animation_player_init(AnimationPlayer* player) {
     player->frame_time = DEFAULT_FRAME_TIME;
     player->frame = 0;
     player->loop = 0;
+    player->speed = 1.0f;
 }
 
 void animation_player_uninit(AnimationPlayer* player) {
@@ -54,7 +55,7 @@ void animation_player_set_current(AnimationPlayer* player, int index, int loop) 
 }
 
 void animation_player_update(AnimationPlayer* player, float time_delta) {
-    player->current_time += time_delta;
+    player->current_time += time_delta * player->speed;
 
     if (player->current_time >= player->total_time) {
         if (player->loop)

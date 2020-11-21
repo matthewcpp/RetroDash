@@ -1,0 +1,9 @@
+{
+    "name": "Tutorial",
+    "order": 0,
+    "tileSet": "/geom_dash.tileset",
+    "music": "/title_music.mod",
+    "width": 20,
+    "height": 10,
+    "goal": 15
+}

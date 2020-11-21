@@ -212,8 +212,11 @@ void player_update_movement(Player* player, float time_delta) {
         try_set_size(player, PLAYER_SIZE_LARGE);
     }
 
-    if (player->entity.position.x >= player->_level->goal_dist)
+    if (player->entity.position.x >= player->_level->goal_dist) {
+        player->state = PLAYER_STATE_REACHED_GOAL;
         player->velocity.x = 0.0f;
+        player->_animation.speed = 0; // temp until idle animation
+    }
 
     animation_player_update(&player->_animation, time_delta);
 }
@@ -258,6 +261,10 @@ void player_update_changing_size(Player* player, float time_delta) {
     player->entity.size.y = player_hit_sizes[player->current_size].y + t * (player_hit_sizes[player->target_size].y - player_hit_sizes[player->current_size].y);
 }
 
+void player_update_reached_goal(Player* player, float time_delta) {
+    animation_player_update(&player->_animation, time_delta);
+}
+
 void player_update(Player* player, float time_delta) {
     switch (player->state) {
         case PLAYER_STATE_RUNNING:
@@ -270,6 +277,10 @@ void player_update(Player* player, float time_delta) {
 
         case PLAYER_STATE_CHANGING_SIZE:
             player_update_changing_size(player, time_delta);
+            break;
+
+        case PLAYER_STATE_REACHED_GOAL:
+            player_update_reached_goal(player, time_delta);
             break;
 
         default:
@@ -318,6 +329,7 @@ void reset_player(Player* player) {
     player->state = PLAYER_STATE_INACTIVE;
     player->state_time = 0.0f;
     player->prev_animation_time = 0.0f;
+    player->_animation.speed = 1.0f;
 
     player->entity.position.x = starting_pos.x;
     player->entity.position.y = starting_pos.y;

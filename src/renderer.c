@@ -35,7 +35,7 @@ Font* renderer_load_font(Renderer* renderer, const char* sprite_base_path, const
     filesystem_read(&char_count, sizeof(uint32_t), 1, font_info_handle);
     font->info = malloc(sizeof(FontCharInfo) * char_count);
     filesystem_read(font->info, sizeof(FontCharInfo), char_count, font_info_handle);
-
+    filesystem_close(font_info_handle);
     return font;
 }
 
