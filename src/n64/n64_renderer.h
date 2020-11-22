@@ -22,11 +22,13 @@ struct Renderer {
     uint32_t primitive_color;
     Sprite* tile_sprite;
     TileBatch** tile_batches;
+    SoftwareTileBatch software_tiles;
     int tile_batch_count;
     DrawMode draw_mode;
     Point screen_size;
 };
 
 Renderer* n64_renderer_create(int screen_width, int screen_height);
+void n64_renderer_draw_software_tiles(Renderer* renderer);
 
 #endif

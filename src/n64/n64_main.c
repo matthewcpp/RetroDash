@@ -32,10 +32,6 @@ int main(void)
 
     Game* game = game_create(audio, input, renderer);
 
-    float seconds = 0;
-    char msg[20];
-
-    (void)game;
     unsigned long prev_update_time = get_ticks_ms();
     while(1) 
     {
@@ -52,7 +48,6 @@ int main(void)
 
         if (time_delta_ms >= UPDATE_MS) {
             float time_delta = (float)time_delta_ms / 1000.0f;
-            seconds += time_delta;
 
             n64_audio_update(audio);
             n64_input_update(input);
@@ -74,9 +69,7 @@ int main(void)
         rdp_sync( SYNC_PIPE );
         rdp_detach_display();
 
-        sprintf(msg, "seconds: %f", seconds);
-        graphics_set_color( 0xFFFFFFFF, 0x0 );
-        graphics_draw_text( renderer->display_context, 20, 20, msg);
+        n64_renderer_draw_software_tiles(renderer);
         display_show(renderer->display_context);
     }
 }
