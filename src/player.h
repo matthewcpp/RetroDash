@@ -20,6 +20,7 @@ typedef enum {
     PLAYER_STATE_RUNNING,
     PLAYER_STATE_CHANGING_SIZE,
     PLAYER_STATE_DYING,
+    PLAYER_STATE_DEAD,
     PLAYER_STATE_REACHED_GOAL
 } PlayerState;
 
@@ -59,6 +60,11 @@ void player_update(Player* player, float time_delta);
 void player_draw(Player* player);
 
 void player_kill(Player* player);
+
+/**
+ * Starts the player running though the level.
+ * This method assumes that the player is in an inactive state.
+ */
 void player_start(Player* player);
 
 #endif

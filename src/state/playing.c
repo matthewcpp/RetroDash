@@ -20,8 +20,6 @@ StatePlaying* state_playing_create(Audio* audio, Renderer* renderer, Input* inpu
     state->player = player_create(state->level, renderer, state->camera, input);
     camera_set_target(state->camera, &state->player->entity);
     camera_set_safe_margins(state->camera, -3.0f, 3.0f);
-    player_start(state->player);
-    audio_play_music(state->_audio, state->level->music);
     state->_just_loaded = 1;
 
     return state;
@@ -46,10 +44,21 @@ static void toggle_pause(StatePlaying* state) {
     }
 }
 
+/**
+ * Resets the player, level, and audio for another attempt.  This method assumes the player is in a DEAD state.
+ */
+static void reset_scene(StatePlaying* state) {
+    level_reset(state->player->_level);
+    player_start(state->player);
+    audio_restart_music(state->_audio);
+}
+
 void state_playing_update(StatePlaying* state, float time_delta){
     // N64: its possible that loading the audio can take some amount of time.  Since we cant do this on another thread
     // it can cause the time delta to spike from the previous frame.
     if (state->_just_loaded == 1) {
+        player_start(state->player);
+        audio_play_music(state->_audio, state->level->music);
         state->_just_loaded = 0;
         return;
     }
@@ -64,7 +73,10 @@ void state_playing_update(StatePlaying* state, float time_delta){
     level_update(state->level, time_delta);
     camera_update(state->camera);
 
-    if (state->player->state == PLAYER_STATE_REACHED_GOAL) {
+    if (state->player->state == PLAYER_STATE_DEAD) {
+        reset_scene(state);
+    }
+    else if (state->player->state == PLAYER_STATE_REACHED_GOAL) {
         state->transition = GAME_STATE_LEVEL_SELECT;
     }
 }

@@ -6,6 +6,7 @@
 #include <stdlib.h>
 
 #define PLAYER_SPEED 8.0f
+#define PLAYER_DEATH_TIME 1.0f
 
 typedef enum {
     PLAYER_ANIMATION_RUN,
@@ -225,10 +226,8 @@ void player_update_dying(Player* player, float time_delta) {
     player->state_time += time_delta;
     animation_player_update(&player->_animation, time_delta);
 
-    if (player->state_time >= 1.0f) {
-        level_reset(player->_level);
-        player_start(player);
-        audio_restart_music(player->_level->_audio);
+    if (player->state_time >= PLAYER_DEATH_TIME) {
+        player->state = PLAYER_STATE_DEAD;
     }
 }
 
