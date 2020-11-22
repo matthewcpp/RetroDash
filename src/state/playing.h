@@ -15,6 +15,7 @@ typedef struct {
     Input* _input;
     Audio* _audio;
     int _paused;
+    int _just_loaded;
     GameState transition;
 } StatePlaying;
 
