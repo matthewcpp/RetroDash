@@ -20,6 +20,7 @@ Renderer* n64_renderer_create(int screen_width, int screen_height) {
 
     renderer->tile_batches = NULL;
     renderer->tile_batch_count = 0;
+    software_tile_batch_init(&renderer->software_tiles);
 
     return renderer;
 }
@@ -191,7 +192,10 @@ void renderer_begin_tile_drawing(Renderer* renderer, Sprite* sprite) {
 }
 
 void renderer_draw_tile(Renderer* renderer, int index, int x, int y) {
-    tile_batch_add(renderer->tile_batches[index], x, y);
+    if (x >= 0)
+        tile_batch_add(renderer->tile_batches[index], x, y);
+    else
+        software_tile_batch_add(&renderer->software_tiles, index, x, y);
 }
 
 void renderer_end_tile_drawing(Renderer* renderer) {
@@ -210,8 +214,16 @@ void renderer_end_tile_drawing(Renderer* renderer) {
 
         rdp_sync( SYNC_PIPE ); // flush draw commands before loading next batch texture
     }
+}
 
-    renderer->tile_sprite = NULL;
+void n64_renderer_draw_software_tiles(Renderer* renderer) {
+    for (int i =0; i < renderer->software_tiles.count; i++) {
+        SoftwareTile* tile = renderer->software_tiles.tiles + i;
+
+        graphics_draw_sprite_stride(renderer->display_context, tile->x, tile->y, renderer->tile_sprite->libdragon_sprite, tile->frame);
+    }
+
+    renderer->software_tiles.count = 0;
 }
 
 void renderer_set_clear_color(Renderer* renderer, uint8_t r, uint8_t g, uint8_t b) {

@@ -28,3 +28,28 @@ void tile_batch_add(TileBatch* batch, int x, int y) {
 
     batch->count += 1;
 }
+
+
+void software_tile_batch_init(SoftwareTileBatch* tile_batch) {
+    tile_batch->count = 0;
+    tile_batch->capacity = 8;
+    tile_batch->tiles = calloc(tile_batch->capacity, sizeof(SoftwareTile));
+}
+
+void software_tile_batch_uninit(SoftwareTileBatch* tile_batch) {
+    free(tile_batch->tiles);
+}
+
+void software_tile_batch_add(SoftwareTileBatch* batch, int frame, int x, int y) {
+    if (batch->count == batch->capacity) {
+        batch->capacity += 8;
+        batch->tiles = realloc(batch->tiles, batch->capacity * sizeof(SoftwareTile));
+    }
+
+    SoftwareTile* tile = batch->tiles + batch->count;
+    tile->frame = frame;
+    tile->x = x;
+    tile->y = y;
+
+    batch->count += 1;
+}

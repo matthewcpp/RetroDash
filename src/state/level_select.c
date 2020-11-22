@@ -17,7 +17,7 @@ static void set_selected_level(StateLevelSelect* level_select, int index) {
 static void load_level_list(StateLevelSelect* level_select) {
     int level_list_handle = filesystem_open("/level_list");
 
-    u_int32_t payload_size;
+    uint32_t payload_size;
     filesystem_read(&payload_size, sizeof(uint32_t), 1, level_list_handle);
     level_select->_level_list.data = malloc(payload_size);
     filesystem_read(level_select->_level_list.data , 1, payload_size, level_list_handle);

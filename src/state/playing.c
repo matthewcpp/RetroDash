@@ -22,6 +22,7 @@ StatePlaying* state_playing_create(Audio* audio, Renderer* renderer, Input* inpu
     camera_set_safe_margins(state->camera, -3.0f, 3.0f);
     player_start(state->player);
     audio_play_music(state->_audio, state->level->music);
+    state->_just_loaded = 1;
 
     return state;
 }
@@ -46,6 +47,13 @@ static void toggle_pause(StatePlaying* state) {
 }
 
 void state_playing_update(StatePlaying* state, float time_delta){
+    // N64: its possible that loading the audio can take some amount of time.  Since we cant do this on another thread
+    // it can cause the time delta to spike from the previous frame.
+    if (state->_just_loaded == 1) {
+        state->_just_loaded = 0;
+        return;
+    }
+
     if (input_button_is_down(state->_input, CONTROLLER_1, CONTROLLER_BUTTON_START))
         toggle_pause(state);
 
