@@ -26,7 +26,7 @@ typedef struct {
 static Vec2 player_hit_sizes[3] = {
         {PLAYER_HIT_W * 0.66f, PLAYER_HIT_H * 0.66f},
         {PLAYER_HIT_W, PLAYER_HIT_H},
-        {PLAYER_HIT_W * 1.33f, PLAYER_HIT_H * 1.33f} };
+        {PLAYER_HIT_W * 1.35f, PLAYER_HIT_H * 1.35f} };
 
 static float player_jump_velocity[3] = {6.0f, 10.0f, 14.0f};
 
