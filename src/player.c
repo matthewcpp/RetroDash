@@ -48,6 +48,8 @@ Player* player_create(Level* level, Renderer* renderer, Camera* camera, Input* i
 
     animation_player_init(&player->_animation);
     animation_player_load(&player->_animation, "/player.animation");
+
+    player->attempt_count = 0;
     reset_player(player);
 
     player->_sprite = renderer_load_sprite(player->_renderer, "/player");
@@ -198,6 +200,7 @@ void player_update_movement(Player* player, float time_delta) {
 
     // step horizontal
     player->entity.position.x += player->velocity.x * time_delta;
+    player->distance_travelled += player->entity.position.x - player->prev_pos.x;
     check_collisions(player, &query);
 
     if (input_button_is_down(player->_input, CONTROLLER_1, CONTROLLER_BUTTON_A)) {
@@ -338,6 +341,9 @@ void reset_player(Player* player) {
 
     player->on_ground = 1;
     player->is_jumping = 0;
+
+    player->distance_travelled = 0.0f;
+    player->attempt_count += 1;
 }
 
 // TODO: This should take previous position into account to prevent "falling through tiles"

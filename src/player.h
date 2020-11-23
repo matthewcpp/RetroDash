@@ -31,7 +31,7 @@ typedef struct {
 
     PlayerState state;
 
-    // amount of time the player has been in thier current state
+    // amount of time the player has been in their current state
     float state_time;
 
     // holds the time of the previous animation when the player begins changing sizes
@@ -44,6 +44,8 @@ typedef struct {
     int on_ground;
     int is_jumping;
 
+    float distance_travelled;
+    int attempt_count;
 
     Sprite* _sprite;
     Level* _level;

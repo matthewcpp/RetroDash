@@ -5,6 +5,8 @@
 #include "../camera.h"
 #include "../level.h"
 #include "../player.h"
+
+#include "attempt_dialog.h"
 #include "states.h"
 
 typedef struct {
@@ -12,9 +14,12 @@ typedef struct {
     Level* level;
     Player* player;
 
+    AttemptDialog _attempt_dialog;
     Input* _input;
     Audio* _audio;
     int _paused;
+
+    /** N64: its possible that loading the audio can take some amount of time.  Since we cant do this on another thread it can cause the time delta to spike from the previous frame. */
     int _just_loaded;
     GameState transition;
 } StatePlaying;

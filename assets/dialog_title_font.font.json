@@ -1,0 +1,356 @@
+[
+  {
+    "char": " ",
+    "top": -18,
+    "left": 0,
+    "right": 5
+  },
+  {
+    "char": "!",
+    "top": -6,
+    "left": 1,
+    "right": 4
+  },
+  {
+    "char": "\"",
+    "top": 0,
+    "left": 1,
+    "right": 9
+  },
+  {
+    "char": "#",
+    "top": -6,
+    "left": 1,
+    "right": 10
+  },
+  {
+    "char": "$",
+    "top": -6,
+    "left": 1,
+    "right": 9
+  },
+  {
+    "char": "%",
+    "top": -6,
+    "left": 1,
+    "right": 15
+  },
+  {
+    "char": "&",
+    "top": -6,
+    "left": 1,
+    "right": 12
+  },
+  {
+    "char": "'",
+    "top": 0,
+    "left": 1,
+    "right": 5
+  },
+  {
+    "char": "(",
+    "top": -6,
+    "left": 1,
+    "right": 5
+  },
+  {
+    "char": ")",
+    "top": -6,
+    "left": 1,
+    "right": 5
+  },
+  {
+    "char": "*",
+    "top": 0,
+    "left": -1,
+    "right": 12
+  },
+  {
+    "char": "+",
+    "top": -6,
+    "left": -1,
+    "right": 11
+  },
+  {
+    "char": ",",
+    "top": -15,
+    "left": 0,
+    "right": 6
+  },
+  {
+    "char": "-",
+    "top": -11,
+    "left": 1,
+    "right": 9
+  },
+  {
+    "char": ".",
+    "top": -14,
+    "left": 0,
+    "right": 6
+  },
+  {
+    "char": "/",
+    "top": -6,
+    "left": 1,
+    "right": 10
+  },
+  {
+    "char": "0",
+    "top": -6,
+    "left": 1,
+    "right": 14
+  },
+  {
+    "char": "1",
+    "top": -6,
+    "left": 1,
+    "right": 6
+  },
+  {
+    "char": "2",
+    "top": -6,
+    "left": 1,
+    "right": 10
+  },
+  {
+    "char": "3",
+    "top": -6,
+    "left": 1,
+    "right": 10
+  },
+  {
+    "char": "4",
+    "top": -6,
+    "left": 1,
+    "right": 12
+  },
+  {
+    "char": "5",
+    "top": -6,
+    "left": 1,
+    "right": 10
+  },
+  {
+    "char": "6",
+    "top": -6,
+    "left": 1,
+    "right": 10
+  },
+  {
+    "char": "7",
+    "top": -6,
+    "left": 1,
+    "right": 11
+  },
+  {
+    "char": "8",
+    "top": -6,
+    "left": 1,
+    "right": 10
+  },
+  {
+    "char": "9",
+    "top": -6,
+    "left": 1,
+    "right": 10
+  },
+  {
+    "char": ":",
+    "top": -7,
+    "left": 0,
+    "right": 6
+  },
+  {
+    "char": ";",
+    "top": -7,
+    "left": 0,
+    "right": 6
+  },
+  {
+    "char": "<",
+    "top": -4,
+    "left": 0,
+    "right": 14
+  },
+  {
+    "char": "=",
+    "top": -6,
+    "left": 0,
+    "right": 12
+  },
+  {
+    "char": ">",
+    "top": -4,
+    "left": 0,
+    "right": 14
+  },
+  {
+    "char": "?",
+    "top": -6,
+    "left": 1,
+    "right": 9
+  },
+  {
+    "char": "@",
+    "top": -6,
+    "left": 1,
+    "right": 13
+  },
+  {
+    "char": "A",
+    "top": -6,
+    "left": 1,
+    "right": 13
+  },
+  {
+    "char": "B",
+    "top": -6,
+    "left": 1,
+    "right": 11
+  },
+  {
+    "char": "C",
+    "top": -6,
+    "left": 1,
+    "right": 11
+  },
+  {
+    "char": "D",
+    "top": -6,
+    "left": 1,
+    "right": 12
+  },
+  {
+    "char": "E",
+    "top": -6,
+    "left": 1,
+    "right": 10
+  },
+  {
+    "char": "F",
+    "top": -6,
+    "left": 1,
+    "right": 10
+  },
+  {
+    "char": "G",
+    "top": -6,
+    "left": 1,
+    "right": 11
+  },
+  {
+    "char": "H",
+    "top": -6,
+    "left": 1,
+    "right": 12
+  },
+  {
+    "char": "I",
+    "top": -6,
+    "left": 1,
+    "right": 5
+  },
+  {
+    "char": "J",
+    "top": -6,
+    "left": 5,
+    "right": 6
+  },
+  {
+    "char": "K",
+    "top": -6,
+    "left": 1,
+    "right": 12
+  },
+  {
+    "char": "L",
+    "top": -6,
+    "left": 1,
+    "right": 9
+  },
+  {
+    "char": "M",
+    "top": -6,
+    "left": 2,
+    "right": 16
+  },
+  {
+    "char": "N",
+    "top": -6,
+    "left": 1,
+    "right": 12
+  },
+  {
+    "char": "O",
+    "top": -6,
+    "left": 1,
+    "right": 14
+  },
+  {
+    "char": "P",
+    "top": -6,
+    "left": 1,
+    "right": 11
+  },
+  {
+    "char": "Q",
+    "top": -6,
+    "left": 1,
+    "right": 13
+  },
+  {
+    "char": "R",
+    "top": -6,
+    "left": 1,
+    "right": 11
+  },
+  {
+    "char": "S",
+    "top": -6,
+    "left": 2,
+    "right": 10
+  },
+  {
+    "char": "T",
+    "top": -6,
+    "left": 1,
+    "right": 11
+  },
+  {
+    "char": "U",
+    "top": -6,
+    "left": 1,
+    "right": 12
+  },
+  {
+    "char": "V",
+    "top": -6,
+    "left": 2,
+    "right": 14
+  },
+  {
+    "char": "W",
+    "top": -6,
+    "left": 2,
+    "right": 18
+  },
+  {
+    "char": "X",
+    "top": -6,
+    "left": 2,
+    "right": 13
+  },
+  {
+    "char": "Y",
+    "top": -6,
+    "left": 2,
+    "right": 12
+  },
+  {
+    "char": "Z",
+    "top": -6,
+    "left": 1,
+    "right": 12
+  }
+]
