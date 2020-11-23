@@ -5,5 +5,9 @@
     "music": "/title_music.mod",
     "width": 20,
     "height": 10,
+    "startPos": {
+        "x": 3.0,
+        "y": 3.0
+    },
     "goal": 15
 }

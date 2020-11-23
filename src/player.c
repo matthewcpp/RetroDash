@@ -6,6 +6,7 @@
 #include <stdlib.h>
 
 #define PLAYER_SPEED 8.0f
+#define PLAYER_DEATH_TIME 1.0f
 
 typedef enum {
     PLAYER_ANIMATION_RUN,
@@ -30,7 +31,6 @@ static Vec2 player_hit_sizes[3] = {
 
 static float player_jump_velocity[3] = {6.0f, 10.0f, 14.0f};
 
-static Vec2 starting_pos = {3.0f, 3.0f}; // todo move into level data
 static Point sprite_draw_offset = {0, 2};
 
 void reset_player(Player* player);
@@ -47,6 +47,8 @@ Player* player_create(Level* level, Renderer* renderer, Camera* camera, Input* i
 
     animation_player_init(&player->_animation);
     animation_player_load(&player->_animation, "/player.animation");
+
+    player->attempt_count = 0;
     reset_player(player);
 
     player->_sprite = renderer_load_sprite(player->_renderer, "/player");
@@ -158,6 +160,7 @@ static void try_jump(Player* player) {
     player->velocity.y = player_jump_velocity[player->target_size];
     player->on_ground = 0;
     player->is_jumping = 1;
+    player->jump_count += 1;
 
     if (player->state == PLAYER_STATE_CHANGING_SIZE)
         player->prev_animation_time = 0.0f;
@@ -197,6 +200,7 @@ void player_update_movement(Player* player, float time_delta) {
 
     // step horizontal
     player->entity.position.x += player->velocity.x * time_delta;
+    player->distance_travelled += player->entity.position.x - player->prev_pos.x;
     check_collisions(player, &query);
 
     if (input_button_is_down(player->_input, CONTROLLER_1, CONTROLLER_BUTTON_A)) {
@@ -214,6 +218,7 @@ void player_update_movement(Player* player, float time_delta) {
 
     if (player->entity.position.x >= player->_level->goal_dist) {
         player->state = PLAYER_STATE_REACHED_GOAL;
+        player->distance_travelled = level_travel_distance(player->_level);
         player->velocity.x = 0.0f;
         player->_animation.speed = 0; // temp until idle animation
     }
@@ -225,10 +230,8 @@ void player_update_dying(Player* player, float time_delta) {
     player->state_time += time_delta;
     animation_player_update(&player->_animation, time_delta);
 
-    if (player->state_time >= 1.0f) {
-        level_reset(player->_level);
-        player_start(player);
-        audio_restart_music(player->_level->_audio);
+    if (player->state_time >= PLAYER_DEATH_TIME) {
+        player->state = PLAYER_STATE_DEAD;
     }
 }
 
@@ -313,6 +316,7 @@ void player_start(Player* player) {
     player->state = PLAYER_STATE_RUNNING;
     player->velocity.x = PLAYER_SPEED;
     animation_player_set_current(&player->_animation, PLAYER_ANIMATION_RUN, 1);
+    player->attempt_count += 1;
 }
 
 void player_kill(Player* player) {
@@ -331,14 +335,16 @@ void reset_player(Player* player) {
     player->prev_animation_time = 0.0f;
     player->_animation.speed = 1.0f;
 
-    player->entity.position.x = starting_pos.x;
-    player->entity.position.y = starting_pos.y;
+    player->entity.position = player->_level->start_pos;
     player->prev_pos = player->entity.position;
     player->velocity.x = 0.0f;
     player->velocity.y = 0.0f;
 
     player->on_ground = 1;
     player->is_jumping = 0;
+
+    player->distance_travelled = 0.0f;
+    player->jump_count = 0;
 }
 
 // TODO: This should take previous position into account to prevent "falling through tiles"

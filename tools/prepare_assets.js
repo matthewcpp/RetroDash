@@ -64,12 +64,13 @@ function readLevelTiles(srcPath) {
 function prepareLevel(srcPath, destPath, littleEndian) {
     const sourceFile = fs.readFileSync(srcPath, "utf8");
     const level = JSON.parse(sourceFile);
+    level.name = level.name.toUpperCase(); // right now fonts only support UPPER CASE
     const levelTiles = readLevelTiles(srcPath);
 
     const nameLength = Buffer.byteLength(level.name, "utf8");
     const tileSetLength = Buffer.byteLength(level.tileSet, "utf8");
     const musicLength = Buffer.byteLength(level.music, "utf8");
-    const bufferSize = 12 + nameLength + tileSetLength + musicLength + 8 + (level.width * level.height) + 4 /*level.goal*/;
+    const bufferSize = 12 + nameLength + tileSetLength + musicLength + 8 + (level.width * level.height) + 12 /*level start & goal*/;
 
     const buffer = Buffer.alloc(bufferSize);
     let offset = writeUint32(nameLength, buffer, 0, littleEndian);
@@ -80,6 +81,8 @@ function prepareLevel(srcPath, destPath, littleEndian) {
     offset += buffer.write(level.music, offset, musicLength, "utf8");
     offset = writeUint32(level.width, buffer, offset, littleEndian);
     offset = writeUint32(level.height, buffer, offset, littleEndian);
+    offset = writeFloat(level.startPos.x, buffer, offset, littleEndian);
+    offset = writeFloat(level.startPos.y, buffer, offset, littleEndian);
     offset = writeFloat(level.goal, buffer, offset, littleEndian);
 
     for (let i = 0; i < levelTiles.length; i++){

@@ -14,6 +14,7 @@
 typedef struct {
     uint32_t width;
     uint32_t height;
+    Vec2 start_pos;
     float goal_dist;
     char* name;
     float gravity;
@@ -43,5 +44,10 @@ void level_update(Level* level, float time_delta);
 void level_reset(Level* level);
 void level_draw(Level* level);
 void level_set_tile(Level* level, int x, int y, uint8_t tile_palette_index);
+
+/**
+ * Returns the distance the player must travel to beat the level.
+ */
+float level_travel_distance(Level* level);
 
 #endif

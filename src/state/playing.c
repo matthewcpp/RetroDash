@@ -20,9 +20,9 @@ StatePlaying* state_playing_create(Audio* audio, Renderer* renderer, Input* inpu
     state->player = player_create(state->level, renderer, state->camera, input);
     camera_set_target(state->camera, &state->player->entity);
     camera_set_safe_margins(state->camera, -3.0f, 3.0f);
-    player_start(state->player);
-    audio_play_music(state->_audio, state->level->music);
     state->_just_loaded = 1;
+
+    attempt_dialog_init(&state->_attempt_dialog, input, renderer, state->player);
 
     return state;
 }
@@ -31,6 +31,8 @@ void state_playing_destroy(StatePlaying* state){
     level_destroy(state->level);
     camera_destroy(state->camera);
     player_destroy(state->player);
+
+    attempt_dialog_uninit(&state->_attempt_dialog);
 
     free(state);
 }
@@ -46,14 +48,18 @@ static void toggle_pause(StatePlaying* state) {
     }
 }
 
-void state_playing_update(StatePlaying* state, float time_delta){
-    // N64: its possible that loading the audio can take some amount of time.  Since we cant do this on another thread
-    // it can cause the time delta to spike from the previous frame.
-    if (state->_just_loaded == 1) {
-        state->_just_loaded = 0;
-        return;
-    }
+/**
+ * Resets the player, level, and audio for another attempt.  This method assumes the player is in a DEAD state.
+ */
 
+static void reset_scene(StatePlaying* state) {
+    state->_attempt_dialog.shown = 0;
+    level_reset(state->player->_level);
+    player_start(state->player);
+    audio_restart_music(state->_audio);
+}
+
+static void update_player_running(StatePlaying* state, float time_delta) {
     if (input_button_is_down(state->_input, CONTROLLER_1, CONTROLLER_BUTTON_START))
         toggle_pause(state);
 
@@ -63,13 +69,40 @@ void state_playing_update(StatePlaying* state, float time_delta){
     player_update(state->player, time_delta);
     level_update(state->level, time_delta);
     camera_update(state->camera);
+}
 
-    if (state->player->state == PLAYER_STATE_REACHED_GOAL) {
-        state->transition = GAME_STATE_LEVEL_SELECT;
+void state_playing_update(StatePlaying* state, float time_delta){
+    if (state->_just_loaded == 1) {
+        player_start(state->player);
+        audio_play_music(state->_audio, state->level->music);
+        state->_just_loaded = 0;
+        return;
+    }
+
+    if (state->player->state == PLAYER_STATE_DEAD || state->player->state == PLAYER_STATE_REACHED_GOAL) {
+        if (!state->_attempt_dialog.shown)
+            attempt_dialog_show(&state->_attempt_dialog);
+
+        attempt_dialog_update(&state->_attempt_dialog, time_delta);
+
+        if (state->_attempt_dialog.action == DIALOG_ACTION_RETURN){
+            state->transition = GAME_STATE_LEVEL_SELECT;
+        }
+
+        else if (state->_attempt_dialog.action) {
+            reset_scene(state);
+        }
+    }
+    else {
+        update_player_running(state, time_delta);
     }
 }
 
 void state_playing_draw(StatePlaying* state) {
     level_draw(state->level);
     player_draw(state->player);
+
+    if (state->player->state == PLAYER_STATE_DEAD || state->player->state == PLAYER_STATE_REACHED_GOAL) {
+        attempt_dialog_draw(&state->_attempt_dialog);
+    }
 }

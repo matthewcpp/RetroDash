@@ -192,6 +192,9 @@ int level_load(Level* level, const char* path) {
     filesystem_read(&level->width, sizeof(uint32_t), 1, level->_file_handle);
     filesystem_read(&level->height, sizeof(uint32_t), 1, level->_file_handle);
 
+    // Read Start & goal
+    filesystem_read(&level->start_pos.x, sizeof(float), 1, level->_file_handle);
+    filesystem_read(&level->start_pos.y, sizeof(float), 1, level->_file_handle);
     filesystem_read(&level->goal_dist, sizeof(float), 1, level->_file_handle);
 
     level->_tile_map = malloc(level->width * level->height);
@@ -217,4 +220,8 @@ void level_reset(Level* level) {
     filesystem_seek(level->_file_handle, -size, SEEK_END);
     filesystem_read(level->_tile_map, 1, size, level->_file_handle);
     brick_particles_clear(&level->brick_particles);
+}
+
+float level_travel_distance(Level* level) {
+    return level->goal_dist - level->start_pos.x;
 }

@@ -137,8 +137,10 @@ void renderer_set_color(Renderer* renderer, int r, int g, int b, int a) {
 }
 
 void renderer_draw_filled_rect(Renderer* renderer, Rect* rect) {
+    renderer_enable_filled_mode(renderer);
+
     rdp_sync( SYNC_PIPE );
-    rdp_draw_filled_rectangle(rect->x, rect->y, rect->x + rect->w, rect->y + rect->w);
+    rdp_draw_filled_rectangle(rect->x, rect->y, rect->x + rect->w, rect->y + rect->h);
 }
 
 #define GRID_SIZE 32

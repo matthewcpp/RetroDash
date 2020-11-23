@@ -20,6 +20,7 @@ typedef enum {
     PLAYER_STATE_RUNNING,
     PLAYER_STATE_CHANGING_SIZE,
     PLAYER_STATE_DYING,
+    PLAYER_STATE_DEAD,
     PLAYER_STATE_REACHED_GOAL
 } PlayerState;
 
@@ -30,7 +31,7 @@ typedef struct {
 
     PlayerState state;
 
-    // amount of time the player has been in thier current state
+    // amount of time the player has been in their current state
     float state_time;
 
     // holds the time of the previous animation when the player begins changing sizes
@@ -43,6 +44,9 @@ typedef struct {
     int on_ground;
     int is_jumping;
 
+    float distance_travelled;
+    int attempt_count;
+    int jump_count;
 
     Sprite* _sprite;
     Level* _level;
@@ -59,6 +63,11 @@ void player_update(Player* player, float time_delta);
 void player_draw(Player* player);
 
 void player_kill(Player* player);
+
+/**
+ * Starts the player running though the level.
+ * This method assumes that the player is in an inactive state.
+ */
 void player_start(Player* player);
 
 #endif
