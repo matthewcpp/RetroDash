@@ -38,8 +38,7 @@ typedef struct {
     Player* _player;
 }AttemptDialog;
 
-void attempt_dialog_init(AttemptDialog* dialog, Input* input, Renderer* renderer, Player* player);
-void attempt_dialog_uninit(AttemptDialog* dialog);
+void attempt_dialog_init(AttemptDialog* dialog, Input* input, Renderer* renderer, Player* player, Font* title_font, Font* info_font);
 
 void attempt_dialog_show(AttemptDialog* dialog);
 

@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include <string.h>
 
-void attempt_dialog_init(AttemptDialog* dialog, Input* input, Renderer* renderer, Player* player) {
+void attempt_dialog_init(AttemptDialog* dialog, Input* input, Renderer* renderer, Player* player, Font* title_font, Font* info_font) {
     dialog->_input = input;
     dialog->_renderer = renderer;
     dialog->_player = player;
@@ -12,13 +12,8 @@ void attempt_dialog_init(AttemptDialog* dialog, Input* input, Renderer* renderer
     dialog->action = DIALOG_ACTION_NONE;
     dialog->_selected_action = DIALOG_ACTION_RETRY;
 
-    dialog->_title_font = renderer_load_font(renderer, "/dialog_title_font", "/dialog_title_font.font");
-    dialog->_info_font = renderer_load_font(renderer, "/dialog_info_font", "/dialog_info_font.font");
-}
-
-void attempt_dialog_uninit(AttemptDialog* dialog) {
-    renderer_destroy_font(dialog->_renderer, dialog->_title_font);
-    renderer_destroy_font(dialog->_renderer, dialog->_info_font);
+    dialog->_title_font = title_font;
+    dialog->_info_font = info_font;
 }
 
 void compute_text_metrics(AttemptDialog* dialog) {

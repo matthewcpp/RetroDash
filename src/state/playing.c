@@ -7,6 +7,7 @@ StatePlaying* state_playing_create(Audio* audio, Renderer* renderer, Input* inpu
 
     state->_audio = audio;
     state->_input = input;
+    state->_renderer = renderer;
     state->_paused = 0;
     state->transition = GAME_STATE_NONE;
 
@@ -22,7 +23,10 @@ StatePlaying* state_playing_create(Audio* audio, Renderer* renderer, Input* inpu
     camera_set_safe_margins(state->camera, -3.0f, 3.0f);
     state->_just_loaded = 1;
 
-    attempt_dialog_init(&state->_attempt_dialog, input, renderer, state->player);
+    state->_title_font = renderer_load_font(renderer, "/dialog_title_font", "/dialog_title_font.font");
+    state->_info_font = renderer_load_font(renderer, "/dialog_info_font", "/dialog_info_font.font");
+
+    attempt_dialog_init(&state->_attempt_dialog, input, renderer, state->player, state->_title_font, state->_info_font);
 
     return state;
 }
@@ -32,7 +36,8 @@ void state_playing_destroy(StatePlaying* state){
     camera_destroy(state->camera);
     player_destroy(state->player);
 
-    attempt_dialog_uninit(&state->_attempt_dialog);
+    renderer_destroy_font(state->_renderer, state->_title_font);
+    renderer_destroy_font(state->_renderer, state->_info_font);
 
     free(state);
 }
