@@ -1,21 +1,12 @@
 #ifndef ATTEMPT_DIALOG
 #define ATTEMPT_DIALOG
 
-#include "../input.h"
 #include "../player.h"
-#include "../renderer.h"
 
-typedef enum {
-    DIALOG_ACTION_NONE,
-    DIALOG_ACTION_RETRY,
-    DIALOG_ACTION_RETURN
-} DialogAction;
+#include "dialog.h"
 
 typedef struct {
-    DialogAction action;
-
-    DialogAction _selected_action;
-    int shown;
+    Dialog base;
 
     Font* _title_font;
     Font* _info_font;
@@ -33,16 +24,16 @@ typedef struct {
     int _retry_width;
     int _return_width;
 
-    Input* _input;
-    Renderer* _renderer;
+
     Player* _player;
 }AttemptDialog;
 
 void attempt_dialog_init(AttemptDialog* dialog, Input* input, Renderer* renderer, Player* player, Font* title_font, Font* info_font);
 
 void attempt_dialog_show(AttemptDialog* dialog);
+void attempt_dialog_hide(AttemptDialog* dialog);
 
-void attempt_dialog_update(AttemptDialog* dialog, float time_delta);
+void attempt_dialog_update(AttemptDialog* dialog);
 void attempt_dialog_draw(AttemptDialog* dialog);
 
 #endif
