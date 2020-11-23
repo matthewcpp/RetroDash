@@ -51,7 +51,9 @@ static void toggle_pause(StatePlaying* state) {
 /**
  * Resets the player, level, and audio for another attempt.  This method assumes the player is in a DEAD state.
  */
+
 static void reset_scene(StatePlaying* state) {
+    state->_attempt_dialog.shown = 0;
     level_reset(state->player->_level);
     player_start(state->player);
     audio_restart_music(state->_audio);
@@ -77,15 +79,22 @@ void state_playing_update(StatePlaying* state, float time_delta){
         return;
     }
 
-    if (state->player->state == PLAYER_STATE_RUNNING) {
-        update_player_running(state, time_delta);
-    }
-
     if (state->player->state == PLAYER_STATE_DEAD || state->player->state == PLAYER_STATE_REACHED_GOAL) {
         if (!state->_attempt_dialog.shown)
             attempt_dialog_show(&state->_attempt_dialog);
 
         attempt_dialog_update(&state->_attempt_dialog, time_delta);
+
+        if (state->_attempt_dialog.action == DIALOG_ACTION_RETURN){
+            state->transition = GAME_STATE_LEVEL_SELECT;
+        }
+
+        else if (state->_attempt_dialog.action) {
+            reset_scene(state);
+        }
+    }
+    else {
+        update_player_running(state, time_delta);
     }
 }
 

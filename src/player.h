@@ -46,6 +46,7 @@ typedef struct {
 
     float distance_travelled;
     int attempt_count;
+    int jump_count;
 
     Sprite* _sprite;
     Level* _level;

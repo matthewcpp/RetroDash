@@ -160,6 +160,7 @@ static void try_jump(Player* player) {
     player->velocity.y = player_jump_velocity[player->target_size];
     player->on_ground = 0;
     player->is_jumping = 1;
+    player->jump_count += 1;
 
     if (player->state == PLAYER_STATE_CHANGING_SIZE)
         player->prev_animation_time = 0.0f;
@@ -315,6 +316,7 @@ void player_start(Player* player) {
     player->state = PLAYER_STATE_RUNNING;
     player->velocity.x = PLAYER_SPEED;
     animation_player_set_current(&player->_animation, PLAYER_ANIMATION_RUN, 1);
+    player->attempt_count += 1;
 }
 
 void player_kill(Player* player) {
@@ -342,7 +344,7 @@ void reset_player(Player* player) {
     player->is_jumping = 0;
 
     player->distance_travelled = 0.0f;
-    player->attempt_count += 1;
+    player->jump_count = 0;
 }
 
 // TODO: This should take previous position into account to prevent "falling through tiles"

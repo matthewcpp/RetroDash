@@ -6,9 +6,9 @@
 #include "../renderer.h"
 
 typedef enum {
-    ACTION_NONE,
-    ACTION_RETRY,
-    ACTION_RETURN
+    DIALOG_ACTION_NONE,
+    DIALOG_ACTION_RETRY,
+    DIALOG_ACTION_RETURN
 } DialogAction;
 
 typedef struct {
@@ -21,9 +21,17 @@ typedef struct {
     Font* _info_font;
 
     char _level_title_text[25];
-    char _attempt_text[13];
+    char _attempt_text[14]; // 9999 attempts
+    char _percent_text[5];
+    char _jump_text[12]; // 9999 jumps
+
     int _level_title_width;
     int _attempt_width;
+    int _percent_width;
+    int _jump_width;
+
+    int _retry_width;
+    int _return_width;
 
     Input* _input;
     Renderer* _renderer;
