@@ -64,6 +64,7 @@ function readLevelTiles(srcPath) {
 function prepareLevel(srcPath, destPath, littleEndian) {
     const sourceFile = fs.readFileSync(srcPath, "utf8");
     const level = JSON.parse(sourceFile);
+    level.name = level.name.toUpperCase(); // right now fonts only support UPPER CASE
     const levelTiles = readLevelTiles(srcPath);
 
     const nameLength = Buffer.byteLength(level.name, "utf8");
