@@ -21,7 +21,7 @@
     <script type="text/javascript">
 
 
-    const fontSize = 32;
+    const fontSize = 18;
     const fontFace = "Basic_LAZER"
 
     const columnCount = 12;
@@ -31,6 +31,7 @@
 
 
     window.onload = function(){
+        document.getElementById("font-name").value = `${fontFace}_${fontSize}`;
         const fontCanvas = document.getElementById("font-canvas");
         const context2d = fontCanvas.getContext("2d");
 
@@ -98,7 +99,8 @@
 
         const dataBlob = new Blob([JSON.stringify(metrics, null, 2)], {type: "application/json"})
         const downloadLink = document.createElement("a");
-        downloadLink.download = `${fontFace}.font.json`;
+        const baseName = document.getElementById("font-name").value;
+        downloadLink.download = `${baseName}.font.json`;
         downloadLink.href = URL.createObjectURL(dataBlob);
         downloadLink.click();
     }
@@ -106,7 +108,8 @@
     function savePNG() {
         const fontCanvas = document.getElementById("font-canvas");
         const downloadLink = document.createElement("a");
-        downloadLink.download = `${fontFace}.png`;
+        const baseName = document.getElementById("font-name").value;
+        downloadLink.download = `${baseName}.png`;
         downloadLink.href = fontCanvas.toDataURL("image/png")
         downloadLink.click();
     }
@@ -119,7 +122,8 @@
 
         const dataBlob = new Blob([JSON.stringify(spriteInfo, null, 2)], {type: "application/json"})
         const downloadLink = document.createElement("a");
-        downloadLink.download = `${fontFace}.sprite.json`;
+        const baseName = document.getElementById("font-name").value;
+        downloadLink.download = `${baseName}.sprite.json`;
         downloadLink.href = URL.createObjectURL(dataBlob);
         downloadLink.click();
     }
@@ -129,6 +133,7 @@
 <body>
     <h1>Sprite Font</h1>
     <div id="canvas-div"><canvas id="font-canvas"> </div>
+    <div><label for="font-name">Font name: </label><input id="font-name" type="text">
     <div><button onclick="savePNG();">Save PNG</button><button onclick="saveSpriteInfo();">Save SpriteInfo</button><button onclick="saveMetrics();">Save Metrics</button></div>
 
 </body>
