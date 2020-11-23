@@ -31,7 +31,6 @@ static Vec2 player_hit_sizes[3] = {
 
 static float player_jump_velocity[3] = {6.0f, 10.0f, 14.0f};
 
-static Vec2 starting_pos = {3.0f, 3.0f}; // todo move into level data
 static Point sprite_draw_offset = {0, 2};
 
 void reset_player(Player* player);
@@ -218,6 +217,7 @@ void player_update_movement(Player* player, float time_delta) {
 
     if (player->entity.position.x >= player->_level->goal_dist) {
         player->state = PLAYER_STATE_REACHED_GOAL;
+        player->distance_travelled = level_travel_distance(player->_level);
         player->velocity.x = 0.0f;
         player->_animation.speed = 0; // temp until idle animation
     }
@@ -333,8 +333,7 @@ void reset_player(Player* player) {
     player->prev_animation_time = 0.0f;
     player->_animation.speed = 1.0f;
 
-    player->entity.position.x = starting_pos.x;
-    player->entity.position.y = starting_pos.y;
+    player->entity.position = player->_level->start_pos;
     player->prev_pos = player->entity.position;
     player->velocity.x = 0.0f;
     player->velocity.y = 0.0f;
