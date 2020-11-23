@@ -20,7 +20,9 @@ set(game_src
     src/tile_set.h src/tile_set.c
 
     src/state/attempt_dialog.h src/state/attempt_dialog.c
+    src/state/dialog.h src/state/dialog.c
     src/state/level_select.h src/state/level_select.c
+    src/state/pause_dialog.h src/state/pause_dialog.c
     src/state/playing.h src/state/playing.c
     src/state/title.h src/state/title.c)
 

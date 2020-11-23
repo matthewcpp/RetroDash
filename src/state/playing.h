@@ -7,6 +7,7 @@
 #include "../player.h"
 
 #include "attempt_dialog.h"
+#include "pause_dialog.h"
 #include "states.h"
 
 typedef struct {
@@ -15,6 +16,7 @@ typedef struct {
     Player* player;
 
     AttemptDialog _attempt_dialog;
+    PauseDialog _pause_dialog;
     Input* _input;
     Audio* _audio;
     Renderer* _renderer;
