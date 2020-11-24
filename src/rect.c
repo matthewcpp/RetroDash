@@ -34,3 +34,13 @@ void point_set_from_vec2(Point* p, const Vec2* v) {
     p->x = (int)v->x;
     p->y = (int)v->y;
 }
+
+void vec2_set(Vec2* v, float x, float y) {
+    v->x = x;
+    v->y = y;
+}
+
+void vec2_lerp(Vec2* out, Vec2* a, Vec2* b, float t) {
+    out->x = a->x + (b->x - a->x) * t;
+    out->y = a->y + (b->y - a->y) * t;
+}

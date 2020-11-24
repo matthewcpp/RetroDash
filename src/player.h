@@ -16,7 +16,7 @@ typedef enum {
 } PlayerSize;
 
 typedef enum {
-    PLAYER_STATE_INACTIVE,
+    PLAYER_STATE_IDLE,
     PLAYER_STATE_RUNNING,
     PLAYER_STATE_CHANGING_SIZE,
     PLAYER_STATE_DYING,
@@ -65,9 +65,24 @@ void player_draw(Player* player);
 void player_kill(Player* player);
 
 /**
+ * Resets player to initial state.  Note they will not be running.
+ */
+void player_reset(Player* player);
+
+/**
  * Starts the player running though the level.
  * This method assumes that the player is in an inactive state.
  */
 void player_start(Player* player);
 
+/**
+ * Gets the hit size for the given PlayerSize
+ */
+Vec2 player_get_hit_size(PlayerSize playerSize);
+
+
+/**
+ * Immediately sets the hit size for the player without performing any animation
+ */
+void player_set_hit_size(Player* player, PlayerSize playerSize);
 #endif

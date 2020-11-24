@@ -16,6 +16,7 @@ set(game_src
     src/player.h src/player.c
     src/rect.h src/rect.c
     src/renderer.h src/renderer.c
+    src/teleport.h src/teleport.c
     src/tile_collision.h src/tile_collision.c
     src/tile_set.h src/tile_set.c
 
