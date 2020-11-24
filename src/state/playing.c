@@ -2,6 +2,8 @@
 
 #include <stdlib.h>
 
+void on_teleport_in_complete(void* user_data);
+
 StatePlaying* state_playing_create(Audio* audio, Renderer* renderer, Input* input, const char* level_path) {
     StatePlaying* state = malloc(sizeof(StatePlaying));
 
@@ -21,6 +23,10 @@ StatePlaying* state_playing_create(Audio* audio, Renderer* renderer, Input* inpu
     state->player = player_create(state->level, renderer, state->camera, input);
     camera_set_target(state->camera, &state->player->entity);
     camera_set_safe_margins(state->camera, -3.0f, 3.0f);
+    camera_update(state->camera);
+
+    teleport_init(&state->teleport, state->_renderer);
+
     state->_just_loaded = 1;
 
     state->_title_font = renderer_load_font(renderer, "/dialog_title_font", "/dialog_title_font.font");
@@ -50,7 +56,9 @@ void state_playing_destroy(StatePlaying* state){
 static void reset_scene(StatePlaying* state) {
     state->_attempt_dialog.base.shown = 0;
     level_reset(state->player->_level);
-    player_start(state->player);
+    player_reset(state->player);
+    camera_update(state->camera);
+    teleport_in(&state->teleport, state->player, state->camera, on_teleport_in_complete, state);
     audio_restart_music(state->_audio);
 }
 
@@ -60,7 +68,11 @@ static void update_player_active(StatePlaying* state, float time_delta) {
         state->_paused = 1;
     }
 
-    player_update(state->player, time_delta);
+    if (teleport_is_active(&state->teleport))
+        teleport_update(&state->teleport, time_delta);
+    else
+        player_update(state->player, time_delta);
+
     level_update(state->level, time_delta);
     camera_update(state->camera);
 }
@@ -85,7 +97,7 @@ static void update_state_paused(StatePlaying* state, float time_delta) {
 
 void state_playing_update(StatePlaying* state, float time_delta){
     if (state->_just_loaded == 1) {
-        player_start(state->player);
+        teleport_in(&state->teleport, state->player, state->camera, on_teleport_in_complete, state);
         audio_play_music(state->_audio, state->level->music);
         state->_just_loaded = 0;
         return;
@@ -116,13 +128,20 @@ void state_playing_update(StatePlaying* state, float time_delta){
 
 void state_playing_draw(StatePlaying* state) {
     level_draw(state->level);
-    player_draw(state->player);
 
-    if (state->_attempt_dialog.base.shown) {
+    if (teleport_is_active(&state->teleport))
+        teleport_draw(&state->teleport);
+    else
+        player_draw(state->player);
+
+    if (state->_attempt_dialog.base.shown)
         attempt_dialog_draw(&state->_attempt_dialog);
-    }
 
-    if (state->_pause_dialog.base.shown) {
+    if (state->_pause_dialog.base.shown)
         pause_dialog_draw(&state->_pause_dialog);
-    }
+}
+
+void on_teleport_in_complete(void* user_data) {
+    StatePlaying* state = (StatePlaying*)user_data;
+    player_start(state->player);
 }

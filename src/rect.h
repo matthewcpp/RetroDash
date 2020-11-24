@@ -22,6 +22,9 @@ typedef struct {
     float x, y;
 } Vec2;
 
+void vec2_set(Vec2* v, float x, float y);
+void vec2_lerp(Vec2* out, Vec2* a, Vec2* b, float t);
+
 void point_set(Point* p, int x, int y);
 void point_set_from_vec2(Point* p, const Vec2* v);
 

@@ -29,11 +29,13 @@ static Vec2 player_hit_sizes[3] = {
         {PLAYER_HIT_W, PLAYER_HIT_H},
         {PLAYER_HIT_W * 1.35f, PLAYER_HIT_H * 1.35f} };
 
+Vec2 player_get_hit_size(PlayerSize playerSize) {
+    return player_hit_sizes[playerSize];
+}
+
 static float player_jump_velocity[3] = {6.0f, 10.0f, 14.0f};
 
 static Point sprite_draw_offset = {0, 2};
-
-void reset_player(Player* player);
 
 static void player_query_init(PlayerQuery* query, Player* player);
 
@@ -49,7 +51,7 @@ Player* player_create(Level* level, Renderer* renderer, Camera* camera, Input* i
     animation_player_load(&player->_animation, "/player.animation");
 
     player->attempt_count = 0;
-    reset_player(player);
+    player_reset(player);
 
     player->_sprite = renderer_load_sprite(player->_renderer, "/player");
 
@@ -264,10 +266,6 @@ void player_update_changing_size(Player* player, float time_delta) {
     player->entity.size.y = player_hit_sizes[player->current_size].y + t * (player_hit_sizes[player->target_size].y - player_hit_sizes[player->current_size].y);
 }
 
-void player_update_reached_goal(Player* player, float time_delta) {
-    animation_player_update(&player->_animation, time_delta);
-}
-
 void player_update(Player* player, float time_delta) {
     switch (player->state) {
         case PLAYER_STATE_RUNNING:
@@ -283,10 +281,13 @@ void player_update(Player* player, float time_delta) {
             break;
 
         case PLAYER_STATE_REACHED_GOAL:
-            player_update_reached_goal(player, time_delta);
+            animation_player_update(&player->_animation, time_delta);
             break;
 
-        default:
+        case PLAYER_STATE_IDLE:
+            break; // TODO: Update Idle animation
+
+        case PLAYER_STATE_DEAD:
             break;
     }
 }
@@ -311,8 +312,6 @@ void player_draw(Player* player) {
 }
 
 void player_start(Player* player) {
-    reset_player(player);
-
     player->state = PLAYER_STATE_RUNNING;
     player->velocity.x = PLAYER_SPEED;
     animation_player_set_current(&player->_animation, PLAYER_ANIMATION_RUN, 1);
@@ -325,15 +324,16 @@ void player_kill(Player* player) {
     animation_player_set_current(&player->_animation, PLAYER_ANIMATION_DEATH, 0);
 }
 
-void reset_player(Player* player) {
+void player_reset(Player* player) {
     player->current_size = PLAYER_SIZE_MEDIUM;
     player->target_size = PLAYER_SIZE_MEDIUM;
     player->entity.size = player_hit_sizes[PLAYER_SIZE_MEDIUM];
 
-    player->state = PLAYER_STATE_INACTIVE;
+    player->state = PLAYER_STATE_IDLE;
     player->state_time = 0.0f;
     player->prev_animation_time = 0.0f;
     player->_animation.speed = 1.0f;
+    animation_player_set_current(&player->_animation, PLAYER_ANIMATION_RUN, 1); // TODO: Idle
 
     player->entity.position = player->_level->start_pos;
     player->prev_pos = player->entity.position;
@@ -360,4 +360,8 @@ void player_query_init(PlayerQuery* query, Player* player) {
 
     query->min_x = (int)floor(player->entity.position.x - player_hit_sizes[player->current_size].x / 2.0f); // left
     if (query->min_x < 0) query->min_x = 0;
+}
+
+void player_set_hit_size(Player* player, PlayerSize playerSize) {
+    player->entity.size = player_hit_sizes[playerSize];
 }

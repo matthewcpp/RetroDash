@@ -5,6 +5,7 @@
 #include "../camera.h"
 #include "../level.h"
 #include "../player.h"
+#include "../teleport.h"
 
 #include "attempt_dialog.h"
 #include "pause_dialog.h"
@@ -14,6 +15,7 @@ typedef struct {
     Camera* camera;
     Level* level;
     Player* player;
+    Teleport teleport;
 
     AttemptDialog _attempt_dialog;
     PauseDialog _pause_dialog;
