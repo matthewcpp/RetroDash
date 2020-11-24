@@ -2,7 +2,7 @@
 
 #include <stddef.h>
 
-#define TELEPORT_BEAM_SPEED 0.5f
+#define TELEPORT_TIME 0.5f
 #define TELEPORT_WIDTH 8
 #define TELEPORT_HEIGHT 24
 
@@ -28,12 +28,12 @@ static void teleport_finish(Teleport* teleport) {
 void teleport_update(Teleport* teleport, float time_delta) {
     teleport->_time += time_delta;
 
-    if (teleport->_time >= TELEPORT_BEAM_SPEED)
+    if (teleport->_time >= TELEPORT_TIME)
         teleport_finish(teleport);
 }
 
 void teleport_draw(Teleport* teleport) {
-    float progress = teleport->_time / TELEPORT_BEAM_SPEED;
+    float progress = teleport->_time / TELEPORT_TIME;
     int current_y = teleport->_start_position.y + (int)((teleport->_target_position.y - teleport->_start_position.y) * progress);
 
     Rect r;
@@ -47,7 +47,7 @@ void teleport_draw(Teleport* teleport) {
 }
 
 void teleport_in(Teleport* teleport, Player* player, Camera* camera, TeleportCallback callback, void* user_data) {
-    teleport->status = TELEPORT_STATUS_IN;
+    teleport->status = TELEPORT_STATUS_ACTIVE;
 
     camera_world_pos_to_screen_pos(camera, &player->entity.position, &teleport->_target_position);
     point_set(&teleport->_start_position, teleport->_target_position.x, 0);
@@ -56,6 +56,12 @@ void teleport_in(Teleport* teleport, Player* player, Camera* camera, TeleportCal
     teleport->_callback_data = user_data;
 }
 
-int teleport_is_active(Teleport* teleport) {
-    return teleport->status != TELEPORT_STATUS_INACTIVE;
+void teleport_out(Teleport* teleport, Player* player, Camera* camera, TeleportCallback callback, void* user_data) {
+    teleport->status = TELEPORT_STATUS_ACTIVE;
+
+    camera_world_pos_to_screen_pos(camera, &player->entity.position, &teleport->_start_position);
+    point_set(&teleport->_target_position, teleport->_start_position.x, -TELEPORT_HEIGHT);
+
+    teleport->_callback = callback;
+    teleport->_callback_data = user_data;
 }

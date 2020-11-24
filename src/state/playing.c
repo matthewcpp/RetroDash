@@ -3,6 +3,7 @@
 #include <stdlib.h>
 
 void on_teleport_in_complete(void* user_data);
+void on_teleport_out_complete(void* user_data);
 
 StatePlaying* state_playing_create(Audio* audio, Renderer* renderer, Input* input, const char* level_path) {
     StatePlaying* state = malloc(sizeof(StatePlaying));
@@ -68,7 +69,7 @@ static void update_player_active(StatePlaying* state, float time_delta) {
         state->_paused = 1;
     }
 
-    if (teleport_is_active(&state->teleport))
+    if (state->teleport.status == TELEPORT_STATUS_ACTIVE)
         teleport_update(&state->teleport, time_delta);
     else
         player_update(state->player, time_delta);
@@ -95,6 +96,19 @@ static void update_state_paused(StatePlaying* state, float time_delta) {
     }
 }
 
+void update_attempt_dialog(StatePlaying* state) {
+    attempt_dialog_update(&state->_attempt_dialog);
+
+    if (state->_attempt_dialog.base.action == DIALOG_ACTION_RETURN){
+        attempt_dialog_hide(&state->_attempt_dialog);
+        state->transition = GAME_STATE_LEVEL_SELECT;
+    }
+    else if (state->_attempt_dialog.base.action == DIALOG_ACTION_RETRY) {
+        attempt_dialog_hide(&state->_attempt_dialog);
+        reset_scene(state);
+    }
+}
+
 void state_playing_update(StatePlaying* state, float time_delta){
     if (state->_just_loaded == 1) {
         teleport_in(&state->teleport, state->player, state->camera, on_teleport_in_complete, state);
@@ -106,20 +120,14 @@ void state_playing_update(StatePlaying* state, float time_delta){
     if (state->_paused) {
         update_state_paused(state, time_delta);
     }
-    else if (state->player->state == PLAYER_STATE_DEAD || state->player->state == PLAYER_STATE_REACHED_GOAL) {
-        if (!state->_attempt_dialog.base.shown)
-            attempt_dialog_show(&state->_attempt_dialog);
-
-        attempt_dialog_update(&state->_attempt_dialog);
-
-        if (state->_attempt_dialog.base.action == DIALOG_ACTION_RETURN){
-            attempt_dialog_hide(&state->_attempt_dialog);
-            state->transition = GAME_STATE_LEVEL_SELECT;
-        }
-        else if (state->_attempt_dialog.base.action == DIALOG_ACTION_RETRY) {
-            attempt_dialog_hide(&state->_attempt_dialog);
-            reset_scene(state);
-        }
+    else if (state->_attempt_dialog.base.shown) {
+        update_attempt_dialog(state);
+    }
+    else if (state->player->state == PLAYER_STATE_DEAD) {
+        attempt_dialog_show(&state->_attempt_dialog);
+    }
+    else if (state->player->state == PLAYER_STATE_REACHED_GOAL && !state->teleport.status == TELEPORT_STATUS_ACTIVE) {
+        teleport_out(&state->teleport, state->player, state->camera, on_teleport_out_complete, state);
     }
     else {
         update_player_active(state, time_delta);
@@ -129,7 +137,7 @@ void state_playing_update(StatePlaying* state, float time_delta){
 void state_playing_draw(StatePlaying* state) {
     level_draw(state->level);
 
-    if (teleport_is_active(&state->teleport))
+    if (state->teleport.status == TELEPORT_STATUS_ACTIVE)
         teleport_draw(&state->teleport);
     else
         player_draw(state->player);
@@ -144,4 +152,10 @@ void state_playing_draw(StatePlaying* state) {
 void on_teleport_in_complete(void* user_data) {
     StatePlaying* state = (StatePlaying*)user_data;
     player_start(state->player);
+}
+
+void on_teleport_out_complete(void* user_data) {
+    StatePlaying* state = (StatePlaying*)user_data;
+
+    attempt_dialog_show(&state->_attempt_dialog);
 }
