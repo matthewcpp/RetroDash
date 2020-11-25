@@ -61,6 +61,7 @@ Font* renderer_load_font(Renderer* renderer, const char* font_base_path) {
     return font;
 }
 
+#define CHAR_SPACER 1
 
 static int measure_text_width(Font* font, const char* str) {
     int index = str[0] - ' ';
@@ -68,12 +69,12 @@ static int measure_text_width(Font* font, const char* str) {
 
     while (str[0] != '\0') {
         index = str[0] - ' ';
-        width += font->glyphs[index].width;
+        width += font->glyphs[index].width + CHAR_SPACER;
 
         str += 1;
     }
 
-    return width;
+    return width - CHAR_SPACER; // no spacer after last character
 }
 
 // This function assumes a 16bpp image!
@@ -123,7 +124,7 @@ Sprite* renderer_create_text_sprite(Renderer* renderer, Font* font, const char* 
 
         copy_sprite(font->surface, &source_rect, text_sprite, &dest_point);
 
-        x += glyph->width;
+        x += glyph->width + CHAR_SPACER;
         str += 1;
     }
 
