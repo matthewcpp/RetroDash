@@ -2,7 +2,7 @@
     "name": "Level 1",
     "order": 10,
     "tileSet": "/geom_dash.tileset",
-    "music": "/title_music.mod",
+    "music": "/title/title_music.mod",
     "width": 109,
     "height": 10,
     "startPos": {

@@ -23,12 +23,12 @@ StateTitle* state_title_create(Audio* audio, Input* input, Renderer* renderer){
     state->menu_selection = TITLE_MENU_START;
 
     state->_title_sprite = NULL;
-    state->_title_sprite = renderer_load_sprite(state->_renderer, "/title");
-    state->_character_top = renderer_load_sprite(state->_renderer, "/title_idle_top");
-    state->_character_bottom = renderer_load_sprite(state->_renderer, "/title_idle_bottom");
-    state->_platform = renderer_load_sprite(state->_renderer, "/title_platform");
-    state->_menu = renderer_load_sprite(state->_renderer, "/title_menu");
-    state->_music = audio_load_music(state->_audio, "/title_music.mod");
+    state->_title_sprite = renderer_load_sprite(state->_renderer, "/title/title");
+    state->_character_top = renderer_load_sprite(state->_renderer, "/title/title_idle_top");
+    state->_character_bottom = renderer_load_sprite(state->_renderer, "/title/title_idle_bottom");
+    state->_platform = renderer_load_sprite(state->_renderer, "/title/title_platform");
+    state->_menu = renderer_load_sprite(state->_renderer, "/title/title_menu");
+    state->_music = audio_load_music(state->_audio, "/title/title_music.mod");
 
     if (state->_music == NULL)
         renderer_set_clear_color(state->_renderer, 255, 0, 0);
@@ -36,7 +36,7 @@ StateTitle* state_title_create(Audio* audio, Input* input, Renderer* renderer){
         audio_play_music(audio, state->_music);
 
     animation_player_init(&state->_animation);
-    animation_player_load(&state->_animation, "/title_idle.animation");
+    animation_player_load(&state->_animation, "/title/title_idle.animation");
     state->_animation.frame_time = 1.0f;
     animation_player_set_current(&state->_animation, 0, 1);
 
