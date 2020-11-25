@@ -15,7 +15,7 @@ set(game_src
     src/particles.h src/particles.c
     src/player.h src/player.c
     src/rect.h src/rect.c
-    src/renderer.h src/renderer.c
+    src/renderer.h
     src/teleport.h src/teleport.c
     src/tile_collision.h src/tile_collision.c
     src/tile_set.h src/tile_set.c
@@ -30,6 +30,7 @@ set(game_src
 set(sdl_src
     src/sdl/sdl_audio.h src/sdl/sdl_audio.c
     src/sdl/sdl_filesystem.c
+    src/sdl/sdl_font.c
     src/sdl/sdl_input.h src/sdl/sdl_input.c
     src/sdl/sdl_main.c
     src/sdl/sdl_renderer.h src/sdl/sdl_renderer.c)

@@ -36,9 +36,8 @@ void renderer_set_clear_color(Renderer* renderer, uint8_t r, uint8_t g, uint8_t 
 Sprite* renderer_load_sprite(Renderer* renderer, const char* sprite_base_path);
 void renderer_destroy_sprite(Renderer* renderer, Sprite* sprite);
 
-Font* renderer_load_font(Renderer* renderer, const char* sprite_base_path, const char* font_path);
+Font* renderer_load_font(Renderer* renderer, const char* font_base_path);
 void renderer_destroy_font(Renderer* renderer, Font* font);
-void renderer_draw_text_string(Renderer* renderer, Font* font, const char* str, int x, int y);
-int renderer_measure_text_width(Renderer* renderer, Font* font, const char* str);
+Sprite* renderer_create_text_sprite(Renderer* renderer, Font* font, const char* str);
 
 #endif
