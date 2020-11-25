@@ -7,28 +7,21 @@
 
 typedef struct {
     Dialog base;
+    Player* _player;
 
     Font* _title_font;
     Font* _info_font;
 
-    char _level_title_text[25];
-    char _attempt_text[14]; // 9999 attempts
-    char _percent_text[5];
-    char _jump_text[12]; // 9999 jumps
-
-    int _level_title_width;
-    int _attempt_width;
-    int _percent_width;
-    int _jump_width;
-
-    int _retry_width;
-    int _return_width;
-
-
-    Player* _player;
-}AttemptDialog;
+    Sprite* _level_title_sprite;
+    Sprite* _attempt_count_sprite;
+    Sprite* _percent_complete_sprite;
+    Sprite* _jump_count_sprite;
+    Sprite* _retry_sprite;
+    Sprite* _return_sprite;
+} AttemptDialog;
 
 void attempt_dialog_init(AttemptDialog* dialog, Input* input, Renderer* renderer, Player* player, Font* title_font, Font* info_font);
+void attempt_dialog_uninit(AttemptDialog* dialog);
 
 void attempt_dialog_show(AttemptDialog* dialog);
 void attempt_dialog_hide(AttemptDialog* dialog);

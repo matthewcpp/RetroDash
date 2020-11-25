@@ -28,6 +28,8 @@ typedef struct {
     Sprite* _title_sprite;
     Sprite* _selector_arrows;
     Sprite* _selector_dots;
+    Sprite* _selected_level_name_sprite;
+
     LevelList _level_list;
     int _selected_level_index;
     Point _screen_size;

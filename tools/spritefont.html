@@ -20,17 +20,17 @@
 
     <script type="text/javascript">
 
-
-    const fontSize = 18;
-    const fontFace = "Basic_LAZER"
-
     const columnCount = 12;
     const rowCount = 5;
 
-    const fontInfo = [];
+    let fontGlyphs = [];
+    let fontSize, fontFace;
 
+    function generateSpritefont(){
+        fontGlyphs = [];
+        fontSize = document.getElementById("font-size").value;
+        fontFace = document.getElementById("font-face").value;
 
-    window.onload = function(){
         document.getElementById("font-name").value = `${fontFace}_${fontSize}`;
         const fontCanvas = document.getElementById("font-canvas");
         const context2d = fontCanvas.getContext("2d");
@@ -39,65 +39,84 @@
         context2d.font         = `${fontSize}px "${fontFace}"`;
         context2d.fillStyle = 'white';
 
-        let frameWidth = 0;
-        let frameHeight = 0;
-
+        // Record measurements of all glyphs which will be used for positioning in next step
         for (let i = 32; i < 91; i++) {
             const metrics = context2d.measureText(String.fromCharCode(i));
             const charInfo = {
                 ch: String.fromCharCode(i),
-                top: metrics.actualBoundingBoxAscent,
-                left: metrics.actualBoundingBoxLeft,
-                right: Math.max(metrics.width, metrics.actualBoundingBoxRight)
+                top: Math.ceil(metrics.actualBoundingBoxAscent),
+                left: Math.ceil(metrics.actualBoundingBoxLeft),
+                bottom: Math.ceil(metrics.actualBoundingBoxDescent),
+                width: Math.ceil(metrics.width)
             };
 
-            fontInfo.push(charInfo)
-
-            frameWidth = Math.max(frameWidth, parseInt(charInfo.right));
-            frameHeight = Math.max(frameHeight, parseInt(metrics.actualBoundingBoxDescent + metrics.actualBoundingBoxAscent));
+            fontGlyphs.push(charInfo)
         }
 
-        console.log(`FrameSize: ${frameWidth}x${frameHeight}`);
+        // create the rows of the spritefont
+        let rows = [];
+        for (let i = 0; i < rowCount; i ++) {
+            let row = {
+                glyphs: fontGlyphs.slice(i * columnCount, i * columnCount + columnCount),
+                width: 0,
+                height: 0
+            };
 
+            for (const glyph of row.glyphs) {
+                row.width += glyph.width +1;
+                row.height = Math.max(row.height, parseInt(glyph.bottom + glyph.top));
+            }
 
-        fontCanvas.width = frameWidth * columnCount;
-        fontCanvas.height = frameHeight * rowCount;
+            rows.push(row);
+        }
+
+        // calculate the spritefont image size
+        let imageWidth = 0;
+        let imageHeight = 0;
+
+        for (const row of rows) {
+            imageWidth = parseInt(Math.max(imageWidth, row.width));
+            imageHeight += parseInt(row.height);
+        }
+
+        console.log(`ImageSize: ${imageWidth}x${imageHeight}`);
+
+        fontCanvas.width = imageWidth;
+        fontCanvas.height = imageHeight;
+        //fontCanvas.clearRect(0, 0, fontCanvas.width, fontCanvas.height);
 
         context2d.textBaseline = "top";
         context2d.font         = `${fontSize}px "${fontFace}"`;
         context2d.fillStyle = 'white';
 
-        let col = 0;
-        let row = 0;
-        
-        for (let i  =0; i < fontInfo.length; i++) {
-            if (i > 0 && i % columnCount == 0) {
-                col = 0;
-                row += 1;
+        // write the glyphs into the image
+        let posX = 0;
+        let posY = 0;
+
+        for (const row of rows) {
+            for (let glyph of row.glyphs) {
+                glyph.x = posX;
+                glyph.y = posY;
+
+                const drawX = posX + glyph.left;
+                const drawY = posY + glyph.top;
+
+                context2d.fillText(glyph.ch, drawX, drawY);
+                posX += glyph.width + 1;
             }
 
-            const char = fontInfo[i];
-
-            const drawX = col * frameWidth + char.left;
-            const drawY = row * frameHeight + char.top;
-            context2d.fillText(char.ch, drawX, drawY);
-            col += 1;
+            posX = 0;
+            posY += row.height;
         }
     };
 
     function saveMetrics() {
-        const metrics = [];
+        const json = {
+            size: fontSize,
+            glyphs: fontGlyphs
+        };
 
-        for (const char of fontInfo) {
-            metrics.push({
-                char: char.ch,
-                top: parseInt(char.top),
-                left: parseInt(char.left),
-                right: parseInt(char.right)
-            })
-        }
-
-        const dataBlob = new Blob([JSON.stringify(metrics, null, 2)], {type: "application/json"})
+        const dataBlob = new Blob([JSON.stringify(json, null, 2)], {type: "application/json"})
         const downloadLink = document.createElement("a");
         const baseName = document.getElementById("font-name").value;
         downloadLink.download = `${baseName}.font.json`;
@@ -116,8 +135,8 @@
 
     function saveSpriteInfo() {
         const spriteInfo = {
-            horizonalFrames: columnCount,
-            verticalFrames: rowCount
+            horizonalFrames: 1,
+            verticalFrames: 1
         }
 
         const dataBlob = new Blob([JSON.stringify(spriteInfo, null, 2)], {type: "application/json"})
@@ -132,6 +151,11 @@
 </head>
 <body>
     <h1>Sprite Font</h1>
+    <div>
+        <label for="font-face">Font Face:</label><input id="font-face" type="text" value="Basic_LAZER" />
+        <label for="font-size">Size:</label><input id="font-size" type="number" min="1" step="1" value="18" />
+        <button onclick="generateSpritefont();">Generate</button>
+    </div>
     <div id="canvas-div"><canvas id="font-canvas"> </div>
     <div><label for="font-name">Font name: </label><input id="font-name" type="text">
     <div><button onclick="savePNG();">Save PNG</button><button onclick="saveSpriteInfo();">Save SpriteInfo</button><button onclick="saveMetrics();">Save Metrics</button></div>

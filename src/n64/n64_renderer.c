@@ -110,6 +110,7 @@ void renderer_draw_sprite(Renderer* renderer, Sprite* sprite, int x, int y) {
 }
 
 void renderer_destroy_sprite(Renderer* renderer, Sprite* sprite) {
+    free(sprite->libdragon_sprite);
     free(sprite);
     (void)renderer;
 }
