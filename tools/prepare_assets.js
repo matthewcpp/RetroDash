@@ -14,6 +14,13 @@ const levelList = [];
 
 const musicFormats = new Set([".mod", ".xm"]);
 
+function writeUint16(value, buffer, offset, littleEndian) {
+    if (littleEndian)
+        return buffer.writeUInt16LE(value, offset);
+    else
+        return buffer.writeUInt16BE(value, offset);
+}
+
 function writeUint32(value, buffer, offset, littleEndian) {
     if (littleEndian)
         return buffer.writeUInt32LE(value, offset);
@@ -144,17 +151,22 @@ function prepareAnimation(srcPath, destPath){
 function prepareFont(srcPath, destPath, littleEndian) {
     const fontInfo = JSON.parse(fs.readFileSync(srcPath, "utf8"));
 
-    // char count + 3 bytes for each char
-    let bufferSize = 4 + (fontInfo.length * 3);
+    // font size + glyph count + 4 bytes for each char bounding info and 4 bytes for texture pos
+    let bufferSize = 8 + (fontInfo.glyphs.length * 8);
 
     const buffer = Buffer.alloc(bufferSize);
 
-    let offset = writeUint32(fontInfo.length, buffer, 0, littleEndian);
+    let offset = writeUint32(fontInfo.size, buffer, 0, littleEndian);
+    offset = writeUint32(fontInfo.glyphs.length, buffer, offset, littleEndian);
 
-    for (const char of fontInfo) {
+    for (const char of fontInfo.glyphs) {
         offset = buffer.writeInt8(char.top, offset);
+        offset = buffer.writeInt8(char.bottom, offset);
         offset = buffer.writeInt8(char.left, offset);
-        offset = buffer.writeInt8(char.right, offset);
+        offset = buffer.writeInt8(char.width, offset);
+
+        offset = writeUint16(char.x, buffer, offset, littleEndian);
+        offset = writeUint16(char.y, buffer, offset, littleEndian);
     }
 
     fs.writeFileSync(destPath, buffer);
