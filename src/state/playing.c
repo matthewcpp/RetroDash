@@ -19,6 +19,10 @@ StatePlaying* state_playing_create(Audio* audio, Renderer* renderer, Input* inpu
 
     state->camera = camera_create(screen_size.x, screen_size.y);
     state->level = level_create(audio, renderer, state->camera);
+
+    state->_title_font = renderer_load_font(renderer, "/dialog_title_font");
+    state->_info_font = renderer_load_font(renderer, "/dialog_info_font");
+
     level_load(state->level, level_path);
 
     state->player = player_create(state->level, renderer, state->camera, input);
@@ -30,9 +34,6 @@ StatePlaying* state_playing_create(Audio* audio, Renderer* renderer, Input* inpu
 
     state->_just_loaded = 1;
 
-    state->_title_font = renderer_load_font(renderer, "/dialog_title_font", "/dialog_title_font.font");
-    state->_info_font = renderer_load_font(renderer, "/dialog_info_font", "/dialog_info_font.font");
-
     attempt_dialog_init(&state->_attempt_dialog, input, renderer, state->player, state->_title_font, state->_info_font);
     pause_dialog_init(&state->_pause_dialog, input, renderer, state->_title_font, state->_info_font);
 
@@ -43,6 +44,9 @@ void state_playing_destroy(StatePlaying* state){
     level_destroy(state->level);
     camera_destroy(state->camera);
     player_destroy(state->player);
+
+    attempt_dialog_uninit(&state->_attempt_dialog);
+    pause_dialog_uninit(&state->_pause_dialog);
 
     renderer_destroy_font(state->_renderer, state->_title_font);
     renderer_destroy_font(state->_renderer, state->_info_font);
@@ -126,7 +130,7 @@ void state_playing_update(StatePlaying* state, float time_delta){
     else if (state->player->state == PLAYER_STATE_DEAD) {
         attempt_dialog_show(&state->_attempt_dialog);
     }
-    else if (state->player->state == PLAYER_STATE_REACHED_GOAL && !state->teleport.status == TELEPORT_STATUS_ACTIVE) {
+    else if (state->player->state == PLAYER_STATE_REACHED_GOAL && state->teleport.status != TELEPORT_STATUS_ACTIVE) {
         teleport_out(&state->teleport, state->player, state->camera, on_teleport_out_complete, state);
     }
     else {

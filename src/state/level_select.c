@@ -5,9 +5,17 @@
 #include <stdlib.h>
 
 static void set_selected_level(StateLevelSelect* level_select, int index) {
+    if (index == level_select->_selected_level_index)
+        return;
+
     if (level_select->music)
         audio_destroy_music(level_select->_audio, level_select->music);
 
+    if (level_select->_selected_level_name_sprite) {
+        renderer_destroy_sprite(level_select->_renderer, level_select->_selected_level_name_sprite);
+    }
+
+    level_select->_selected_level_name_sprite = renderer_create_text_sprite(level_select->_renderer, level_select->_font, level_select->_level_list.levels[index].name);
     level_select->music = audio_load_music(level_select->_audio, level_select->_level_list.levels[index].music);
     audio_play_music(level_select->_audio, level_select->music);
 
@@ -46,16 +54,18 @@ StateLevelSelect* state_level_select_create(Audio* audio, Input* input, Renderer
     level_select->_renderer = renderer;
     level_select->transition = GAME_STATE_NONE;
 
-    level_select->_font = renderer_load_font(renderer, "/Basic_LAZER", "/Basic_LAZER.font");
+    level_select->_font = renderer_load_font(renderer, "/level_select_font");
 
     level_select->_title_sprite = renderer_load_sprite(level_select->_renderer, "/select_level");
     level_select->_selector_arrows = renderer_load_sprite(level_select->_renderer, "/selector_arrows");
     level_select->_selector_dots = renderer_load_sprite(level_select->_renderer, "/selector_dots");
     level_select->music = NULL;
+    level_select->_selected_level_name_sprite = NULL;
 
     renderer_get_screen_size(level_select->_renderer, &level_select->_screen_size);
     load_level_list(level_select);
 
+    level_select->_selected_level_index = -1;
     set_selected_level(level_select,0);
 
     return level_select;
@@ -67,6 +77,9 @@ void state_level_select_destroy(StateLevelSelect* level_select) {
     renderer_destroy_sprite(level_select->_renderer, level_select->_selector_arrows);
     renderer_destroy_sprite(level_select->_renderer, level_select->_selector_dots);
     renderer_destroy_font(level_select->_renderer, level_select->_font);
+
+    if (level_select->_selected_level_name_sprite)
+        renderer_destroy_sprite(level_select->_renderer, level_select->_selected_level_name_sprite);
 
     free(level_select->_level_list.data);
     free(level_select->_level_list.levels);
@@ -89,13 +102,6 @@ void state_level_select_update(StateLevelSelect* level_select, float time_delta)
         input_button_is_down(level_select->_input, CONTROLLER_1, CONTROLLER_BUTTON_START) ) {
         level_select->transition = GAME_STATE_PLAYING;
     }
-}
-
-static void draw_selected_level_info(StateLevelSelect* level_select) {
-    const char* level_text = level_select->_level_list.levels[level_select->_selected_level_index].name;
-    int width = renderer_measure_text_width(level_select->_renderer, level_select->_font, level_text);
-
-    renderer_draw_text_string(level_select->_renderer, level_select->_font, level_text, (level_select->_screen_size.x / 2) - (width / 2), level_select->_screen_size.y / 2 - 15);
 }
 
 static void draw_selector_arrows(StateLevelSelect* level_select) {
@@ -135,7 +141,11 @@ void state_level_select_draw(StateLevelSelect* level_select) {
     int title_width = sprite_width(level_select->_title_sprite);
     renderer_draw_sprite(level_select->_renderer, level_select->_title_sprite, (level_select->_screen_size.x / 2) - (title_width / 2), 10);
 
-    draw_selected_level_info(level_select);
+
+    renderer_draw_sprite(level_select->_renderer, level_select->_selected_level_name_sprite,
+                         (level_select->_screen_size.x / 2) - (sprite_width(level_select->_selected_level_name_sprite) / 2),
+                         level_select->_screen_size.y / 2 - 15);
+
     draw_selector_arrows(level_select);
     draw_selector_dots(level_select);
 }

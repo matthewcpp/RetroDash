@@ -34,12 +34,13 @@ void dialog_draw_and_adjust_box(Dialog* dialog, Rect* dialog_rect) {
     renderer_draw_filled_rect(dialog->_renderer, dialog_rect);
 }
 
-void dialog_draw_options(Dialog* dialog, Rect* dialog_rect, int y_pos, Font* font, const char* str_a, int str_a_width, const char* str_b, int str_b_width ) {
+void dialog_draw_options(Dialog* dialog, Rect* dialog_rect, int y_pos, Sprite* sprite_a, Sprite* sprite_b) {
     int x_pos = dialog_rect->x + 20;
-    renderer_draw_text_string(dialog->_renderer, font, str_a, x_pos, y_pos);
+    renderer_draw_sprite(dialog->_renderer, sprite_a, x_pos, y_pos);
 
+    int str_b_width = sprite_width(sprite_b);
     x_pos = dialog_rect->x + dialog_rect->w - 20 - str_b_width;
-    renderer_draw_text_string(dialog->_renderer, font, str_b, x_pos, y_pos);
+    renderer_draw_sprite(dialog->_renderer, sprite_b, x_pos, y_pos);
 
     y_pos += 18 + 3;
 
@@ -49,7 +50,7 @@ void dialog_draw_options(Dialog* dialog, Rect* dialog_rect, int y_pos, Font* fon
 
     if (dialog->_selected_action == DIALOG_ACTION_RETRY) {
         indicator_rect.x = dialog_rect->x + 20;
-        indicator_rect.w = str_a_width;
+        indicator_rect.w = sprite_width(sprite_a);
     }
     else {
         indicator_rect.x = dialog_rect->x + dialog_rect->w - 20 - str_b_width;

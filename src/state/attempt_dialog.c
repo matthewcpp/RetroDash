@@ -10,28 +10,47 @@ void attempt_dialog_init(AttemptDialog* dialog, Input* input, Renderer* renderer
 
     dialog->_title_font = title_font;
     dialog->_info_font = info_font;
+
+    dialog->_return_sprite = renderer_create_text_sprite(dialog->base._renderer, dialog->_info_font, "RETURN");
+    dialog->_retry_sprite = renderer_create_text_sprite(dialog->base._renderer, dialog->_info_font, "RETRY");
+    dialog->_level_title_sprite = renderer_create_text_sprite(dialog->base._renderer, dialog->_title_font, dialog->_player->_level->name);
+
+    dialog->_attempt_count_sprite = NULL;
 }
 
-void compute_text_metrics(AttemptDialog* dialog) {
-    strcpy(dialog->_level_title_text, dialog->_player->_level->name);
-    dialog->_level_title_width = renderer_measure_text_width(dialog->base._renderer, dialog->_title_font, dialog->_level_title_text);
+static void clear_results_sprites(AttemptDialog* dialog) {
+    if (dialog->_attempt_count_sprite != NULL) {
+        renderer_destroy_sprite(dialog->base._renderer, dialog->_attempt_count_sprite);
+        renderer_destroy_sprite(dialog->base._renderer, dialog->_percent_complete_sprite);
+        renderer_destroy_sprite(dialog->base._renderer, dialog->_jump_count_sprite);
+    }
+}
 
-    sprintf(dialog->_attempt_text, "ATTEMPT %d", dialog->_player->attempt_count);
-    dialog->_attempt_width = renderer_measure_text_width(dialog->base._renderer, dialog->_info_font, dialog->_attempt_text);
+void attempt_dialog_uninit(AttemptDialog* dialog) {
+    renderer_destroy_sprite(dialog->base._renderer, dialog->_level_title_sprite);
+    renderer_destroy_sprite(dialog->base._renderer, dialog->_retry_sprite);
+    renderer_destroy_sprite(dialog->base._renderer, dialog->_return_sprite);
+    clear_results_sprites(dialog);
+}
+
+void compute_results_sprites(AttemptDialog* dialog) {
+    char str_buffer[64];
+
+    clear_results_sprites(dialog);
+
+    sprintf(str_buffer, "ATTEMPT %d", dialog->_player->attempt_count);
+    dialog->_attempt_count_sprite = renderer_create_text_sprite(dialog->base._renderer, dialog->_info_font, str_buffer);
 
     int percent_complete = (int)((dialog->_player->distance_travelled / level_travel_distance(dialog->_player->_level)) * 100.0f);
-    sprintf(dialog->_percent_text, "%d%%", percent_complete);
-    dialog->_percent_width = renderer_measure_text_width(dialog->base._renderer, dialog->_info_font, dialog->_percent_text);
+    sprintf(str_buffer, "%d%%", percent_complete);
+    dialog->_percent_complete_sprite = renderer_create_text_sprite(dialog->base._renderer, dialog->_info_font, str_buffer);
 
-    sprintf(dialog->_jump_text, "JUMPS: %d", dialog->_player->jump_count);
-    dialog->_jump_width = renderer_measure_text_width(dialog->base._renderer, dialog->_info_font, dialog->_jump_text);
-
-    dialog->_retry_width = renderer_measure_text_width(dialog->base._renderer, dialog->_info_font, "RETRY");
-    dialog->_return_width = renderer_measure_text_width(dialog->base._renderer, dialog->_info_font, "RETURN");
+    sprintf(str_buffer, "JUMPS: %d", dialog->_player->jump_count);
+    dialog->_jump_count_sprite = renderer_create_text_sprite(dialog->base._renderer, dialog->_info_font, str_buffer);
 }
 
 void attempt_dialog_show(AttemptDialog* dialog) {
-    compute_text_metrics(dialog);
+    compute_results_sprites(dialog);
     dialog_show(&dialog->base);
 
 }
@@ -59,14 +78,14 @@ void attempt_dialog_draw(AttemptDialog* dialog) {
     dialog_draw_and_adjust_box(&dialog->base, &dialog_rect);
 
     renderer_set_color(dialog->base._renderer, 255, 255, 255, 255);
-    int x_pos = dialog_rect.x + dialog_rect.w / 2 - dialog->_level_title_width / 2;
+    int x_pos = dialog_rect.x + dialog_rect.w / 2 - sprite_width(dialog->_level_title_sprite) / 2;
     int y_pos = dialog_rect.y + 5;
 
-    renderer_draw_text_string(dialog->base._renderer, dialog->_title_font, dialog->_level_title_text, x_pos, y_pos);
+    renderer_draw_sprite(dialog->base._renderer, dialog->_level_title_sprite, x_pos, y_pos);
     y_pos += 24 + 5;
 
-    x_pos = dialog_rect.x + dialog_rect.w / 2 - dialog->_attempt_width / 2;
-    renderer_draw_text_string(dialog->base._renderer, dialog->_info_font, dialog->_attempt_text, x_pos, y_pos);
+    x_pos = dialog_rect.x + dialog_rect.w / 2 - sprite_width(dialog->_attempt_count_sprite) / 2;
+    renderer_draw_sprite(dialog->base._renderer, dialog->_attempt_count_sprite, x_pos, y_pos);
     y_pos += 18 + 5;
 
     Rect progress_bar;
@@ -84,19 +103,19 @@ void attempt_dialog_draw(AttemptDialog* dialog) {
     renderer_set_color(dialog->base._renderer, 117, 251, 76, 255);
     renderer_draw_filled_rect(dialog->base._renderer, &progress_bar);
 
-    x_pos = dialog_rect.x + dialog_rect.w / 2 - dialog->_percent_width / 2;
+    x_pos = dialog_rect.x + dialog_rect.w / 2 - sprite_width(dialog->_percent_complete_sprite) / 2;
     y_pos = progress_bar.y;
 
-    renderer_draw_text_string(dialog->base._renderer, dialog->_info_font, dialog->_percent_text, x_pos, y_pos);
+    renderer_draw_sprite(dialog->base._renderer, dialog->_percent_complete_sprite, x_pos, y_pos);
 
     y_pos += PROGRESS_BAR_HEIGHT + 10;
-    x_pos = dialog_rect.x + dialog_rect.w / 2 - dialog->_jump_width / 2;
+    x_pos = dialog_rect.x + dialog_rect.w / 2 - sprite_width(dialog->_jump_count_sprite) / 2;
 
-    renderer_draw_text_string(dialog->base._renderer, dialog->_info_font, dialog->_jump_text, x_pos, y_pos);
+    renderer_draw_sprite(dialog->base._renderer, dialog->_jump_count_sprite, x_pos, y_pos);
 
     y_pos += 18 + 15;
 
-    dialog_draw_options(&dialog->base, &dialog_rect, y_pos, dialog->_info_font, "RETRY", dialog->_retry_width, "RETURN", dialog->_return_width);
+    dialog_draw_options(&dialog->base, &dialog_rect, y_pos, dialog->_retry_sprite, dialog->_return_sprite);
 }
 
 void attempt_dialog_hide(AttemptDialog* dialog) {
