@@ -20,8 +20,8 @@ StatePlaying* state_playing_create(Audio* audio, Renderer* renderer, Input* inpu
     state->camera = camera_create(screen_size.x, screen_size.y);
     state->level = level_create(audio, renderer, state->camera);
 
-    state->_title_font = renderer_load_font(renderer, "/dialog_title_font");
-    state->_info_font = renderer_load_font(renderer, "/dialog_info_font");
+    state->_title_font = renderer_load_font(renderer, "/dialog/dialog_title_font");
+    state->_info_font = renderer_load_font(renderer, "/dialog/dialog_info_font");
 
     level_load(state->level, level_path);
 
