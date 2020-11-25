@@ -223,6 +223,43 @@ function prepareLevelList(destDir, littleEndian) {
     fs.writeFileSync(buildPath, buffer);
 }
 
+const ignore = new Set(["build_sdl", "build_n64"]);
+
+function processAssetDirectory(sourceDir, destDir, options) {
+    console.log(`Process Asset Directory: ${sourceDir}`);
+
+    const items = fs.readdirSync(sourceDir, {withFileTypes: true});
+
+    for (const item of items) {
+        if (ignore.has(item.name))
+            continue;
+
+        const currentPath = path.join(sourceDir, item.name);
+
+        if (item.isDirectory()) {
+            const destPath = path.join(destDir, item.name);
+            fs.mkdirSync(destPath);
+            processAssetDirectory(currentPath, destPath, options)
+        }
+        else if (item.isFile()){
+            const asset = item.name;
+
+            if (asset.endsWith(".tileset.json"))
+                options.tilesetFunc(currentPath, destDir, asset);
+            else if (asset.endsWith(".level.json"))
+                options.levelFunc(currentPath, destDir, asset);
+            else if (asset.endsWith(".animation.json"))
+                options.animationFunc(currentPath, destDir, asset);
+            else if (asset.endsWith(".png"))
+                options.spriteFunc(currentPath, destDir, asset);
+            else if (asset.endsWith(".font.json"))
+                options.fontFunc(currentPath, destDir, asset);
+            else if (musicFormats.has(path.extname(asset)))
+                options.musicFunc(currentPath, destDir, asset);
+        }
+    }
+}
+
 function prepareAssets(sourceDir, destDir, params) {
     let options = {
         littleEndian: true,
@@ -259,24 +296,7 @@ function prepareAssets(sourceDir, destDir, params) {
     if (params)
         Object.assign(options, params);
 
-    const assets = fs.readdirSync(sourceDir);
-
-    for (const asset of assets) {
-        const sourceFile = path.join(sourceDir, asset);
-
-        if (asset.endsWith(".tileset.json")) 
-            options.tilesetFunc(sourceFile, destDir, asset);
-        else if (asset.endsWith(".level.json")) 
-            options.levelFunc(sourceFile, destDir, asset);
-        else if (asset.endsWith(".animation.json")) 
-            options.animationFunc(sourceFile, destDir, asset);
-        else if (asset.endsWith(".png"))
-            options.spriteFunc(sourceFile, destDir, asset);
-        else if (asset.endsWith(".font.json"))
-            options.fontFunc(sourceFile, destDir, asset);
-        else if (musicFormats.has(path.extname(asset)))
-            options.musicFunc(sourceFile, destDir, asset);
-    }
+    processAssetDirectory(sourceDir, destDir, options);
 
     prepareLevelList(destDir, options.littleEndian);
 }
