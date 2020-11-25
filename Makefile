@@ -11,7 +11,7 @@ HEADERPATH = $(ROOTDIR)/mips64-elf/lib
 N64TOOL = $(ROOTDIR)/bin/n64tool
 HEADERNAME = header
 LINK_FLAGS = -L$(ROOTDIR)/mips64-elf/lib -L$(ROOTDIR)/lib -ldragon -lmikmod -lc -lm -ldragonsys -Tn64.ld
-PROG_NAME = spritemap
+PROG_NAME = RetroDash
 CFLAGS = -std=gnu99 -march=vr4300 -mtune=vr4300 -O2 -Wall -Werror -I$(ROOTDIR)/mips64-elf/include -I$(ROOTDIR)/include
 ASFLAGS = -mtune=vr4300 -march=vr4300
 CC = $(GCCN64PREFIX)gcc
@@ -27,18 +27,18 @@ ROM_EXTENSION = .z64
 N64_FLAGS = -l 2M -h $(HEADERPATH)/$(HEADERNAME) -o $(PROG_NAME)$(ROM_EXTENSION)
 endif
 
-$(PROG_NAME)$(ROM_EXTENSION): $(PROG_NAME).elf spritemap.dfs
+$(PROG_NAME)$(ROM_EXTENSION): $(PROG_NAME).elf RetroDash.dfs
 	$(OBJCOPY) $(PROG_NAME).elf $(PROG_NAME).bin -O binary
 	rm -f $(PROG_NAME)$(ROM_EXTENSION)
-	$(N64TOOL) $(N64_FLAGS) -t "Spritemap Test" $(PROG_NAME).bin -s 1M spritemap.dfs
+	$(N64TOOL) $(N64_FLAGS) -t "RetroDash" $(PROG_NAME).bin -s 1M RetroDash.dfs
 	$(CHKSUM64PATH) $(PROG_NAME)$(ROM_EXTENSION)
 
 
 $(PROG_NAME).elf : $(OBJ_FILES) $(HEADER_FILES)
 	$(LD) -o $(PROG_NAME).elf $(OBJ_FILES) $(LINK_FLAGS)
 
-spritemap.dfs:
-	$(MKDFSPATH) spritemap.dfs ./assets/build_n64/
+RetroDash.dfs:
+	$(MKDFSPATH) RetroDash.dfs ./assets/build_n64/
 
 all: $(PROG_NAME)$(ROM_EXTENSION)
 
