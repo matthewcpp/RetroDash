@@ -9,5 +9,9 @@
         "x": 3.0,
         "y": 2.0
     },
-    "goal": 15
+    "goal": 15,
+
+    "pieces": [
+        "tutorial.level.tiles"
+    ]
 }

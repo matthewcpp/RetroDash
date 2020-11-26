@@ -9,5 +9,8 @@
         "x": 3.0,
         "y": 3.0
     },
-    "goal": 103.0
+    "goal": 103.0,
+    "pieces": [
+        "level01.level.tiles"
+    ]
 }
