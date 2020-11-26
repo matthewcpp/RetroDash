@@ -68,7 +68,7 @@ function readLevelTiles(srcPath) {
     return fs.readFileSync(tilesFile, "utf8")
 }
 
-function prepareLevel(srcPath, destPath, littleEndian) {
+function prepareLevel(srcPath, destPath, options) {
     const sourceFile = fs.readFileSync(srcPath, "utf8");
     const level = JSON.parse(sourceFile);
     level.name = level.name.toUpperCase(); // right now fonts only support UPPER CASE
@@ -80,17 +80,17 @@ function prepareLevel(srcPath, destPath, littleEndian) {
     const bufferSize = 12 + nameLength + tileSetLength + musicLength + 8 + (level.width * level.height) + 12 /*level start & goal*/;
 
     const buffer = Buffer.alloc(bufferSize);
-    let offset = writeUint32(nameLength, buffer, 0, littleEndian);
+    let offset = writeUint32(nameLength, buffer, 0, options.littleEndian);
     offset += buffer.write(level.name, offset, nameLength, "utf8");
-    offset = writeUint32(tileSetLength, buffer, offset, littleEndian);
-    offset += buffer.write(level.tileSet, offset, tileSetLength, "utf8");
-    offset = writeUint32(musicLength, buffer, offset, littleEndian);
+    offset = writeUint32(tileSetLength, buffer, offset, options.littleEndian);
+    offset += buffer.write(level.tileSet, offset, options.tileSetLength, "utf8");
+    offset = writeUint32(musicLength, buffer, offset, options.littleEndian);
     offset += buffer.write(level.music, offset, musicLength, "utf8");
-    offset = writeUint32(level.width, buffer, offset, littleEndian);
-    offset = writeUint32(level.height, buffer, offset, littleEndian);
-    offset = writeFloat(level.startPos.x, buffer, offset, littleEndian);
-    offset = writeFloat(level.startPos.y, buffer, offset, littleEndian);
-    offset = writeFloat(level.goal, buffer, offset, littleEndian);
+    offset = writeUint32(level.width, buffer, offset, options.littleEndian);
+    offset = writeUint32(level.height, buffer, offset, options.littleEndian);
+    offset = writeFloat(level.startPos.x, buffer, offset, options.littleEndian);
+    offset = writeFloat(level.startPos.y, buffer, offset, options.littleEndian);
+    offset = writeFloat(level.goal, buffer, offset, options.littleEndian);
 
     for (let i = 0; i < levelTiles.length; i++){
         const char = levelTiles.charCodeAt(i);
@@ -102,11 +102,9 @@ function prepareLevel(srcPath, destPath, littleEndian) {
 
     fs.writeFileSync(destPath, buffer);
 
-    const destBaseName = path.basename(destPath);
-
     levelList.push({
         name: level.name.toUpperCase(),
-        path: `/${destBaseName}`,
+        path: destPath.substring(options.destDir.length),
         music: level.music,
         order: level.order
     })
@@ -263,6 +261,8 @@ function processAssetDirectory(sourceDir, destDir, options) {
 function prepareAssets(sourceDir, destDir, params) {
     let options = {
         littleEndian: true,
+        sourceDir: sourceDir,
+        destDir: destDir,
         spriteFunc: (sourceFile, destDir, assetName) => {
             const buildPath = path.join(destDir, assetName);
             prepareSprite(sourceFile, buildPath, options.littleEndian);
@@ -270,7 +270,7 @@ function prepareAssets(sourceDir, destDir, params) {
         levelFunc: (sourceFile, destDir, assetName) =>  {
             const baseName = path.basename(assetName, ".level.json");
             const buildPath = path.join(destDir, `${baseName}.level`);
-            prepareLevel(sourceFile, buildPath, options.littleEndian);
+            prepareLevel(sourceFile, buildPath, options);
         },
         tilesetFunc: (sourceFile, destDir, assetName) =>  {
             const baseName = path.basename(assetName, ".tileset.json");
@@ -297,7 +297,6 @@ function prepareAssets(sourceDir, destDir, params) {
         Object.assign(options, params);
 
     processAssetDirectory(sourceDir, destDir, options);
-
     prepareLevelList(destDir, options.littleEndian);
 }
 
