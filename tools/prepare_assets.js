@@ -77,11 +77,12 @@ function validatePieceWidth(rows) {
     }
 }
 
-function stitchLevelPieces(level, srcPath) {
-    const levelDir = path.dirname(srcPath);
-    const buffer = Buffer.alloc(level.width * level.height);
-
-    let startX = 0;
+function processPieces(level, levelDir) {
+    const levelInfo = {
+        width: 0,
+        height: -1,
+        pieces: []
+    };
 
     for (const piece of level.pieces) {
         const pieceFile = path.join(levelDir, piece);
@@ -89,14 +90,32 @@ function stitchLevelPieces(level, srcPath) {
 
         const rows = levelTiles.split(/\r?\n/);
         validatePieceWidth(rows);
-        if (rows.length !== level.height)
+        levelInfo.width += rows[0].length
+
+        if (levelInfo.height < 0)
+            levelInfo.height = rows.length
+        else if (rows.length !== levelInfo.height)
             throw new Error(`Expected Piece: ${piece} to have height: ${level.height}`);
 
+        levelInfo.pieces.push(rows);
+    }
+
+    return levelInfo;
+}
+
+function stitchLevelPieces(level, srcPath) {
+    const levelDir = path.dirname(srcPath);
+    const levelInfo = processPieces(level, levelDir);
+    const buffer = Buffer.alloc(levelInfo.width * levelInfo.height);
+
+    let processedWidth = 0;
+
+    for (const rows of levelInfo.pieces) {
         for (let r = 0; r < rows.length; r ++) {
             const row = rows[r];
 
             for (let col = 0; col < row.length; col++) {
-                const index = (level.width * r)  + startX + col
+                const index = (levelInfo.width * r)  + processedWidth + col
                 const char = row.charCodeAt(col);
 
                 if (char === 32)
@@ -106,15 +125,16 @@ function stitchLevelPieces(level, srcPath) {
             }
         }
 
-        startX += rows[0].length;
+        processedWidth += rows[0].length;
     }
 
-    return buffer;
+    return {width: levelInfo.width, height: levelInfo.height, tiles: buffer};
 }
 
 function prepareLevel(srcPath, destPath, options) {
     const sourceFile = fs.readFileSync(srcPath, "utf8");
     const level = JSON.parse(sourceFile);
+    const tileData = stitchLevelPieces(level, srcPath);
     level.name = level.name.toUpperCase(); // right now fonts only support UPPER CASE
 
     const nameLength = Buffer.byteLength(level.name, "utf8");
@@ -129,15 +149,13 @@ function prepareLevel(srcPath, destPath, options) {
     offset += buffer.write(level.tileSet, offset, options.tileSetLength, "utf8");
     offset = writeUint32(musicLength, buffer, offset, options.littleEndian);
     offset += buffer.write(level.music, offset, musicLength, "utf8");
-    offset = writeUint32(level.width, buffer, offset, options.littleEndian);
-    offset = writeUint32(level.height, buffer, offset, options.littleEndian);
+    offset = writeUint32(tileData.width, buffer, offset, options.littleEndian);
+    offset = writeUint32(tileData.height, buffer, offset, options.littleEndian);
     offset = writeFloat(level.startPos.x, buffer, offset, options.littleEndian);
     offset = writeFloat(level.startPos.y, buffer, offset, options.littleEndian);
     writeFloat(level.goal, buffer, offset, options.littleEndian);
 
-    const tileBuffer = stitchLevelPieces(level, srcPath);
-
-    fs.writeFileSync(destPath, Buffer.concat([buffer, tileBuffer]));
+    fs.writeFileSync(destPath, Buffer.concat([buffer, tileData.tiles]));
 
     levelList.push({
         name: level.name.toUpperCase(),

@@ -3,14 +3,13 @@
     "order": 10,
     "tileSet": "/geom_dash.tileset",
     "music": "/title/title_music.mod",
-    "width": 109,
-    "height": 10,
     "startPos": {
         "x": 3.0,
         "y": 3.0
     },
     "goal": 103.0,
     "pieces": [
-        "level01.level.tiles"
+        "level01.tiles.1",
+        "level01.tiles.2"
     ]
 }
