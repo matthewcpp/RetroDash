@@ -355,4 +355,7 @@ function prepareAssets(sourceDir, destDir, params) {
     prepareLevelList(destDir, options.littleEndian);
 }
 
-module.exports = prepareAssets;
+module.exports = {
+    prepareAssets: prepareAssets,
+    prepareLevel: prepareLevel
+};
