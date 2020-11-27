@@ -73,5 +73,6 @@ void audio_resume_music(Audio* audio) {
 
 void audio_restart_music(Audio* audio) {
     Mix_RewindMusic();
+    Mix_ResumeMusic();
     (void)audio;
 }

@@ -4,12 +4,13 @@
     "tileSet": "/geom_dash.tileset",
     "music": "/the_streets/synth_attack_4.mod",
     "startPos": {
-        "x": 0.0,
+        "x": 0,
         "y": 2.0
     },
-    "goal": 44,
+    "goal": 300,
 
     "pieces": [
-        "the_streets.tiles.1"
+        "the_streets.tiles.1",
+        "the_streets.tiles.2"
     ]
 }
