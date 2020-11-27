@@ -68,16 +68,79 @@ function readLevelTiles(srcPath) {
     return fs.readFileSync(tilesFile, "utf8")
 }
 
+function validatePieceWidth(rows) {
+    const expectedWidth = rows[0].length;
+
+    for (let i = 1; i < rows.length; i++) {
+        if (rows[i].length !== expectedWidth)
+            throw new Error(`Expected row: ${i} to have width: ${expectedWidth}`);
+    }
+}
+
+function processPieces(level, levelDir) {
+    const levelInfo = {
+        width: 0,
+        height: -1,
+        pieces: []
+    };
+
+    for (const piece of level.pieces) {
+        const pieceFile = path.join(levelDir, piece);
+        const levelTiles = fs.readFileSync(pieceFile, "utf8")
+
+        const rows = levelTiles.split(/\r?\n/);
+        validatePieceWidth(rows);
+        levelInfo.width += rows[0].length
+
+        if (levelInfo.height < 0)
+            levelInfo.height = rows.length
+        else if (rows.length !== levelInfo.height)
+            throw new Error(`Expected Piece: ${piece} to have height: ${level.height}`);
+
+        levelInfo.pieces.push(rows);
+    }
+
+    return levelInfo;
+}
+
+function stitchLevelPieces(level, srcPath) {
+    const levelDir = path.dirname(srcPath);
+    const levelInfo = processPieces(level, levelDir);
+    const buffer = Buffer.alloc(levelInfo.width * levelInfo.height);
+
+    let processedWidth = 0;
+
+    for (const rows of levelInfo.pieces) {
+        for (let r = 0; r < rows.length; r ++) {
+            const row = rows[r];
+
+            for (let col = 0; col < row.length; col++) {
+                const index = (levelInfo.width * r)  + processedWidth + col
+                const char = row.charCodeAt(col);
+
+                if (char === 32)
+                    buffer.writeUInt8(255, index);
+                else if (char >= 65 && char <= 90)
+                    buffer.writeUInt8(parseInt(char - 65), index);
+            }
+        }
+
+        processedWidth += rows[0].length;
+    }
+
+    return {width: levelInfo.width, height: levelInfo.height, tiles: buffer};
+}
+
 function prepareLevel(srcPath, destPath, options) {
     const sourceFile = fs.readFileSync(srcPath, "utf8");
     const level = JSON.parse(sourceFile);
+    const tileData = stitchLevelPieces(level, srcPath);
     level.name = level.name.toUpperCase(); // right now fonts only support UPPER CASE
-    const levelTiles = readLevelTiles(srcPath);
 
     const nameLength = Buffer.byteLength(level.name, "utf8");
     const tileSetLength = Buffer.byteLength(level.tileSet, "utf8");
     const musicLength = Buffer.byteLength(level.music, "utf8");
-    const bufferSize = 12 + nameLength + tileSetLength + musicLength + 8 + (level.width * level.height) + 12 /*level start & goal*/;
+    const bufferSize = 12 + nameLength + tileSetLength + musicLength + 8 /*level dimensions */ + 12 /*level start & goal*/;
 
     const buffer = Buffer.alloc(bufferSize);
     let offset = writeUint32(nameLength, buffer, 0, options.littleEndian);
@@ -86,21 +149,13 @@ function prepareLevel(srcPath, destPath, options) {
     offset += buffer.write(level.tileSet, offset, options.tileSetLength, "utf8");
     offset = writeUint32(musicLength, buffer, offset, options.littleEndian);
     offset += buffer.write(level.music, offset, musicLength, "utf8");
-    offset = writeUint32(level.width, buffer, offset, options.littleEndian);
-    offset = writeUint32(level.height, buffer, offset, options.littleEndian);
+    offset = writeUint32(tileData.width, buffer, offset, options.littleEndian);
+    offset = writeUint32(tileData.height, buffer, offset, options.littleEndian);
     offset = writeFloat(level.startPos.x, buffer, offset, options.littleEndian);
     offset = writeFloat(level.startPos.y, buffer, offset, options.littleEndian);
-    offset = writeFloat(level.goal, buffer, offset, options.littleEndian);
+    writeFloat(level.goal, buffer, offset, options.littleEndian);
 
-    for (let i = 0; i < levelTiles.length; i++){
-        const char = levelTiles.charCodeAt(i);
-        if (char === 32)
-            offset = buffer.writeUInt8(255, offset);
-        else if (char >= 65 && char <= 90)
-            offset = buffer.writeUInt8(parseInt(char - 65), offset);
-    }
-
-    fs.writeFileSync(destPath, buffer);
+    fs.writeFileSync(destPath, Buffer.concat([buffer, tileData.tiles]));
 
     levelList.push({
         name: level.name.toUpperCase(),

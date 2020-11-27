@@ -3,7 +3,7 @@
 
 #include "../audio.h"
 
-#include <SDL2/SDL_mixer.h>
+#include <SDL_mixer.h>
 
 struct Audio {
     Music* current_music;
