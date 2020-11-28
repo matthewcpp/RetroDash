@@ -24,8 +24,10 @@ set(game_src
     src/state/dialog.h src/state/dialog.c
     src/state/level_select.h src/state/level_select.c
     src/state/pause_dialog.h src/state/pause_dialog.c
+    src/state/playing_base.h src/state/playing_base.c
     src/state/playing.h src/state/playing.c
-    src/state/title.h src/state/title.c)
+    src/state/title.h src/state/title.c
+    src/state/tutorial.h src/state/tutorial.c)
 
 set(sdl_src
     src/sdl/sdl_audio.h src/sdl/sdl_audio.c

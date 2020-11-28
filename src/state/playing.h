@@ -7,28 +7,11 @@
 #include "../player.h"
 #include "../teleport.h"
 
-#include "attempt_dialog.h"
-#include "pause_dialog.h"
+#include "playing_base.h"
 #include "states.h"
 
 typedef struct {
-    Camera* camera;
-    Level* level;
-    Player* player;
-    Teleport teleport;
-
-    AttemptDialog _attempt_dialog;
-    PauseDialog _pause_dialog;
-    Input* _input;
-    Audio* _audio;
-    Renderer* _renderer;
-    int _paused;
-
-    Font* _title_font;
-    Font* _info_font;
-
-    /** N64: its possible that loading the audio can take some amount of time.  Since we cant do this on another thread it can cause the time delta to spike from the previous frame. */
-    int _just_loaded;
+    StatePlayingBase base;
     GameState transition;
 } StatePlaying;
 
