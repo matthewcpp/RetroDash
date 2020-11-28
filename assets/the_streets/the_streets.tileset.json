@@ -1,0 +1,25 @@
+{
+    "sprite": "/the_streets/the_streets",
+    "tiles": [
+        "solid",
+        "solid",
+        "solid",
+        "tunnel",
+        "tunnel",
+        "tunnel",
+
+        "solid",
+        "solid",
+        "solid",
+        "solid",
+        "solid",
+        "solid",
+
+        "triangle",
+        "triangle",
+        "brick",
+        "none",
+        "none",
+        "none"
+    ]
+}
