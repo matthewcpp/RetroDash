@@ -86,7 +86,7 @@ Game* game_create(Audio* audio, Input* input, Renderer* renderer){
     game->current_state = GAME_STATE_NONE;
 
     renderer_set_clear_color(game->_renderer, 10, 7, 53);
-    game_set_state(game , GAME_STATE_TUTORIAL);
+    game_set_state(game , GAME_STATE_TITLE);
 
     return game;
 }

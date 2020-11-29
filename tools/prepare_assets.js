@@ -157,8 +157,13 @@ function prepareLevel(srcPath, destPath, options) {
 
     fs.writeFileSync(destPath, Buffer.concat([buffer, tileData.tiles]));
 
+    const levelUppercaseName = level.name.toUpperCase();
+
+    // we do not want the tutorial level to appear in the level list
+    if (levelUppercaseName.indexOf("TUTORIAL") >= 0) return;
+
     levelList.push({
-        name: level.name.toUpperCase(),
+        name: levelUppercaseName,
         path: destPath.substring(options.destDir.length),
         music: level.music,
         order: level.order
