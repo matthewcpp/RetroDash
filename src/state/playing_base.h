@@ -36,7 +36,7 @@ typedef struct {
     void* hook_user_data;
 } StatePlayingBase;
 
-void state_playing_base_init(StatePlayingBase* state, Audio* audio, Renderer* renderer, Input* input, const char* level_path);
+void state_playing_base_init(StatePlayingBase* state, Audio* audio, Renderer* renderer, Input* input, const char* level_path, const char* info_font_path);
 void state_playing_base_uninit(StatePlayingBase* state);
 
 void state_playing_base_update(StatePlayingBase* state, float time_delta);

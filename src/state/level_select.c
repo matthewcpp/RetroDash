@@ -17,7 +17,7 @@ static void set_selected_level(StateLevelSelect* level_select, int index) {
 
     level_select->_selected_level_name_sprite = renderer_create_text_sprite(level_select->_renderer, level_select->_font, level_select->_level_list.levels[index].name);
     level_select->music = audio_load_music(level_select->_audio, level_select->_level_list.levels[index].music);
-    audio_play_music(level_select->_audio, level_select->music);
+    //audio_play_music(level_select->_audio, level_select->music);
 
     level_select->_selected_level_index = index;
 }

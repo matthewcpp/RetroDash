@@ -2,7 +2,7 @@
 
 #include <stddef.h>
 
-void state_playing_base_init(StatePlayingBase* state, Audio* audio, Renderer* renderer, Input* input, const char* level_path){
+void state_playing_base_init(StatePlayingBase* state, Audio* audio, Renderer* renderer, Input* input, const char* level_path, const char* info_font_path){
     state->_audio = audio;
     state->_input = input;
     state->_renderer = renderer;
@@ -15,7 +15,7 @@ void state_playing_base_init(StatePlayingBase* state, Audio* audio, Renderer* re
     state->level = level_create(audio, renderer, state->camera);
 
     state->_title_font = renderer_load_font(renderer, "/dialog/dialog_title_font");
-    state->_info_font = renderer_load_font(renderer, "/dialog/dialog_info_font");
+    state->_info_font = renderer_load_font(renderer, info_font_path);
 
     level_load(state->level, level_path);
 

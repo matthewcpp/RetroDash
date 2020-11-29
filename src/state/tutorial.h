@@ -7,13 +7,28 @@
 #include "playing_base.h"
 #include "states.h"
 
+#define INFO_TEXT_LINE_COUNT 2
+
 typedef enum {
-TUTORIAL_PHASE_TELEPORT_IN
+    TUTORIAL_PHASE_WAITING_FOR_TELEPORT_IN,
+    TUTORIAL_PHASE_INFO,
+    TUTORIAL_STATE_BASIC_MOVEMENT,
+    TUTORIAL_STATE_JUMP,
+    TUTORIAL_PHASE_RUN_TO_LARGE_CHANGE,
+    TUTORIAL_PHASE_CHANGE_TO_LARGE,
+    TUTORIAL_PHASE_CLEAR_LARGE_OBSTACLE,
+    TUTORIAL_PHASE_SMASH_BRICKS,
+    TUTORIAL_PHASE_CHANGE_TO_SMALL,
+    TUTORIAL_PHASE_RUN_THROUGH_SMALL_AREA,
+    TUTORIAL_PHASE_CHANGE_TO_NORMAL,
+    TUTORIAL_PHASE_PRACTICE,
 } TutorialPhase;
 
 typedef struct {
     StatePlayingBase base;
     GameState transition;
+    TutorialPhase phase;
+    Sprite* _info_text[INFO_TEXT_LINE_COUNT];
 } StateTutorial;
 
 StateTutorial* state_tutorial_create(Audio* audio, Input* input, Renderer* renderer);
