@@ -3,7 +3,7 @@ const path = require("path");
 const fs = require("fs");
 const rimraf = require("rimraf");
 
-const prepareAssets = require("./prepare_assets");
+const {prepareAssets} = require("./prepare_assets");
 
 const mksprite = process.argv[2];
 

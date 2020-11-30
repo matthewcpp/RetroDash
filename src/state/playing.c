@@ -129,6 +129,7 @@ void state_playing_update(StatePlaying* state, float time_delta){
     }
     else if (state->player->state == PLAYER_STATE_DEAD) {
         attempt_dialog_show(&state->_attempt_dialog);
+        audio_pause_music(state->_audio);
     }
     else if (state->player->state == PLAYER_STATE_REACHED_GOAL && state->teleport.status != TELEPORT_STATUS_ACTIVE) {
         teleport_out(&state->teleport, state->player, state->camera, on_teleport_out_complete, state);
@@ -162,4 +163,5 @@ void on_teleport_out_complete(void* user_data) {
     StatePlaying* state = (StatePlaying*)user_data;
 
     attempt_dialog_show(&state->_attempt_dialog);
+    audio_pause_music(state->_audio);
 }

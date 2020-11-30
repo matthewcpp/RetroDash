@@ -100,6 +100,10 @@ static void check_floor(Player* player, PlayerQuery* query) {
     }
 }
 
+static int is_below_world(Player* player) {
+    return player->entity.position.y + player->entity.size.y < 0.0f;
+}
+
 static void player_break_brick(Player* player, int tile_x, int tile_y) {
     Vec2 debris_pos;
     debris_pos.x = (float)tile_x + 0.75f;
@@ -132,7 +136,7 @@ static void check_collisions(Player* player, PlayerQuery* query) {
                 return;
 
             case TILE_TYPE_TUNNEL:
-                if (player->target_size != PLAYER_SIZE_SMALL) {
+                if (player->current_size != PLAYER_SIZE_SMALL) {
                     player_kill(player);
                     return;
                 }
@@ -180,6 +184,7 @@ static void try_set_size(Player* player, PlayerSize size) {
 
     player->state = PLAYER_STATE_CHANGING_SIZE;
     player->target_size = size;
+    player->current_size = size;
     player->state_time = 0.0f;
 
     if (player->is_jumping)
@@ -204,6 +209,9 @@ void player_update_movement(Player* player, float time_delta) {
     player->entity.position.x += player->velocity.x * time_delta;
     player->distance_travelled += player->entity.position.x - player->prev_pos.x;
     check_collisions(player, &query);
+
+    if (is_below_world(player))
+        player_kill(player);
 
     if (input_button_is_down(player->_input, CONTROLLER_1, CONTROLLER_BUTTON_A)) {
         try_jump(player);

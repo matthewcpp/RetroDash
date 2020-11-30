@@ -1,0 +1,18 @@
+{
+    "name": "The Streets",
+    "order": 0,
+    "tileSet": "/the_streets/the_streets.tileset",
+    "music": "/the_streets/synth_attack_4.mod",
+    "startPos": {
+        "x": 0,
+        "y": 2.0
+    },
+    "goal": 565,
+
+    "pieces": [
+        "the_streets.tiles.1",
+        "the_streets.tiles.2",
+        "the_streets.tiles.3",
+        "the_streets.tiles.4"
+    ]
+}
