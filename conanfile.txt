@@ -1,8 +1,10 @@
 [requires]
 zlib/1.2.11
 libpng/1.6.37
+libiconv/1.16
 sdl2/2.0.10@bincrafters/stable
 sdl2_image/2.0.5@bincrafters/stable
+sdl2_mixer/2.0.4@bincrafters/stable
 
 [generators]
 cmake_find_package
@@ -22,3 +24,12 @@ sdl2_image:xv=False
 sdl2_image:jpg=False
 sdl2_image:tif=False
 sdl2_image:webp=False
+
+sdl2_mixer:flac=False
+sdl2_mixer:mpg123=False
+sdl2_mixer:mad=False
+sdl2_mixer:ogg=False
+sdl2_mixer:opus=False
+sdl2_mixer:modplug=False
+sdl2_mixer:fluidsynth=False
+sdl2_mixer:nativemidi=False

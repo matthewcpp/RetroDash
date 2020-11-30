@@ -32,6 +32,7 @@ You will need to have cmake, nodejs, and sdl installed.
 
 MacOS: `brew install sdl2 sdl2_image sdl2_ttf sdl2_mixer`  
 Ubuntu Linux: `sudo apt-get -y install libsdl2-dev libsdl2-image-dev libsdl2-mixer-dev`
+Windows: `conan install .. --build=sdl2_mixer`
 
 ```shell script
 node tools/prepare_sdl_assets.js
