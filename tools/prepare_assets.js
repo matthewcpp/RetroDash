@@ -209,8 +209,8 @@ function prepareAnimation(srcPath, destPath){
 function prepareFont(srcPath, destPath, littleEndian) {
     const fontInfo = JSON.parse(fs.readFileSync(srcPath, "utf8"));
 
-    // font size + glyph count + 4 bytes for each char bounding info and 4 bytes for texture pos
-    let bufferSize = 8 + (fontInfo.glyphs.length * 8);
+    // font size + glyph count + 2 bytes char code, 4 bytes for each char bounding info and 4 bytes for texture pos
+    let bufferSize = 8 + (fontInfo.glyphs.length * 10);
 
     const buffer = Buffer.alloc(bufferSize);
 
@@ -218,6 +218,7 @@ function prepareFont(srcPath, destPath, littleEndian) {
     offset = writeUint32(fontInfo.glyphs.length, buffer, offset, littleEndian);
 
     for (const char of fontInfo.glyphs) {
+        offset = writeUint16(char.ch.charCodeAt(0), buffer, offset, littleEndian);
         offset = buffer.writeInt8(char.top, offset);
         offset = buffer.writeInt8(char.bottom, offset);
         offset = buffer.writeInt8(char.left, offset);
