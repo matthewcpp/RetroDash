@@ -34,9 +34,9 @@ typedef struct {
 } StateTitle;
 
 StateTitle* state_title_create(Audio* audio, Input* input, Renderer* renderer);
-void state_title_destroy(StateTitle* state);
+void state_title_destroy(StateTitle* title);
 
-void state_title_update(StateTitle* state, float time_delta);
-void state_title_draw(StateTitle* state);
+void state_title_update(StateTitle* title, float time_delta);
+void state_title_draw(StateTitle* title);
 
 #endif
