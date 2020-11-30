@@ -1,27 +1,10 @@
 #include "sdl_renderer.h"
 
+#include "../font_private.h"
+
 #include <SDL_image.h>
 
 #include <stdio.h>
-
-typedef struct {
-    uint16_t char_code;
-
-    /** positive numbers indicating a distance going up from the given baseline. */
-    int8_t top;
-
-    /** positive numbers indicating a distance going down from the given baseline. */
-    int8_t bottom;
-
-    /** positive numbers indicating a distance going left from the given alignment point. */
-    int8_t left;
-
-    /** the width of the rendering context's scratch bitmap, in CSS pixels */
-    int8_t width;
-
-    uint16_t x;
-    uint16_t y;
-} FontGlyphInfo;
 
 struct Font {
     uint32_t font_size;
@@ -57,47 +40,8 @@ Font* renderer_load_font(Renderer* renderer, const char* font_base_path) {
     return font;
 }
 
-#define CHAR_SPACER 1
-
-static FontGlyphInfo* find_font_glyph_rec(FontGlyphInfo* glyphs, int min_index, int max_index, uint16_t char_code) {
-    uint32_t center_index = min_index + (max_index - min_index) / 2;
-    if (min_index > max_index) return NULL;
-
-    FontGlyphInfo* center_glyph = glyphs + center_index;
-
-    if (center_glyph->char_code == char_code) {
-        return center_glyph;
-    }
-    else if (center_glyph->char_code > char_code) {
-        return find_font_glyph_rec(glyphs, min_index, center_index - 1, char_code);
-    }
-    else if (center_glyph->char_code < char_code) {
-        return find_font_glyph_rec(glyphs, center_index + 1, max_index, char_code);
-    }
-    else {
-        return center_glyph;
-    }
-}
-
-static FontGlyphInfo* find_font_glyph(FontGlyphInfo* glyphs, uint32_t glyph_count, uint16_t char_code) {
-    return find_font_glyph_rec(glyphs, 0, glyph_count - 1, char_code);
-}
-
-static int measure_text_width(Font* font, const char* str) {
-    FontGlyphInfo* glyph = find_font_glyph(font->glyphs, font->glyph_count, str[0]);
-    int width = glyph->left;
-
-    do {
-        width += glyph->width + CHAR_SPACER;
-        str += 1;
-        glyph = find_font_glyph(font->glyphs, font->glyph_count, str[0]);
-    } while (str[0] != '\0');
-
-    return width - CHAR_SPACER;
-}
-
 Sprite* renderer_create_text_sprite(Renderer* renderer, Font* font, const char* str) {
-    int width = measure_text_width(font, str);
+    int width = measure_text_width(font->glyphs, font->glyph_count, str);
     SDL_Surface* surface = SDL_CreateRGBSurfaceWithFormat(0, width, font->font_size, 32, SDL_PIXELFORMAT_RGBA32);
 
     FontGlyphInfo* glyph = find_font_glyph(font->glyphs, font->glyph_count, str[0]);

@@ -8,6 +8,7 @@ set(game_src
     src/camera.h src/camera.c
     src/entity.h
     src/filesystem.h
+    src/font_private.h src/font.c
     src/game.h src/game.c
     src/input.h
     src/intersection.h src/intersection.c
