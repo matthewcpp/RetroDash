@@ -3,7 +3,7 @@
 
 #include <stdint.h>
 
-#define CHAR_SPACER 1
+#define CHAR_SPACER 0
 
 typedef struct {
     uint16_t char_code;

@@ -83,3 +83,7 @@ void renderer_destroy_font(Renderer* renderer, Font* font) {
     free(font->glyphs);
     free(font);
 }
+
+int font_size(Font* font) {
+    return font->font_size;
+}

@@ -7,6 +7,13 @@
 #include "../renderer.h"
 #include "states.h"
 
+typedef enum{
+    TITLE_MENU_START,
+    TITLE_MENU_TUTORIAL,
+    TITLE_MENU_CREDITS,
+    TITLE_MENU_COUNT
+} TitleMenuItem;
+
 typedef struct {
     Audio* _audio;
     Input* _input;
@@ -17,7 +24,10 @@ typedef struct {
     Sprite* _character_top;
     Sprite* _character_bottom;
     Sprite* _platform;
-    Sprite* _menu;
+    Font* _menu_font;
+    Font* _menu_font_selected;
+    Sprite* _menu_sprite[TITLE_MENU_COUNT];
+    Sprite* _menu_sprite_selected[TITLE_MENU_COUNT];
     Music* _music;
     AnimationPlayer _animation;
     int menu_selection;

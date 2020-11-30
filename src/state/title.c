@@ -2,16 +2,14 @@
 
 #include <stdlib.h>
 
-typedef enum{
-    TITLE_MENU_START,
-    TITLE_MENU_CREDITS,
-    TITLE_MENU_COUNT
-} TitleMenuItem;
+
 
 #define START_SPRITE_INDEX 0
 #define CREDIT_SPRITE_INDEX 2
 
 #define CHARACTER_SCALE 1.25f
+
+static void create_menu(StateTitle* title);
 
 StateTitle* state_title_create(Audio* audio, Input* input, Renderer* renderer){
     StateTitle* state = malloc(sizeof(StateTitle));
@@ -27,7 +25,9 @@ StateTitle* state_title_create(Audio* audio, Input* input, Renderer* renderer){
     state->_character_top = renderer_load_sprite(state->_renderer, "/title/title_idle_top");
     state->_character_bottom = renderer_load_sprite(state->_renderer, "/title/title_idle_bottom");
     state->_platform = renderer_load_sprite(state->_renderer, "/title/title_platform");
-    state->_menu = renderer_load_sprite(state->_renderer, "/title/title_menu");
+    state->_menu_font = renderer_load_font(state->_renderer, "/title/title_menu");
+    state->_menu_font_selected = renderer_load_font(state->_renderer, "/title/title_menu_selected");
+    create_menu(state);
     state->_music = audio_load_music(state->_audio, "/title/title_music.mod");
 
     if (state->_music == NULL)
@@ -40,8 +40,6 @@ StateTitle* state_title_create(Audio* audio, Input* input, Renderer* renderer){
     state->_animation.frame_time = 1.0f;
     animation_player_set_current(&state->_animation, 0, 1);
 
-
-
     return state;
 }
 
@@ -51,6 +49,14 @@ void state_title_destroy(StateTitle* state){
     renderer_destroy_sprite(state->_renderer, state->_character_bottom);
     renderer_destroy_sprite(state->_renderer, state->_platform);
     audio_destroy_music(state->_audio, state->_music);
+
+    for (int i = 0; i < 3; i++) {
+        renderer_destroy_sprite(state->_renderer, state->_menu_sprite[i]);
+        renderer_destroy_sprite(state->_renderer, state->_menu_sprite_selected[i]);
+    }
+
+    renderer_destroy_font(state->_renderer, state->_menu_font);
+    renderer_destroy_font(state->_renderer, state->_menu_font_selected);
 
     free(state);
 }
@@ -94,17 +100,14 @@ static void draw_character(StateTitle* state, Point* screen_size) {
 }
 
 static void draw_menu(StateTitle* state, Point* screen_size) {
-    int height = sprite_vertical_frame_size(state->_menu);
+    int size = font_size(state->_menu_font);
+    int x_pos = screen_size->x - sprite_width(state->_menu_sprite[TITLE_MENU_START]) - 10;
+    int y_pos = screen_size->y - TITLE_MENU_COUNT * size - 15;
 
-    int y_pos = screen_size->y - height - 30;
-    int x_pos = screen_size->x - sprite_width(state->_menu) - 10;
-
-    int row = state->menu_selection == TITLE_MENU_CREDITS ? CREDIT_SPRITE_INDEX + 1 : CREDIT_SPRITE_INDEX;
-    renderer_draw_sprite_row(state->_renderer, state->_menu, row, x_pos, y_pos);
-
-    y_pos -= 2 * height;
-    row = state->menu_selection == TITLE_MENU_START ? START_SPRITE_INDEX + 1 : START_SPRITE_INDEX;
-    renderer_draw_sprite_row(state->_renderer, state->_menu, row, x_pos, y_pos);
+    for (int i = 0; i < TITLE_MENU_COUNT; i++) {
+        renderer_draw_sprite(state->_renderer, state->menu_selection == i ? state->_menu_sprite_selected[i] : state->_menu_sprite[i], x_pos, y_pos);
+        y_pos += size;
+    }
 }
 
 void state_title_draw(StateTitle* state){
@@ -121,4 +124,15 @@ void state_title_draw(StateTitle* state){
 
     draw_character(state, &screen_size);
     draw_menu(state, &screen_size);
+}
+
+void create_menu(StateTitle* title) {
+    title->_menu_sprite[0] = renderer_create_text_sprite(title->_renderer, title->_menu_font, "START GAME");
+    title->_menu_sprite_selected[0] = renderer_create_text_sprite(title->_renderer, title->_menu_font_selected, "START GAME");
+
+    title->_menu_sprite[1] = renderer_create_text_sprite(title->_renderer, title->_menu_font, "TUTORIAL");
+    title->_menu_sprite_selected[1] = renderer_create_text_sprite(title->_renderer, title->_menu_font_selected, "TUTORIAL");
+
+    title->_menu_sprite[2] = renderer_create_text_sprite(title->_renderer, title->_menu_font, "CREDITS");
+    title->_menu_sprite_selected[2] = renderer_create_text_sprite(title->_renderer, title->_menu_font_selected, "CREDITS");
 }
