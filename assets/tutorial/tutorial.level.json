@@ -1,15 +1,16 @@
 {
-    "name": "Level 1",
-    "order": 10,
+    "name": "Tutorial",
+    "order": 0,
     "tileSet": "/geom_dash.tileset",
     "music": "/title/title_music.mod",
     "startPos": {
         "x": 3.0,
-        "y": 3.0
+        "y": 2.0
     },
-    "goal": 103.0,
+    "goal": 220,
+
     "pieces": [
-        "level01.tiles.1",
-        "level01.tiles.2"
+        "tutorial.tiles.guided",
+        "tutorial.tiles.practice"
     ]
 }

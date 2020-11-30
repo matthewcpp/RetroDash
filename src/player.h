@@ -24,6 +24,13 @@ typedef enum {
     PLAYER_STATE_REACHED_GOAL
 } PlayerState;
 
+typedef enum {
+    PLAYER_ANIMATION_RUN,
+    PLAYER_ANIMATION_JUMP,
+    PLAYER_ANIMATION_DEATH,
+    PLAYER_ANIMATION_CHANGE_SIZE
+} PlayerAnimation;
+
 typedef struct {
     Entity entity;
     PlayerSize current_size;

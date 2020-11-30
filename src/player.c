@@ -8,13 +8,6 @@
 #define PLAYER_SPEED 8.0f
 #define PLAYER_DEATH_TIME 1.0f
 
-typedef enum {
-    PLAYER_ANIMATION_RUN,
-    PLAYER_ANIMATION_JUMP,
-    PLAYER_ANIMATION_DEATH,
-    PLAYER_ANIMATION_CHANGE_SIZE
-} PlayerAnimation;
-
 typedef struct {
     int min_x, min_y;
     int max_x, max_y;

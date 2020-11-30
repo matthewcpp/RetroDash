@@ -16,12 +16,18 @@
             border: 1px solid white;
         }
 
+        textarea {
+            margin: 10;
+            width: 400px;
+            height: 100px;
+        }
+
     </style>
 
     <script type="text/javascript">
 
-    const columnCount = 12;
-    const rowCount = 5;
+    let columnCount;
+    let rowCount = 5;
 
     let fontGlyphs = [];
     let fontSize, fontFace;
@@ -40,10 +46,12 @@
         context2d.fillStyle = 'white';
 
         // Record measurements of all glyphs which will be used for positioning in next step
-        for (let i = 32; i < 91; i++) {
-            const metrics = context2d.measureText(String.fromCharCode(i));
+        const characters = [...new Set(Array.from(document.getElementById("glyphs").value))];
+        characters.sort();
+        for (let i = 0; i < characters.length; i++) {
+            const metrics = context2d.measureText(characters[i]);
             const charInfo = {
-                ch: String.fromCharCode(i),
+                ch: characters[i],
                 top: Math.ceil(metrics.actualBoundingBoxAscent),
                 left: Math.ceil(metrics.actualBoundingBoxLeft),
                 bottom: Math.ceil(metrics.actualBoundingBoxDescent),
@@ -52,6 +60,9 @@
 
             fontGlyphs.push(charInfo)
         }
+
+        rowCount = parseInt(document.getElementById("row-count").value);
+        columnCount = Math.ceil(characters.length / rowCount);
 
         // create the rows of the spritefont
         let rows = [];
@@ -154,7 +165,11 @@
     <div>
         <label for="font-face">Font Face:</label><input id="font-face" type="text" value="Basic_LAZER" />
         <label for="font-size">Size:</label><input id="font-size" type="number" min="1" step="1" value="18" />
+        <label for="row-count">Row Count:</label><input id="row-count" type="number" value="5", min="1", step="1" />
         <button onclick="generateSpritefont();">Generate</button>
+    </div>
+    <div>
+        <textarea id="glyphs"> !"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ</textarea>
     </div>
     <div id="canvas-div"><canvas id="font-canvas"> </div>
     <div><label for="font-name">Font name: </label><input id="font-name" type="text">

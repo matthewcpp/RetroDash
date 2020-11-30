@@ -3,6 +3,7 @@
 #include "state/level_select.h"
 #include "state/playing.h"
 #include "state/title.h"
+#include "state/tutorial.h"
 
 #include <stdlib.h>
 #include <string.h>
@@ -11,6 +12,7 @@ typedef union {
     StatePlaying* playing;
     StateTitle* title;
     StateLevelSelect* level_select;
+    StateTutorial* tutorial;
 } State;
 
 struct Game {
@@ -33,6 +35,10 @@ static void game_destroy_current_state(Game* game) {
 
         case GAME_STATE_LEVEL_SELECT:
             state_level_select_destroy(game->state.level_select);
+            break;
+
+        case GAME_STATE_TUTORIAL:
+            state_tutorial_destroy(game->state.tutorial);
             break;
 
         case GAME_STATE_NONE:
@@ -60,6 +66,11 @@ static void game_set_state(Game* game, GameState state) {
             game->state.level_select = state_level_select_create(game->_audio, game->_input, game->_renderer);
             break;
 
+        case GAME_STATE_TUTORIAL:
+            game_destroy_current_state(game);
+            game->state.tutorial = state_tutorial_create(game->_audio, game->_input, game->_renderer);
+            break;
+
         case GAME_STATE_NONE:
             break;
     }
@@ -75,7 +86,7 @@ Game* game_create(Audio* audio, Input* input, Renderer* renderer){
     game->current_state = GAME_STATE_NONE;
 
     renderer_set_clear_color(game->_renderer, 10, 7, 53);
-    game_set_state(game , GAME_STATE_LEVEL_SELECT);
+    game_set_state(game , GAME_STATE_TITLE);
 
     return game;
 }
@@ -104,6 +115,10 @@ void game_update(Game* game, float time_delta){
             state_transition = game->state.level_select->transition;
             break;
 
+        case GAME_STATE_TUTORIAL:
+            state_tutorial_update(game->state.tutorial, time_delta);
+            state_transition = game->state.tutorial->transition;
+
         case GAME_STATE_NONE:
             break;
     }
@@ -124,6 +139,10 @@ void game_draw(Game* game){
 
         case GAME_STATE_LEVEL_SELECT:
             state_level_select_draw(game->state.level_select);
+            break;
+
+        case GAME_STATE_TUTORIAL:
+            state_tutorial_draw(game->state.tutorial);
             break;
 
         case GAME_STATE_NONE:
