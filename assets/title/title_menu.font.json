@@ -1,0 +1,131 @@
+{
+  "size": "30",
+  "glyphs": [
+    {
+      "ch": " ",
+      "top": -23,
+      "left": 0,
+      "bottom": 24,
+      "width": 8,
+      "x": 0,
+      "y": 0
+    },
+    {
+      "ch": "A",
+      "top": -8,
+      "left": 1,
+      "bottom": 24,
+      "width": 16,
+      "x": 9,
+      "y": 0
+    },
+    {
+      "ch": "C",
+      "top": -8,
+      "left": 1,
+      "bottom": 24,
+      "width": 13,
+      "x": 26,
+      "y": 0
+    },
+    {
+      "ch": "D",
+      "top": -8,
+      "left": 1,
+      "bottom": 24,
+      "width": 15,
+      "x": 40,
+      "y": 0
+    },
+    {
+      "ch": "E",
+      "top": -8,
+      "left": 1,
+      "bottom": 24,
+      "width": 14,
+      "x": 56,
+      "y": 0
+    },
+    {
+      "ch": "G",
+      "top": -8,
+      "left": 1,
+      "bottom": 24,
+      "width": 14,
+      "x": 71,
+      "y": 0
+    },
+    {
+      "ch": "I",
+      "top": -8,
+      "left": 1,
+      "bottom": 24,
+      "width": 5,
+      "x": 86,
+      "y": 0
+    },
+    {
+      "ch": "L",
+      "top": -8,
+      "left": 1,
+      "bottom": 24,
+      "width": 11,
+      "x": 92,
+      "y": 0
+    },
+    {
+      "ch": "M",
+      "top": -8,
+      "left": 2,
+      "bottom": 24,
+      "width": 20,
+      "x": 104,
+      "y": 0
+    },
+    {
+      "ch": "O",
+      "top": -8,
+      "left": 1,
+      "bottom": 24,
+      "width": 16,
+      "x": 125,
+      "y": 0
+    },
+    {
+      "ch": "R",
+      "top": -8,
+      "left": 1,
+      "bottom": 24,
+      "width": 14,
+      "x": 142,
+      "y": 0
+    },
+    {
+      "ch": "S",
+      "top": -8,
+      "left": 2,
+      "bottom": 24,
+      "width": 12,
+      "x": 157,
+      "y": 0
+    },
+    {
+      "ch": "T",
+      "top": -8,
+      "left": 1,
+      "bottom": 24,
+      "width": 14,
+      "x": 170,
+      "y": 0
+    },
+    {
+      "ch": "U",
+      "top": -8,
+      "left": 1,
+      "bottom": 24,
+      "width": 15,
+      "x": 185,
+      "y": 0
+    }
+  ]
+}
