@@ -11,6 +11,7 @@ void dialog_init(Dialog* dialog, Input* input, Renderer* renderer){
 
 void dialog_update(Dialog* dialog) {
     if (input_button_is_down(dialog->_input, CONTROLLER_1, CONTROLLER_BUTTON_A) ||
+        input_button_is_down(dialog->_input, CONTROLLER_1, CONTROLLER_BUTTON_Z) ||
         input_button_is_down(dialog->_input, CONTROLLER_1, CONTROLLER_BUTTON_START) ) {
         dialog->action = dialog->_selected_action;
     }

@@ -206,16 +206,20 @@ void player_update_movement(Player* player, float time_delta) {
     if (is_below_world(player))
         player_kill(player);
 
-    if (input_button_is_down(player->_input, CONTROLLER_1, CONTROLLER_BUTTON_A)) {
+    if (input_button_is_down(player->_input, CONTROLLER_1, CONTROLLER_BUTTON_A) ||
+        input_button_is_down(player->_input, CONTROLLER_1, CONTROLLER_BUTTON_Z)) {
         try_jump(player);
     }
-    if (input_button_is_down(player->_input, CONTROLLER_1, CONTROLLER_BUTTON_C_LEFT)) {
+    if (input_button_is_down(player->_input, CONTROLLER_1, CONTROLLER_BUTTON_C_LEFT) ||
+        input_button_is_down(player->_input, CONTROLLER_1, CONTROLLER_BUTTON_DPAD_LEFT)) {
         try_set_size(player, PLAYER_SIZE_SMALL);
     }
-    if (input_button_is_down(player->_input, CONTROLLER_1, CONTROLLER_BUTTON_C_UP)) {
+    if (input_button_is_down(player->_input, CONTROLLER_1, CONTROLLER_BUTTON_C_UP) ||
+        input_button_is_down(player->_input, CONTROLLER_1, CONTROLLER_BUTTON_DPAD_UP)) {
         try_set_size(player, PLAYER_SIZE_MEDIUM);
     }
-    if (input_button_is_down(player->_input, CONTROLLER_1, CONTROLLER_BUTTON_C_RIGHT)) {
+    if (input_button_is_down(player->_input, CONTROLLER_1, CONTROLLER_BUTTON_C_RIGHT) ||
+        input_button_is_down(player->_input, CONTROLLER_1, CONTROLLER_BUTTON_DPAD_RIGHT)) {
         try_set_size(player, PLAYER_SIZE_LARGE);
     }
 

@@ -99,6 +99,7 @@ void state_level_select_update(StateLevelSelect* level_select, float time_delta)
     }
 
     if (input_button_is_down(level_select->_input, CONTROLLER_1, CONTROLLER_BUTTON_A) ||
+        input_button_is_down(level_select->_input, CONTROLLER_1, CONTROLLER_BUTTON_Z) ||
         input_button_is_down(level_select->_input, CONTROLLER_1, CONTROLLER_BUTTON_START) ) {
         level_select->transition = GAME_STATE_PLAYING;
     }
