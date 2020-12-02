@@ -1,0 +1,17 @@
+{
+    "name": "The Heights",
+    "order": 10,
+    "tileSet": "/the_heights/the_heights.tileset",
+    "music": "/the_heights/bd_80s.mod",
+    "startPos": {
+        "x": 2.0,
+        "y": 2.0
+    },
+    "goal": 478,
+
+    "pieces": [
+        "the_heights.tiles.1",
+        "the_heights.tiles.2",
+        "the_heights.tiles.3"
+    ]
+}

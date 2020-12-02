@@ -1,0 +1,26 @@
+{
+    "sprite": "/the_heights/the_heights",
+    "debris": 15,
+    "tiles": [
+        "solid",
+        "solid",
+        "solid",
+        "tunnel",
+        "tunnel",
+        "tunnel",
+
+        "solid",
+        "solid",
+        "solid",
+        "triangle",
+        "solid",
+        "solid",
+
+        "solid",
+        "solid",
+        "solid",
+        "brick",
+        "solid",
+        "solid"
+    ]
+}
