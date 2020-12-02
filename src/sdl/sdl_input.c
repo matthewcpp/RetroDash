@@ -43,7 +43,19 @@ void rr_sdl_input_update_button(Input* input, ControllerButton button, int value
 }
 
 static void sdl_update_controller(Input* input) {
-    rr_sdl_input_update_button(input, CONTROLLER_BUTTON_A, SDL_GameControllerGetButton(input->controller, SDL_CONTROLLER_BUTTON_A ), 0);
+    rr_sdl_input_update_button(input, CONTROLLER_BUTTON_A, SDL_GameControllerGetButton(input->controller, SDL_CONTROLLER_BUTTON_A), 0);
+    rr_sdl_input_update_button(input, CONTROLLER_BUTTON_B, SDL_GameControllerGetButton(input->controller, SDL_CONTROLLER_BUTTON_BACK), 0);
+    rr_sdl_input_update_button(input, CONTROLLER_BUTTON_Z, SDL_GameControllerGetAxis(input->controller, SDL_CONTROLLER_AXIS_TRIGGERLEFT), 0);
+    rr_sdl_input_update_button(input, CONTROLLER_BUTTON_L, SDL_GameControllerGetButton(input->controller, SDL_CONTROLLER_BUTTON_LEFTSHOULDER), 0);
+    rr_sdl_input_update_button(input, CONTROLLER_BUTTON_R, SDL_GameControllerGetButton(input->controller, SDL_CONTROLLER_BUTTON_RIGHTSHOULDER), 0);
+    rr_sdl_input_update_button(input, CONTROLLER_BUTTON_START, SDL_GameControllerGetButton(input->controller, SDL_CONTROLLER_BUTTON_START), 0);
+    rr_sdl_input_update_button(input, CONTROLLER_BUTTON_C_LEFT, SDL_GameControllerGetButton(input->controller, SDL_CONTROLLER_BUTTON_X), 0);
+    rr_sdl_input_update_button(input, CONTROLLER_BUTTON_C_UP, SDL_GameControllerGetButton(input->controller, SDL_CONTROLLER_BUTTON_Y), 0);
+    rr_sdl_input_update_button(input, CONTROLLER_BUTTON_C_RIGHT, SDL_GameControllerGetButton(input->controller, SDL_CONTROLLER_BUTTON_B), 0);
+    rr_sdl_input_update_button(input, CONTROLLER_BUTTON_DPAD_UP, SDL_GameControllerGetButton(input->controller, SDL_CONTROLLER_BUTTON_DPAD_UP), 0);
+    rr_sdl_input_update_button(input, CONTROLLER_BUTTON_DPAD_DOWN, SDL_GameControllerGetButton(input->controller, SDL_CONTROLLER_BUTTON_DPAD_DOWN), 0);
+    rr_sdl_input_update_button(input, CONTROLLER_BUTTON_DPAD_LEFT, SDL_GameControllerGetButton(input->controller, SDL_CONTROLLER_BUTTON_DPAD_LEFT), 0);
+    rr_sdl_input_update_button(input, CONTROLLER_BUTTON_DPAD_RIGHT, SDL_GameControllerGetButton(input->controller, SDL_CONTROLLER_BUTTON_DPAD_RIGHT), 0);
 }
 
 static void sdl_update_keyboard(Input* input) {
