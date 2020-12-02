@@ -174,7 +174,7 @@ int level_load(Level* level, const char* path) {
     filesystem_read(level->name, 1, size, level->_file_handle);
     level->name[size] = '\0';
 
-    // Read tile map
+    // Read tile set
     filesystem_read(&size, sizeof(uint32_t), 1, level->_file_handle);
     char* tile_set_name = malloc(size + 1);
     filesystem_read(tile_set_name, 1, size, level->_file_handle);
@@ -207,7 +207,7 @@ int level_load(Level* level, const char* path) {
     free(tile_set_name);
 
     level->brick_particles._sprite = level->tile_set.sprite;
-    level->brick_particles._frame = 14;
+    level->brick_particles._frame = level->tile_set.debris_index;
 
     return loaded_tile_set;
 }

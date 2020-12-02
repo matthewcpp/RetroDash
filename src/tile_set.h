@@ -21,6 +21,7 @@ typedef struct {
     Tile* palette;
     Sprite* sprite;
     Point tile_size;
+    uint32_t debris_index;
 } TileSet;
 
 int tile_set_load(TileSet* tile_set, const char* path, Renderer* renderer);

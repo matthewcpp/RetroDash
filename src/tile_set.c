@@ -26,6 +26,8 @@ int tile_set_load(TileSet* tile_set, const char* path, Renderer* renderer) {
     tile_set->palette = malloc(sizeof(Tile) * tile_set->palette_size);
     filesystem_read(tile_set->palette, sizeof(Tile), tile_set->palette_size, tilemap_file);
 
+    filesystem_read(&tile_set->debris_index, sizeof(uint32_t), 1, tilemap_file);
+
     filesystem_close(tilemap_file);
     return 1;
 }

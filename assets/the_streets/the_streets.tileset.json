@@ -1,5 +1,6 @@
 {
     "sprite": "/the_streets/the_streets",
+    "debris": 14,
     "tiles": [
         "solid",
         "solid",
