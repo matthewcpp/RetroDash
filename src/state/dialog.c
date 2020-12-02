@@ -16,9 +16,14 @@ void dialog_update(Dialog* dialog) {
         dialog->action = dialog->_selected_action;
     }
 
-    if (dialog->_selected_action == DIALOG_ACTION_RETRY && input_button_is_down(dialog->_input, CONTROLLER_1, CONTROLLER_BUTTON_DPAD_RIGHT))
+    if (dialog->_selected_action == DIALOG_ACTION_RETRY &&
+        (input_button_is_down(dialog->_input, CONTROLLER_1, CONTROLLER_BUTTON_DPAD_RIGHT) ||
+         input_button_is_down(dialog->_input, CONTROLLER_1, CONTROLLER_BUTTON_C_RIGHT))) {
         dialog->_selected_action = DIALOG_ACTION_RETURN;
-    else if (dialog->_selected_action == DIALOG_ACTION_RETURN && input_button_is_down(dialog->_input, CONTROLLER_1, CONTROLLER_BUTTON_DPAD_LEFT))
+    }
+    else if (dialog->_selected_action == DIALOG_ACTION_RETURN &&
+            (input_button_is_down(dialog->_input, CONTROLLER_1, CONTROLLER_BUTTON_DPAD_LEFT) ||
+             input_button_is_down(dialog->_input, CONTROLLER_1, CONTROLLER_BUTTON_C_LEFT)))
         dialog->_selected_action = DIALOG_ACTION_RETRY;
 }
 

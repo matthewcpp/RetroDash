@@ -88,12 +88,14 @@ void state_level_select_destroy(StateLevelSelect* level_select) {
 }
 
 void state_level_select_update(StateLevelSelect* level_select, float time_delta){
-    if (input_button_is_down(level_select->_input, CONTROLLER_1, CONTROLLER_BUTTON_DPAD_RIGHT)) {
+    if (input_button_is_down(level_select->_input, CONTROLLER_1, CONTROLLER_BUTTON_DPAD_RIGHT) ||
+        input_button_is_down(level_select->_input, CONTROLLER_1, CONTROLLER_BUTTON_C_RIGHT)) {
         if (level_select->_selected_level_index < level_select->_level_list.count - 1)
             set_selected_level(level_select, level_select->_selected_level_index + 1);
     }
 
-    if (input_button_is_down(level_select->_input, CONTROLLER_1, CONTROLLER_BUTTON_DPAD_LEFT)) {
+    if (input_button_is_down(level_select->_input, CONTROLLER_1, CONTROLLER_BUTTON_DPAD_LEFT) ||
+        input_button_is_down(level_select->_input, CONTROLLER_1, CONTROLLER_BUTTON_C_LEFT)) {
         if (level_select->_selected_level_index > 0)
             set_selected_level(level_select, level_select->_selected_level_index - 1);
     }
@@ -102,6 +104,10 @@ void state_level_select_update(StateLevelSelect* level_select, float time_delta)
         input_button_is_down(level_select->_input, CONTROLLER_1, CONTROLLER_BUTTON_Z) ||
         input_button_is_down(level_select->_input, CONTROLLER_1, CONTROLLER_BUTTON_START) ) {
         level_select->transition = GAME_STATE_PLAYING;
+    }
+
+    if (input_button_is_down(level_select->_input, CONTROLLER_1, CONTROLLER_BUTTON_B)) {
+        level_select->transition = GAME_STATE_TITLE;
     }
 }
 

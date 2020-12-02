@@ -75,8 +75,16 @@ void state_title_update(StateTitle* title, float time_delta){
     if (input_button_is_down(title->_input, CONTROLLER_1, CONTROLLER_BUTTON_START) ||
         input_button_is_down(title->_input, CONTROLLER_1, CONTROLLER_BUTTON_A) ||
         input_button_is_down(title->_input, CONTROLLER_1, CONTROLLER_BUTTON_Z)){
-        if (title->menu_selection == TITLE_MENU_START)
-            title->transition = GAME_STATE_LEVEL_SELECT;
+
+        switch (title->menu_selection) {
+            case TITLE_MENU_START:
+                title->transition = GAME_STATE_LEVEL_SELECT;
+                break;
+
+            case TITLE_MENU_TUTORIAL:
+                title->transition = GAME_STATE_TUTORIAL;
+                break;
+        }
     }
 }
 
