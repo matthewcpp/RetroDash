@@ -21,7 +21,7 @@ void state_playing_base_init(StatePlayingBase* state, Audio* audio, Renderer* re
 
     state->player = player_create(state->level, renderer, state->camera, input);
     camera_set_target(state->camera, &state->player->entity);
-    camera_set_safe_margins(state->camera, -3.0f, 3.0f);
+    camera_set_safe_margins(state->camera, -3.0f, 5.0f);
     camera_update(state->camera);
 
     teleport_init(&state->teleport, state->_renderer);
