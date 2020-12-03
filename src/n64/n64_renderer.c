@@ -126,24 +126,22 @@ void renderer_draw_filled_rect(Renderer* renderer, Rect* rect) {
     rdp_draw_filled_rectangle(rect->x, rect->y, rect->x + rect->w, rect->y + rect->h);
 }
 
-#define GRID_SIZE 32
-
-void renderer_draw_grid(Renderer* renderer, int x_offset) {
+void renderer_draw_grid(Renderer* renderer, int x_offset, int size) {
     renderer_enable_filled_mode(renderer);
 
     Rect rect;
-    rect_set(&rect, 0, GRID_SIZE, renderer->screen_size.x, 0);
+    rect_set(&rect, 0, size, renderer->screen_size.x, 0);
 
     while (rect.y < renderer->screen_size.y) {
         rdp_draw_filled_rectangle(rect.x, rect.y, rect.x + rect.w, rect.y + rect.h);
-        rect.y += GRID_SIZE;
+        rect.y += size;
     }
 
     rect_set(&rect, x_offset, 0, 0, renderer->screen_size.y);
 
     while (rect.x < renderer->screen_size.x) {
         rdp_draw_filled_rectangle(rect.x, rect.y, rect.x + rect.w, rect.y + rect.h);
-        rect.x += GRID_SIZE;
+        rect.x += size;
     }
 }
 
