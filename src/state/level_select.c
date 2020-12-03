@@ -141,9 +141,11 @@ static void draw_selector_dots(StateLevelSelect* level_select) {
     }
 }
 
+#define LEVEL_SELECT_GRID_SIZE 32
+
 void state_level_select_draw(StateLevelSelect* level_select) {
     renderer_set_color(level_select->_renderer, 33, 7, 58, 255);
-    renderer_draw_grid(level_select->_renderer);
+    renderer_draw_grid(level_select->_renderer, 0, LEVEL_SELECT_GRID_SIZE);
 
     int title_width = sprite_width(level_select->_title_sprite);
     renderer_draw_sprite(level_select->_renderer, level_select->_title_sprite, (level_select->_screen_size.x / 2) - (title_width / 2), 10);

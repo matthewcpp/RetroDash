@@ -128,7 +128,7 @@ void renderer_draw_filled_rect(Renderer* renderer, Rect* rect) {
 
 #define GRID_SIZE 32
 
-void renderer_draw_grid(Renderer* renderer) {
+void renderer_draw_grid(Renderer* renderer, int x_offset) {
     renderer_enable_filled_mode(renderer);
 
     Rect rect;
@@ -139,7 +139,7 @@ void renderer_draw_grid(Renderer* renderer) {
         rect.y += GRID_SIZE;
     }
 
-    rect_set(&rect, GRID_SIZE, 0, 0, renderer->screen_size.y);
+    rect_set(&rect, x_offset, 0, 0, renderer->screen_size.y);
 
     while (rect.x < renderer->screen_size.x) {
         rdp_draw_filled_rectangle(rect.x, rect.y, rect.x + rect.w, rect.y + rect.h);

@@ -74,26 +74,24 @@ void renderer_draw_filled_rect(Renderer* renderer, Rect* rect) {
     SDL_RenderFillRect(renderer->sdl_renderer, (SDL_Rect*)rect);
 }
 
-#define GRID_SIZE 32
-
-void renderer_draw_grid(Renderer* renderer) {
-    Point p0 = {0, GRID_SIZE};
+void renderer_draw_grid(Renderer* renderer, int x_offset, int size) {
+    Point p0 = {0, size};
     Point p1;
-    point_set(&p1, renderer->screen_size.x, GRID_SIZE);
+    point_set(&p1, renderer->screen_size.x, size);
 
     while (p1.y < renderer->screen_size.y) {
         SDL_RenderDrawLine(renderer->sdl_renderer, p0.x, p0.y, p1.x, p1.y);
-        p0.y += GRID_SIZE;
-        p1.y += GRID_SIZE;
+        p0.y += size;
+        p1.y += size;
     }
 
-    point_set(&p0, GRID_SIZE, 0);
-    point_set(&p1, GRID_SIZE, renderer->screen_size.y);
+    point_set(&p0, x_offset, 0);
+    point_set(&p1, x_offset, renderer->screen_size.y);
 
     while (p1.x < renderer->screen_size.x) {
         SDL_RenderDrawLine(renderer->sdl_renderer, p0.x, p0.y, p1.x, p1.y);
-        p0.x += GRID_SIZE;
-        p1.x += GRID_SIZE;
+        p0.x += size;
+        p1.x += size;
     }
 }
 
