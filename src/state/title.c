@@ -50,7 +50,7 @@ void state_title_destroy(StateTitle* title){
     renderer_destroy_sprite(title->_renderer, title->_platform);
     audio_destroy_music(title->_audio, title->_music);
 
-    for (int i = 0; i < 3; i++) {
+    for (int i = 0; i < TITLE_MENU_COUNT; i++) {
         renderer_destroy_sprite(title->_renderer, title->_menu_sprite[i]);
         renderer_destroy_sprite(title->_renderer, title->_menu_sprite_selected[i]);
     }
@@ -143,7 +143,4 @@ void create_menu(StateTitle* title) {
 
     title->_menu_sprite[1] = renderer_create_text_sprite(title->_renderer, title->_menu_font, "TUTORIAL");
     title->_menu_sprite_selected[1] = renderer_create_text_sprite(title->_renderer, title->_menu_font_selected, "TUTORIAL");
-
-    title->_menu_sprite[2] = renderer_create_text_sprite(title->_renderer, title->_menu_font, "CREDITS");
-    title->_menu_sprite_selected[2] = renderer_create_text_sprite(title->_renderer, title->_menu_font_selected, "CREDITS");
 }

@@ -10,7 +10,6 @@
 typedef enum{
     TITLE_MENU_START,
     TITLE_MENU_TUTORIAL,
-    TITLE_MENU_CREDITS,
     TITLE_MENU_COUNT
 } TitleMenuItem;
 
