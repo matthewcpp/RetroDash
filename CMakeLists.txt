@@ -5,6 +5,7 @@ project (RetroDash C)
 set(game_src
     src/animation_player.h src/animation_player.c
     src/audio.h
+    src/background.h src/background.c
     src/camera.h src/camera.c
     src/entity.h
     src/filesystem.h

@@ -23,7 +23,7 @@ void renderer_draw_sprite_frame(Renderer* renderer, Sprite* sprite, int frame, i
 void renderer_draw_scaled_sprite(Renderer* renderer, Sprite* sprite,  int x, int y, float scale_x, float scale_y, int frame);
 void renderer_set_color(Renderer* renderer, int r, int g, int b, int a);
 void renderer_draw_filled_rect(Renderer* renderer, Rect* rect);
-void renderer_draw_grid(Renderer* renderer);
+void renderer_draw_grid(Renderer* renderer, int x_offset, int size);
 
 /**
  * Sets the number of tile batches to allocate.

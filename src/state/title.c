@@ -119,12 +119,14 @@ static void draw_menu(StateTitle* title, Point* screen_size) {
     }
 }
 
+#define TITLE_SCREEN_GRID_SIZE 32
+
 void state_title_draw(StateTitle* title){
     Point screen_size;
     renderer_get_screen_size(title->_renderer, &screen_size);
 
     renderer_set_color(title->_renderer, 33, 7, 58, 255);
-    renderer_draw_grid(title->_renderer);
+    renderer_draw_grid(title->_renderer, 0, TITLE_SCREEN_GRID_SIZE);
 
     int title_x = (screen_size.x / 2) - (sprite_width(title->_title_sprite) / 2);
     int title_y = 10;
