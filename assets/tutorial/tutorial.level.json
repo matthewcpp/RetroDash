@@ -1,7 +1,7 @@
 {
     "name": "Tutorial",
     "order": 0,
-    "tileSet": "/geom_dash.tileset",
+    "tileSet": "/tutorial/tutorial.tileset",
     "music": "/title/title_music.mod",
     "startPos": {
         "x": 3.0,

@@ -1,0 +1,26 @@
+{
+    "sprite": "/geom_dash",
+    "debris": 14,
+    "tiles": [
+        "solid",
+        "solid",
+        "solid",
+        "tunnel",
+        "tunnel",
+        "tunnel",
+
+        "solid",
+        "solid",
+        "solid",
+        "solid",
+        "solid",
+        "solid",
+
+        "triangle",
+        "triangle",
+        "brick",
+        "solid",
+        "solid",
+        "solid"
+    ]
+}
