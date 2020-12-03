@@ -325,6 +325,7 @@ void player_start(Player* player) {
 
 void player_kill(Player* player) {
     player->state_time = 0.0f;
+    vec2_set(&player->velocity, 0.0f, 0.0f);
     player->state = PLAYER_STATE_DYING;
     animation_player_set_current(&player->_animation, PLAYER_ANIMATION_DEATH, 0);
 }

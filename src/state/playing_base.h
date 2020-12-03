@@ -2,6 +2,7 @@
 #define PLAYING_BASE
 
 #include "../audio.h"
+#include "../background.h"
 #include "../camera.h"
 #include "../level.h"
 #include "../player.h"
@@ -12,6 +13,7 @@
 #include "states.h"
 
 typedef struct {
+    Background background;
     Camera* camera;
     Level* level;
     Player* player;

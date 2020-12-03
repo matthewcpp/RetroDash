@@ -8,6 +8,8 @@ void state_playing_base_init(StatePlayingBase* state, Audio* audio, Renderer* re
     state->_renderer = renderer;
     state->_paused = 0;
 
+    background_init(&state->background, renderer);
+
     Point screen_size;
     renderer_get_screen_size(renderer, &screen_size);
 
@@ -60,6 +62,9 @@ static void update_player_active(StatePlayingBase* state, float time_delta) {
 
     level_update(state->level, time_delta);
     camera_update(state->camera);
+
+    if (state->player->velocity.x > 0.0f)
+        background_update(&state->background, time_delta);
 }
 
 static void update_state_paused(StatePlayingBase* state, float time_delta) {
@@ -82,6 +87,7 @@ static void update_state_paused(StatePlayingBase* state, float time_delta) {
 
 static void reset_scene(StatePlayingBase* state) {
     state->_attempt_dialog.base.shown = 0;
+    background_reset(&state->background);
     level_reset(state->player->_level);
     player_reset(state->player);
     camera_update(state->camera);
@@ -130,6 +136,7 @@ void state_playing_base_update(StatePlayingBase* state, float time_delta) {
 }
 
 void state_playing_base_draw(StatePlayingBase* state) {
+    background_draw(&state->background);
     level_draw(state->level);
 
     if (state->teleport.status == TELEPORT_STATUS_ACTIVE)
