@@ -1,5 +1,5 @@
 {
-    "sprite": "/geom_dash",
+    "sprite": "/tutorial/tutorial",
     "debris": 14,
     "tiles": [
         "solid",
