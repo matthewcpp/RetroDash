@@ -38,5 +38,12 @@ prepareAssets(assetsFolder, buildFolder,  {
         const buildPath = path.join(destDir, `${baseName}.sprite`);
         
         childProcess.spawnSync(mksprite, [16, sprite.horizonalFrames, sprite.verticalFrames, srcPath, buildPath], {stdio: 'pipe'});
+    },
+    musicFunc(sourceFile, destDir, assetName) {
+        if (assetName.endsWith(".ogg"))
+            return;
+
+        const buildPath = path.join(destDir, assetName);
+        fs.copyFileSync(sourceFile, buildPath);
     }
 });
