@@ -2,11 +2,6 @@
 
 #include <stdlib.h>
 
-
-
-#define START_SPRITE_INDEX 0
-#define CREDIT_SPRITE_INDEX 2
-
 #define CHARACTER_SCALE 1.25f
 
 static void create_menu(StateTitle* title);
@@ -21,22 +16,22 @@ StateTitle* state_title_create(Audio* audio, Input* input, Renderer* renderer){
     title->menu_selection = TITLE_MENU_START;
 
     title->_title_sprite = NULL;
-    title->_title_sprite = renderer_load_sprite(title->_renderer, "/title/title");
-    title->_character_top = renderer_load_sprite(title->_renderer, "/title/title_idle_top");
-    title->_character_bottom = renderer_load_sprite(title->_renderer, "/title/title_idle_bottom");
-    title->_platform = renderer_load_sprite(title->_renderer, "/title/title_platform");
-    title->_menu_font = renderer_load_font(title->_renderer, "/title/title_menu");
-    title->_menu_font_selected = renderer_load_font(title->_renderer, "/title/title_menu_selected");
+    title->_title_sprite = renderer_load_sprite(title->_renderer, "title/title");
+    title->_character_top = renderer_load_sprite(title->_renderer, "title/title_idle_top");
+    title->_character_bottom = renderer_load_sprite(title->_renderer, "title/title_idle_bottom");
+    title->_platform = renderer_load_sprite(title->_renderer, "title/title_platform");
+    title->_menu_font = renderer_load_font(title->_renderer, "title/title_menu");
+    title->_menu_font_selected = renderer_load_font(title->_renderer, "title/title_menu_selected");
     create_menu(title);
-    title->_music = audio_load_music(title->_audio, "/title/title_music.mod");
 
-    if (title->_music == NULL)
-        renderer_set_clear_color(title->_renderer, 255, 0, 0);
-    else
-        audio_play_music(audio, title->_music);
+    title->_music = audio_load_music(title->_audio, "title/title_music");
+    audio_play_music(audio, title->_music);
+#ifdef EMSCRIPTEN
+    audio_restart_music(audio);
+#endif
 
     animation_player_init(&title->_animation);
-    animation_player_load(&title->_animation, "/title/title_idle.animation");
+    animation_player_load(&title->_animation, "title/title_idle.animation");
     title->_animation.frame_time = 1.0f;
     animation_player_set_current(&title->_animation, 0, 1);
 

@@ -49,9 +49,9 @@ void n64_audio_update(Audio* audio) {
 }
 
 Music* audio_load_music(Audio* audio, const char* path) {
-    size_t rom_path_size = 6 + strlen(path);
+    size_t rom_path_size = 11 + strlen(path); //rom:// + ".mod\0"
     char* rom_path = malloc(rom_path_size);
-    sprintf(rom_path, "rom:/%s", path); //rom:/ + '\0'
+    sprintf(rom_path, "rom://%s.mod", path);
     MODULE* mikmod_module = Player_Load(rom_path, 256, 0);
     free(rom_path);
 

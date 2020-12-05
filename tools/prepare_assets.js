@@ -12,7 +12,7 @@ const TileTypeValues = {
 
 const levelList = [];
 
-const musicFormats = new Set([".mod", ".xm"]);
+const musicFormats = new Set([".mod", ".xm", ".ogg"]);
 
 function writeUint16(value, buffer, offset, littleEndian) {
     if (littleEndian)

@@ -2,7 +2,7 @@
     "name": "Tutorial",
     "order": 0,
     "tileSet": "/tutorial/tutorial.tileset",
-    "music": "/title/title_music.mod",
+    "music": "/title/title_music",
     "startPos": {
         "x": 3.0,
         "y": 2.0

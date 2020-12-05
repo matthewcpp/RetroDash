@@ -54,11 +54,11 @@ StateLevelSelect* state_level_select_create(Audio* audio, Input* input, Renderer
     level_select->_renderer = renderer;
     level_select->transition = GAME_STATE_NONE;
 
-    level_select->_font = renderer_load_font(renderer, "/level_select/level_select_font");
+    level_select->_font = renderer_load_font(renderer, "level_select/level_select_font");
 
-    level_select->_title_sprite = renderer_load_sprite(level_select->_renderer, "/level_select/select_level");
-    level_select->_selector_arrows = renderer_load_sprite(level_select->_renderer, "/level_select/selector_arrows");
-    level_select->_selector_dots = renderer_load_sprite(level_select->_renderer, "/level_select/selector_dots");
+    level_select->_title_sprite = renderer_load_sprite(level_select->_renderer, "level_select/select_level");
+    level_select->_selector_arrows = renderer_load_sprite(level_select->_renderer, "level_select/selector_arrows");
+    level_select->_selector_dots = renderer_load_sprite(level_select->_renderer, "level_select/selector_dots");
     level_select->music = NULL;
     level_select->_selected_level_name_sprite = NULL;
 

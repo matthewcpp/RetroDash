@@ -17,15 +17,18 @@ struct Font {
 };
 
 Font* renderer_load_font(Renderer* renderer, const char* font_base_path) {
-    char path_buffer[64];
-    sprintf(path_buffer, "%s.sprite", font_base_path);
+    char* path_buffer = malloc(strlen(font_base_path) + 9);
+    sprintf(path_buffer, "/%s.sprite", font_base_path);
 
     int sprite_handle = dfs_open(path_buffer);
-    if (sprite_handle < 0)
+    if (sprite_handle < 0){
+        free(path_buffer);
         return NULL;
+    }
 
-    sprintf(path_buffer, "%s.font", font_base_path);
+    sprintf(path_buffer, "/%s.font", font_base_path);
     int font_handle = dfs_open(path_buffer);
+    free(path_buffer);
     if (font_handle < 0) {
         dfs_close(sprite_handle);
         return NULL;

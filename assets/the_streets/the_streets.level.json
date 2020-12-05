@@ -2,7 +2,7 @@
     "name": "The Streets",
     "order": 0,
     "tileSet": "/the_streets/the_streets.tileset",
-    "music": "/the_streets/synth_attack_4.mod",
+    "music": "/the_streets/synth_attack_4",
     "startPos": {
         "x": 0,
         "y": 2.0

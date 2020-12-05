@@ -4,13 +4,33 @@ const rimraf = require("rimraf");
 
 const {prepareAssets} = require("./prepare_assets");
 
-const assetsFolder = path.resolve(__dirname, "..", "assets");
-const buildFolder = path.join(assetsFolder, "build_sdl");
-if (fs.existsSync(buildFolder)) {
-    rimraf.sync(buildFolder);
+function prepareSdlAssets(buildFolder) {
+    const assetsFolder = path.resolve(__dirname, "..", "assets");
+
+    if (fs.existsSync(buildFolder)) {
+        rimraf.sync(buildFolder);
+    }
+
+    fs.mkdirSync(buildFolder);
+
+    const params = {
+        musicFunc(sourceFile, destDir, assetName) {
+            if (!assetName.endsWith(".ogg"))
+                return;
+
+            const buildPath = path.join(destDir, assetName);
+            fs.copyFileSync(sourceFile, buildPath);
+        }
+    }
+
+    prepareAssets(assetsFolder, buildFolder, params);
 }
 
-fs.mkdirSync(buildFolder);
+module.exports = {
+    prepareSdlAssets: prepareSdlAssets
+};
 
-
-prepareAssets(assetsFolder, buildFolder, null);
+if (require.main === module) {
+    const buildFolder = path.join(__dirname, "..", "assets", "build_sdl");
+    prepareSdlAssets(buildFolder);
+}

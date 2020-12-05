@@ -39,3 +39,12 @@ node tools/prepare_sdl_assets.js
 mkdir build && cd build
 cmake .. -DCMAKE_BUILD_TYPE=Release
 ```
+
+### Building with Emscripten
+Build the HTML / JS / WebAssembly: 
+```shell script
+node tools/prepare_emscripten_assets.js
+docker run --rm -v $(pwd):/src -u $(id -u):$(id -g) emscripten/emsdk cd build-emscripten && emcmake cmake .. && make
+```
+Start web server: `npx http-server`
+Play the game in the browser: http://localhost:8080/build-emscripten/RetroDash.html

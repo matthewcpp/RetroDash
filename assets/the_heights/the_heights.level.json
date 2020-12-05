@@ -2,7 +2,7 @@
     "name": "The Heights",
     "order": 10,
     "tileSet": "/the_heights/the_heights.tileset",
-    "music": "/the_heights/bd_80s.mod",
+    "music": "/the_heights/bd_80s",
     "startPos": {
         "x": 2.0,
         "y": 2.0
