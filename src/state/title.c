@@ -52,7 +52,7 @@ void state_title_destroy(StateTitle* title){
 
     renderer_destroy_font(title->_renderer, title->_menu_font);
     renderer_destroy_font(title->_renderer, title->_menu_font_selected);
-
+    animation_player_uninit(&title->_animation);
     free(title);
 }
 

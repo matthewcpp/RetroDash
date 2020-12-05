@@ -23,6 +23,7 @@ Font* renderer_load_font(Renderer* renderer, const char* font_base_path) {
 
     sprintf(path_buffer, "%s/%s.png", renderer->asset_dir, font_base_path);
     SDL_Surface* surface = IMG_Load(path_buffer);
+    free(path_buffer);
     if (!surface) {
         fclose(font_info_file);
         return NULL;
