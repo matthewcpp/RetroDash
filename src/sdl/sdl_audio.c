@@ -21,26 +21,30 @@ Audio* sdl_audio_create() {
     return audio;
 }
 
-void sdl_audio_destroy() {
+void sdl_audio_destroy(Audio* audio) {
+    free(audio);
     Mix_CloseAudio();
     SDL_AudioQuit();
 }
 
+static char* music_extensions[2] = {"mod", "ogg"};
+
 Music* audio_load_music(Audio* audio, const char* path) {
     const char* base_path = filesystem_get_asset_base_path();
-    size_t path_len = strlen(base_path) + strlen(path) + 1;
-    char* music_path = malloc(path_len);
-    sprintf(music_path, "%s%s", base_path, path);
+    char* music_path = malloc(strlen(base_path) + strlen(path) + 12);
 
-    Mix_Music* sdl_music = Mix_LoadMUS(music_path);
-    free(music_path);
+    Mix_Music* sdl_music = NULL;
+    for (int i = 0; i < 2; i++) {
+        sprintf(music_path, "%s/%s.%s", base_path, path, music_extensions[i]);
+        sdl_music= Mix_LoadMUS(music_path);
 
-    if (!sdl_music){
-        const char* error = Mix_GetError();
-        puts(error);
-        return NULL;
+        if (sdl_music) break;
     }
 
+    free(music_path);
+
+    if (!sdl_music)
+        return NULL;
 
     Music* music = malloc(sizeof(Music));
     music->sdl_music = sdl_music;

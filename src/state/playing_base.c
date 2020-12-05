@@ -113,6 +113,9 @@ void state_playing_base_update(StatePlayingBase* state, float time_delta) {
     if (state->_just_loaded == 1) {
         teleport_in(&state->teleport, state->player, state->camera, state->teleport_in_hook, state->hook_user_data);
         audio_play_music(state->_audio, state->level->music);
+#ifdef EMSCRIPTEN
+        audio_restart_music(state->_audio);
+#endif
         state->_just_loaded = 0;
         return;
     }

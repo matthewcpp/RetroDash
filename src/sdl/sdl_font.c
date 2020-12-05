@@ -14,14 +14,14 @@ struct Font {
 };
 
 Font* renderer_load_font(Renderer* renderer, const char* font_base_path) {
-    char* path_buffer = malloc(strlen(renderer->asset_dir) + strlen(font_base_path) + 12); //.sprite, .font
+    char* path_buffer = malloc(strlen(renderer->asset_dir) + strlen(font_base_path) + 12); // separator .png, .font
 
-    sprintf(path_buffer, "%s%s.font", renderer->asset_dir, font_base_path);
+    sprintf(path_buffer, "%s/%s.font", renderer->asset_dir, font_base_path);
     FILE* font_info_file = fopen(path_buffer, "rb");
 
     if (!font_info_file) return NULL;
 
-    sprintf(path_buffer, "%s%s.png", renderer->asset_dir, font_base_path);
+    sprintf(path_buffer, "%s/%s.png", renderer->asset_dir, font_base_path);
     SDL_Surface* surface = IMG_Load(path_buffer);
     if (!surface) {
         fclose(font_info_file);
@@ -36,6 +36,7 @@ Font* renderer_load_font(Renderer* renderer, const char* font_base_path) {
     fread(&font->glyph_count, sizeof(uint32_t), 1, font_info_file);
     font->glyphs = malloc(sizeof(FontGlyphInfo) * font->glyph_count);
     fread(font->glyphs, sizeof(FontGlyphInfo), font->glyph_count, font_info_file);
+    fclose(font_info_file);
 
     return font;
 }

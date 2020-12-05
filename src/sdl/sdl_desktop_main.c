@@ -12,7 +12,7 @@ int main(int argc, char** argv) {
 
     const int screen_width = 320, screen_height = 240;
 
-    SDL_Window* window = SDL_CreateWindow("N64 Game Jam", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, screen_width, screen_height,SDL_WINDOW_SHOWN);
+    SDL_Window* window = SDL_CreateWindow("Retro Dash", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, screen_width, screen_height,SDL_WINDOW_SHOWN);
     SDL_InitSubSystem(SDL_INIT_GAMECONTROLLER);
 
     filesystem_init(ASSET_DIRECTORY);

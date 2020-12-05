@@ -14,6 +14,6 @@ struct Music {
 };
 
 Audio* sdl_audio_create();
-void sdl_audio_destroy();
+void sdl_audio_destroy(Audio* audio);
 
 #endif

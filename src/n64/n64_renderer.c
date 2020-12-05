@@ -31,8 +31,8 @@ void renderer_get_screen_size(Renderer* renderer, Point* screen_size) {
 }
 
 Sprite* renderer_load_sprite(Renderer* renderer, const char* path) {
-    char* spritePath = malloc(strlen(path) + 8);  // .sprite
-    sprintf(spritePath, "%s.sprite", path);
+    char* spritePath = malloc(strlen(path) + 9);  //  / .sprite
+    sprintf(spritePath, "/%s.sprite", path);
 
     int handle = dfs_open(spritePath);
     free(spritePath);

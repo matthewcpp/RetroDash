@@ -30,9 +30,8 @@ const char* filesystem_get_asset_base_path() {
 
 int filesystem_open(const char* path) {
     size_t path_len = strlen(path);
-    char* filesystem_path = malloc(path_prefix_len + path_len + 1);
-    strcpy(filesystem_path, path_prefix);
-    strcat(filesystem_path, path);
+    char* filesystem_path = malloc(path_prefix_len + path_len + 2); // / \n
+    sprintf(filesystem_path, "%s/%s", path_prefix, path);
 
     int handle;
     for (handle = 0; handle < FILESYSTEM_MAX_OPEN_FILES; handle++) {
