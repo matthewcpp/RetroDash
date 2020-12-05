@@ -2,11 +2,23 @@
 
 #include <stdlib.h>
 
-#define BUTTON_FRAME_SPRITE_START 0
-
 static void on_teleport_in_complete(void* user_data);
 static void on_teleport_out_complete(void* user_data);
 static void on_dialog_return(void* user_data);
+
+typedef struct {
+    float pos_x;
+    char* hint;
+} PracticeHint;
+
+#define PRACTICE_HINT_COUNT 5
+static PracticeHint practice_hints[PRACTICE_HINT_COUNT] = {
+    {140.5f, "CLEAR ALL OBSTACLES TO FINISH"},
+    {167.0f, "GO LARGE TO MAKE THE JUMP"},
+    {178.0f, "GO MEDIUM TO DODGE THE SPIKES"},
+    {195.0f, "GO SMALL MID JUMP TO LAND IN TUNNEL"},
+    {215.0f, "GO BIG TO SMASH BRICKS"}
+};
 
 StateTutorial* state_tutorial_create(Audio* audio, Input* input, Renderer* renderer) {
     StateTutorial* tutorial = malloc(sizeof(StateTutorial));
@@ -19,6 +31,7 @@ StateTutorial* state_tutorial_create(Audio* audio, Input* input, Renderer* rende
     tutorial->base.teleport_out_hook = on_teleport_out_complete;
     tutorial->base.dialog_return_hook = on_dialog_return;
     tutorial->base.hook_user_data = tutorial;
+    tutorial->practice_hint_index = 0;
 
     for (int i = 0; i < INFO_TEXT_LINE_COUNT; i++)
         tutorial->_info_text[i] = NULL;
@@ -151,7 +164,44 @@ static void update_phase_change_to_normal(StateTutorial* tutorial, float time_de
     if (input_button_is_down(tutorial->base._input, CONTROLLER_1, CONTROLLER_BUTTON_C_UP) || input_button_is_down(tutorial->base._input, CONTROLLER_1, CONTROLLER_BUTTON_DPAD_UP) ) {
         state_playing_base_update(&tutorial->base, time_delta);
         clear_info_texts(tutorial);
-        tutorial->base.level->start_pos.x = 105.0f;
+        tutorial->phase = TUTORIAL_PHASE_CONTINUE_TO_LEDGE_JUMP;
+    }
+}
+
+static void update_phase_continue_to_ledge_jump(StateTutorial* tutorial, float time_delta) {
+    state_playing_base_update(&tutorial->base, time_delta);
+
+    if (tutorial->base.player->prev_pos.x < 113.0f && tutorial->base.player->entity.position.x >= 113.0f) {
+        clear_info_texts(tutorial);
+        tutorial->_info_text[0] = renderer_create_text_sprite(tutorial->base._renderer, tutorial->base._info_font, "JUMP TO THE LEDGE WITH # OR $");
+        tutorial->phase = TUTORIAL_PHASE_START_JUMP_TO_LEDGE;
+    }
+}
+
+static void update_phase_start_jump_to_ledge(StateTutorial* tutorial, float time_delta) {
+    if (input_button_is_down(tutorial->base._input, CONTROLLER_1, CONTROLLER_BUTTON_A) || input_button_is_down(tutorial->base._input, CONTROLLER_1, CONTROLLER_BUTTON_Z) ) {
+        state_playing_base_update(&tutorial->base, time_delta);
+        clear_info_texts(tutorial);
+        tutorial->phase = TUTORIAL_PHASE_JUMPING_TO_LEDGE;
+    }
+}
+
+static void update_phase_jumping_to_ledge(StateTutorial* tutorial, float time_delta) {
+    state_playing_base_update(&tutorial->base, time_delta);
+
+    if (tutorial->base.player->prev_pos.x < 114.5f && tutorial->base.player->entity.position.x >= 114.5f) {
+        tutorial->_info_text[0] = renderer_create_text_sprite(tutorial->base._renderer, tutorial->base._info_font, "YOU WILL NOT FIT ON THE LEDGE");
+        tutorial->_info_text[1] = renderer_create_text_sprite(tutorial->base._renderer, tutorial->base._info_font, "CHANGE TO SMALL IN AIR WITH ( OR )");
+        tutorial->phase = TUTORIAL_PHASE_MID_AIR_SIZE_CHANGE;
+    }
+}
+
+static void update_phase_mid_air_size_change(StateTutorial* tutorial, float time_delta) {
+    if (input_button_is_down(tutorial->base._input, CONTROLLER_1, CONTROLLER_BUTTON_C_LEFT) || input_button_is_down(tutorial->base._input, CONTROLLER_1, CONTROLLER_BUTTON_DPAD_LEFT) ) {
+        state_playing_base_update(&tutorial->base, time_delta);
+        clear_info_texts(tutorial);
+
+        tutorial->base.level->start_pos.x = 140.0f;
         tutorial->base.player->distance_travelled = 0.0f;
         tutorial->phase = TUTORIAL_PHASE_PRACTICE;
     }
@@ -162,14 +212,18 @@ static void update_phase_practice(StateTutorial* tutorial, float time_delta) {
 
     Player* player = tutorial->base.player;
 
-    if (player->prev_pos.x < 106.0f && player->entity.position.x >= 106.0f) {
+    if (player->prev_pos.x < 140.5f && player->entity.position.x >= 140.5f) {
         clear_info_texts(tutorial);
         tutorial->_info_text[0] = renderer_create_text_sprite(tutorial->base._renderer, tutorial->base._info_font, "NAVIGATE ALL OBSTACLES TO FINISH");
         tutorial->_info_text[1] = renderer_create_text_sprite(tutorial->base._renderer, tutorial->base._info_font, "THE TUTORIAL");
     }
 
-    if (player->prev_pos.x < 124.0f && player->entity.position.x >= 124.0f) {
+    if (tutorial->practice_hint_index >= PRACTICE_HINT_COUNT)
+        return;
+
+    if (player->prev_pos.x < practice_hints[tutorial->practice_hint_index].pos_x && player->entity.position.x >= practice_hints[tutorial->practice_hint_index].pos_x) {
         clear_info_texts(tutorial);
+        tutorial->_info_text[0] = renderer_create_text_sprite(tutorial->base._renderer, tutorial->base._info_font, practice_hints[tutorial->practice_hint_index++].hint);
     }
 }
 
@@ -218,11 +272,26 @@ void state_tutorial_update(StateTutorial* tutorial, float time_delta){
             update_phase_change_to_normal(tutorial, time_delta);
             break;
 
+        case TUTORIAL_PHASE_CONTINUE_TO_LEDGE_JUMP:
+            update_phase_continue_to_ledge_jump(tutorial, time_delta);
+            break;
+
+        case TUTORIAL_PHASE_START_JUMP_TO_LEDGE:
+            update_phase_start_jump_to_ledge(tutorial, time_delta);
+            break;
+
+        case TUTORIAL_PHASE_JUMPING_TO_LEDGE:
+            update_phase_jumping_to_ledge(tutorial, time_delta);
+            break;
+
+        case TUTORIAL_PHASE_MID_AIR_SIZE_CHANGE:
+            update_phase_mid_air_size_change(tutorial, time_delta);
+            break;
+
         case TUTORIAL_PHASE_PRACTICE:
             update_phase_practice(tutorial, time_delta);
             break;
     }
-
 }
 
 void state_tutorial_draw(StateTutorial* tutorial) {
@@ -245,6 +314,7 @@ void on_teleport_in_complete(void* user_data) {
     StateTutorial* tutorial = (StateTutorial*)user_data;
 
     if (tutorial->phase == TUTORIAL_PHASE_PRACTICE) {
+        tutorial->practice_hint_index = 0;
         player_start(tutorial->base.player);
     }
     else if (tutorial->phase == TUTORIAL_PHASE_WAITING_FOR_TELEPORT_IN) {

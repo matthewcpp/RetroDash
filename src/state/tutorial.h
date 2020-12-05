@@ -21,6 +21,10 @@ typedef enum {
     TUTORIAL_PHASE_CHANGE_TO_SMALL,
     TUTORIAL_PHASE_RUN_THROUGH_SMALL_AREA,
     TUTORIAL_PHASE_CHANGE_TO_NORMAL,
+    TUTORIAL_PHASE_CONTINUE_TO_LEDGE_JUMP,
+    TUTORIAL_PHASE_START_JUMP_TO_LEDGE,
+    TUTORIAL_PHASE_JUMPING_TO_LEDGE,
+    TUTORIAL_PHASE_MID_AIR_SIZE_CHANGE,
     TUTORIAL_PHASE_PRACTICE,
 } TutorialPhase;
 
@@ -29,6 +33,7 @@ typedef struct {
     GameState transition;
     TutorialPhase phase;
     Sprite* _info_text[INFO_TEXT_LINE_COUNT];
+    int practice_hint_index;
 } StateTutorial;
 
 StateTutorial* state_tutorial_create(Audio* audio, Input* input, Renderer* renderer);
