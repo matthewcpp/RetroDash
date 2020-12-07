@@ -12,16 +12,10 @@ typedef struct {
 
 typedef struct {
     int start;
-    int end;
     int count;
+    int capacity;
     Particle* particles;
 } ParticleGroup;
-
-void particle_group_init(ParticleGroup* particle_group, int count);
-void particle_group_uninit(ParticleGroup* particle_group);
-void particle_group_add(ParticleGroup* particle_group, Particle* particle);
-void particle_group_pop_start(ParticleGroup* particle_group);
-void particle_group_clear(ParticleGroup* particle_group);
 
 typedef struct {
     ParticleGroup _group;

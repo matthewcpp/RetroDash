@@ -3,11 +3,15 @@
 #include <stdlib.h>
 #include <string.h>
 
-void particle_group_init(ParticleGroup* particle_group, int count){
-    particle_group->particles = calloc(count, sizeof(Particle));
-    particle_group->count = count;
+void particle_group_clear(ParticleGroup* particle_group) {
     particle_group->start = 0;
-    particle_group->end = 0;
+    particle_group->count = 0;
+}
+
+void particle_group_init(ParticleGroup* particle_group, int capacity){
+    particle_group->particles = calloc(capacity, sizeof(Particle));
+    particle_group->capacity = capacity;
+    particle_group_clear(particle_group);
 }
 
 void particle_group_uninit(ParticleGroup* particle_group) {
@@ -15,21 +19,24 @@ void particle_group_uninit(ParticleGroup* particle_group) {
 }
 
 void particle_group_add(ParticleGroup* particle_group, Particle* particle) {
-    particle_group->end = (particle_group->end + 1) % particle_group->count;
+    int write_index;
+    if (particle_group->count < particle_group->capacity) {
+        write_index = (particle_group->start + particle_group->count) % particle_group->capacity;
+        particle_group->count += 1;
+    }
+    else {
+        write_index = particle_group->start;
+        particle_group->start = (particle_group->start + 1) % particle_group->capacity;
+    }
 
-    if (particle_group->end == particle_group->start)
-        particle_group->start = (particle_group->start + 1) % particle_group->count;
-
-    memcpy(particle_group->particles + particle_group->end, particle, sizeof(Particle));
+    memcpy(particle_group->particles + write_index, particle, sizeof(Particle));
 }
 
-// note: assumes not empty!
 void particle_group_pop_start(ParticleGroup* particle_group) {
-    particle_group->start = (particle_group->start + 1) % particle_group->count;
-}
-
-void particle_group_clear(ParticleGroup* particle_group) {
-    particle_group->start = particle_group->end;
+    if (particle_group->count > 0) {
+        particle_group->start = (particle_group->start + 1) % particle_group->capacity;
+        particle_group->count -= 1;
+    }
 }
 
 // TODO: this should probably not be hard coded.
@@ -60,35 +67,33 @@ void brick_particles_add(BrickParticles* brick_particles, Vec2* position) {
     particle_group_add(&brick_particles->_group, &particle);
 }
 
-void brick_particles_update(BrickParticles* brick_particles, float time_delta) {
-    int current = brick_particles->_group.start;
-
-    // prune inactive particles at start of buffer
-    while(current != brick_particles->_group.end) {
-        Particle* particle = brick_particles->_group.particles + current;
+// removes inactive particles from the front of the circular buffer.  Attempt to save on draw calls.
+static void prune_inative_particles(BrickParticles* brick_particles) {
+    while (brick_particles->_group.count > 0) {
+        Particle* particle = brick_particles->_group.particles + brick_particles->_group.start;
 
         // particle has gone off screen
         if (particle->position.x + PARTICLE_SIZE < brick_particles->_camera->_origin.x ||
             particle->position.y - PARTICLE_SIZE < 0.0f) {
             particle_group_pop_start(&brick_particles->_group);
-            current = brick_particles->_group.start;
         }
         else {
-            break;
+            return;
         }
     }
+}
 
-    current = brick_particles->_group.start;
+void brick_particles_update(BrickParticles* brick_particles, float time_delta) {
+    prune_inative_particles(brick_particles);
 
     // move all brick particles
-    while (current != brick_particles->_group.end) {
-        Particle* particle = brick_particles->_group.particles + current;
+    for (int i = 0; i < brick_particles->_group.count; i++) {
+        int particle_index = (brick_particles->_group.start + i) % brick_particles->_group.capacity;
+        Particle* particle = brick_particles->_group.particles + particle_index;
 
         particle->velocity.y -= GRAVITY * time_delta;
         particle->position.y += particle->velocity.y * time_delta;
         particle->position.x += particle->velocity.x * time_delta;
-
-        current = (current + 1) % brick_particles->_group.count;
     }
 }
 
@@ -98,8 +103,9 @@ void brick_particles_draw(BrickParticles* brick_particles) {
     float sprite_scale_x = particle_screen_size / (float)sprite_horizontal_frame_size(brick_particles->_sprite);
     float sprite_scale_y = particle_screen_size / (float)sprite_vertical_frame_size(brick_particles->_sprite);
 
-    while(current != brick_particles->_group.end) {
-        Particle * particle = brick_particles->_group.particles + current;
+    for (int i = 0; i < brick_particles->_group.count; i++) {
+        int particle_index = (brick_particles->_group.start + i) % brick_particles->_group.capacity;
+        Particle* particle = brick_particles->_group.particles + particle_index;
 
 
         if (particle->position.x >= brick_particles->_camera->_origin.x && particle->position.y - PARTICLE_SIZE >= 0.0f) {
