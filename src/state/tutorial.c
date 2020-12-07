@@ -218,6 +218,10 @@ static void update_phase_practice(StateTutorial* tutorial, float time_delta) {
         tutorial->_info_text[1] = renderer_create_text_sprite(tutorial->base._renderer, tutorial->base._info_font, "THE TUTORIAL");
     }
 
+    if (player->prev_pos.x < tutorial->base.level->goal_dist && player->entity.position.x >= tutorial->base.level->goal_dist) {
+        clear_info_texts(tutorial);
+    }
+
     if (tutorial->practice_hint_index >= PRACTICE_HINT_COUNT)
         return;
 
