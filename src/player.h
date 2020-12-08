@@ -55,6 +55,9 @@ typedef struct {
     int attempt_count;
     int jump_count;
 
+    /** If zero, the player will not poll input for jumping or size changes. */
+    int process_input;
+
     Sprite* _sprite;
     Level* _level;
     Renderer* _renderer;
@@ -92,4 +95,17 @@ Vec2 player_get_hit_size(PlayerSize playerSize);
  * Immediately sets the hit size for the player without performing any animation
  */
 void player_set_hit_size(Player* player, PlayerSize playerSize);
+
+/**
+ * Attempts to start jumping.
+ * If the player is changing size at this point, the jump animation will not begin until the size change is complete
+ */
+void player_try_jump(Player* player);
+
+/**
+ * Attempts to change the players size.
+ * If the player is jumping that animation will be overridden and then restored if player still hasn't touched ground when size change is complete.
+ */
+void player_try_set_size(Player* player, PlayerSize size);
+
 #endif

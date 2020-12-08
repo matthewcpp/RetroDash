@@ -1,0 +1,16 @@
+{
+    "name": "The Factory",
+    "order": 0,
+    "tileSet": "/the_factory/the_factory.tileset",
+    "music": "/the_factory/battle",
+    "startPos": {
+        "x": 0,
+        "y": 2.0
+    },
+    "goal": 322,
+
+    "pieces": [
+        "the_factory.tiles.1",
+        "the_factory.tiles.2"
+    ]
+}

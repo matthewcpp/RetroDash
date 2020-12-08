@@ -43,6 +43,7 @@ Player* player_create(Level* level, Renderer* renderer, Camera* camera, Input* i
     animation_player_init(&player->_animation);
     animation_player_load(&player->_animation, "/player.animation");
 
+    player->process_input = 1;
     player->attempt_count = 0;
     player_reset(player);
 
@@ -148,11 +149,7 @@ static void check_collisions(Player* player, PlayerQuery* query) {
     }
 }
 
-/**
- * Attempts to start jumping.
- * If the player is changing size at this point, the jump animation will not begin until the size change is complete
- */
-static void try_jump(Player* player) {
+void player_try_jump(Player* player) {
     if (!player->on_ground)
         return;
 
@@ -167,11 +164,7 @@ static void try_jump(Player* player) {
         animation_player_set_current(&player->_animation, PLAYER_ANIMATION_JUMP, 0);
 }
 
-/**
- * Attempts to change the players size.
- * If the player is jumping that animation will be overridden and then restored if player still hasn't touched ground when size change is complete.
- */
-static void try_set_size(Player* player, PlayerSize size) {
+void player_try_set_size(Player* player, PlayerSize size) {
     if (player->state != PLAYER_STATE_RUNNING || size == player->current_size)
         return;
 
@@ -184,6 +177,25 @@ static void try_set_size(Player* player, PlayerSize size) {
         player->prev_animation_time = player->_animation.current_time;
 
     animation_player_set_current(&player->_animation, PLAYER_ANIMATION_CHANGE_SIZE, 0);
+}
+
+static void _process_input(Player* player) {
+    if (input_button_is_down(player->_input, CONTROLLER_1, CONTROLLER_BUTTON_A) ||
+        input_button_is_down(player->_input, CONTROLLER_1, CONTROLLER_BUTTON_Z)) {
+        player_try_jump(player);
+    }
+    if (input_button_is_down(player->_input, CONTROLLER_1, CONTROLLER_BUTTON_C_LEFT) ||
+        input_button_is_down(player->_input, CONTROLLER_1, CONTROLLER_BUTTON_DPAD_LEFT)) {
+        player_try_set_size(player, PLAYER_SIZE_SMALL);
+    }
+    if (input_button_is_down(player->_input, CONTROLLER_1, CONTROLLER_BUTTON_C_UP) ||
+        input_button_is_down(player->_input, CONTROLLER_1, CONTROLLER_BUTTON_DPAD_UP)) {
+        player_try_set_size(player, PLAYER_SIZE_MEDIUM);
+    }
+    if (input_button_is_down(player->_input, CONTROLLER_1, CONTROLLER_BUTTON_C_RIGHT) ||
+        input_button_is_down(player->_input, CONTROLLER_1, CONTROLLER_BUTTON_DPAD_RIGHT)) {
+        player_try_set_size(player, PLAYER_SIZE_LARGE);
+    }
 }
 
 void player_update_movement(Player* player, float time_delta) {
@@ -206,22 +218,8 @@ void player_update_movement(Player* player, float time_delta) {
     if (is_below_world(player))
         player_kill(player);
 
-    if (input_button_is_down(player->_input, CONTROLLER_1, CONTROLLER_BUTTON_A) ||
-        input_button_is_down(player->_input, CONTROLLER_1, CONTROLLER_BUTTON_Z)) {
-        try_jump(player);
-    }
-    if (input_button_is_down(player->_input, CONTROLLER_1, CONTROLLER_BUTTON_C_LEFT) ||
-        input_button_is_down(player->_input, CONTROLLER_1, CONTROLLER_BUTTON_DPAD_LEFT)) {
-        try_set_size(player, PLAYER_SIZE_SMALL);
-    }
-    if (input_button_is_down(player->_input, CONTROLLER_1, CONTROLLER_BUTTON_C_UP) ||
-        input_button_is_down(player->_input, CONTROLLER_1, CONTROLLER_BUTTON_DPAD_UP)) {
-        try_set_size(player, PLAYER_SIZE_MEDIUM);
-    }
-    if (input_button_is_down(player->_input, CONTROLLER_1, CONTROLLER_BUTTON_C_RIGHT) ||
-        input_button_is_down(player->_input, CONTROLLER_1, CONTROLLER_BUTTON_DPAD_RIGHT)) {
-        try_set_size(player, PLAYER_SIZE_LARGE);
-    }
+    if (player->process_input)
+        _process_input(player);
 
     if (player->entity.position.x >= player->_level->goal_dist) {
         player->state = PLAYER_STATE_REACHED_GOAL;

@@ -36,6 +36,8 @@ StateTutorial* state_tutorial_create(Audio* audio, Input* input, Renderer* rende
     for (int i = 0; i < INFO_TEXT_LINE_COUNT; i++)
         tutorial->_info_text[i] = NULL;
 
+    tutorial->base.player->process_input = 0;
+
     return tutorial;
 }
 
@@ -78,7 +80,7 @@ static void update_phase_basic_movement(StateTutorial* tutorial, float time_delt
 static void update_phase_jump(StateTutorial* tutorial, float time_delta) {
     if (input_button_is_down(tutorial->base._input, CONTROLLER_1, CONTROLLER_BUTTON_A) || input_button_is_down(tutorial->base._input, CONTROLLER_1, CONTROLLER_BUTTON_Z) ) {
         clear_info_texts(tutorial);
-        state_playing_base_update(&tutorial->base, time_delta);
+        player_try_jump(tutorial->base.player);
         tutorial->phase = TUTORIAL_PHASE_RUN_TO_LARGE_CHANGE;
     }
 }
@@ -113,13 +115,13 @@ static void update_phase_change_to_large(StateTutorial* tutorial, float time_del
     }
     else if (input_button_is_down(tutorial->base._input, CONTROLLER_1, CONTROLLER_BUTTON_C_RIGHT) || input_button_is_down(tutorial->base._input, CONTROLLER_1, CONTROLLER_BUTTON_DPAD_RIGHT) ) {
         tutorial->base.player->velocity.x = 0;
-        state_playing_base_update(&tutorial->base, time_delta);
+        player_try_set_size(tutorial->base.player, PLAYER_SIZE_LARGE);
     }
 }
 
 static void update_phase_clear_large_obstacle(StateTutorial* tutorial, float time_delta) {
     if (input_button_is_down(tutorial->base._input, CONTROLLER_1, CONTROLLER_BUTTON_A) || input_button_is_down(tutorial->base._input, CONTROLLER_1, CONTROLLER_BUTTON_Z) ) {
-        state_playing_base_update(&tutorial->base, time_delta);
+        player_try_jump(tutorial->base.player);
         clear_info_texts(tutorial);
         tutorial->phase = TUTORIAL_PHASE_SMASH_BRICKS;
     }
@@ -145,7 +147,7 @@ static void update_phase_smash_bricks(StateTutorial* tutorial, float time_delta)
 static void update_phase_change_to_small(StateTutorial* tutorial, float time_delta) {
     if (input_button_is_down(tutorial->base._input, CONTROLLER_1, CONTROLLER_BUTTON_C_LEFT) || input_button_is_down(tutorial->base._input, CONTROLLER_1, CONTROLLER_BUTTON_DPAD_LEFT) ) {
         clear_info_texts(tutorial);
-        state_playing_base_update(&tutorial->base, time_delta);
+        player_try_set_size(tutorial->base.player, PLAYER_SIZE_SMALL);
         tutorial->phase = TUTORIAL_PHASE_RUN_THROUGH_SMALL_AREA;
     }
 }
@@ -156,13 +158,13 @@ static void update_phase_run_though_small_area(StateTutorial* tutorial, float ti
     if (tutorial->base.player->entity.position.x >= 105.0f) {
         clear_info_texts(tutorial);
         tutorial->_info_text[0] = renderer_create_text_sprite(tutorial->base._renderer, tutorial->base._info_font, "RETURN TO NORMAL SIZE WITH * OR +");
-        tutorial->phase = TUTORIAL_PHASE_CHANGE_TO_NORMAL;
+        tutorial->phase = TUTORIAL_PHASE_CHANGE_TO_MEDIUM;
     }
 }
 
-static void update_phase_change_to_normal(StateTutorial* tutorial, float time_delta) {
+static void update_phase_change_to_medium(StateTutorial* tutorial, float time_delta) {
     if (input_button_is_down(tutorial->base._input, CONTROLLER_1, CONTROLLER_BUTTON_C_UP) || input_button_is_down(tutorial->base._input, CONTROLLER_1, CONTROLLER_BUTTON_DPAD_UP) ) {
-        state_playing_base_update(&tutorial->base, time_delta);
+        player_try_set_size(tutorial->base.player, PLAYER_SIZE_MEDIUM);
         clear_info_texts(tutorial);
         tutorial->phase = TUTORIAL_PHASE_CONTINUE_TO_LEDGE_JUMP;
     }
@@ -180,7 +182,7 @@ static void update_phase_continue_to_ledge_jump(StateTutorial* tutorial, float t
 
 static void update_phase_start_jump_to_ledge(StateTutorial* tutorial, float time_delta) {
     if (input_button_is_down(tutorial->base._input, CONTROLLER_1, CONTROLLER_BUTTON_A) || input_button_is_down(tutorial->base._input, CONTROLLER_1, CONTROLLER_BUTTON_Z) ) {
-        state_playing_base_update(&tutorial->base, time_delta);
+        player_try_jump(tutorial->base.player);
         clear_info_texts(tutorial);
         tutorial->phase = TUTORIAL_PHASE_JUMPING_TO_LEDGE;
     }
@@ -198,7 +200,7 @@ static void update_phase_jumping_to_ledge(StateTutorial* tutorial, float time_de
 
 static void update_phase_mid_air_size_change(StateTutorial* tutorial, float time_delta) {
     if (input_button_is_down(tutorial->base._input, CONTROLLER_1, CONTROLLER_BUTTON_C_LEFT) || input_button_is_down(tutorial->base._input, CONTROLLER_1, CONTROLLER_BUTTON_DPAD_LEFT) ) {
-        state_playing_base_update(&tutorial->base, time_delta);
+        player_try_set_size(tutorial->base.player, PLAYER_SIZE_SMALL);
         clear_info_texts(tutorial);
 
         tutorial->base.level->start_pos.x = 140.0f;
@@ -216,6 +218,7 @@ static void update_phase_practice(StateTutorial* tutorial, float time_delta) {
         clear_info_texts(tutorial);
         tutorial->_info_text[0] = renderer_create_text_sprite(tutorial->base._renderer, tutorial->base._info_font, "NAVIGATE ALL OBSTACLES TO FINISH");
         tutorial->_info_text[1] = renderer_create_text_sprite(tutorial->base._renderer, tutorial->base._info_font, "THE TUTORIAL");
+        player->process_input = 1;
     }
 
     if (player->prev_pos.x < tutorial->base.level->goal_dist && player->entity.position.x >= tutorial->base.level->goal_dist) {
@@ -272,8 +275,8 @@ void state_tutorial_update(StateTutorial* tutorial, float time_delta){
             update_phase_run_though_small_area(tutorial, time_delta);
             break;
 
-        case TUTORIAL_PHASE_CHANGE_TO_NORMAL:
-            update_phase_change_to_normal(tutorial, time_delta);
+        case TUTORIAL_PHASE_CHANGE_TO_MEDIUM:
+            update_phase_change_to_medium(tutorial, time_delta);
             break;
 
         case TUTORIAL_PHASE_CONTINUE_TO_LEDGE_JUMP:

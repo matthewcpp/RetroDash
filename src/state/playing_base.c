@@ -144,12 +144,11 @@ void state_playing_base_draw(StatePlayingBase* state) {
 
     if (state->teleport.status == TELEPORT_STATUS_ACTIVE)
         teleport_draw(&state->teleport);
-    else
-        player_draw(state->player);
-
-    if (state->_attempt_dialog.base.shown)
+    else if (state->_attempt_dialog.base.shown)
         attempt_dialog_draw(&state->_attempt_dialog);
 
-    if (state->_pause_dialog.base.shown)
+    else if (state->_pause_dialog.base.shown)
         pause_dialog_draw(&state->_pause_dialog);
+    else
+        player_draw(state->player);
 }
