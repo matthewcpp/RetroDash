@@ -10,6 +10,7 @@ typedef struct {
     char* name;
     char* path;
     char* music;
+    uint32_t difficulty;
 }LevelInfo;
 
 typedef struct {
@@ -23,12 +24,14 @@ typedef struct {
     Input* _input;
     Renderer* _renderer;
 
-    Font* _font;
+    Font* _level_title_font;
+    Font* _level_info_font;
     Music* music;
     Sprite* _title_sprite;
     Sprite* _selector_arrows;
     Sprite* _selector_dots;
     Sprite* _selected_level_name_sprite;
+    Sprite* _selected_level_difficulty_sprite;
 
     LevelList _level_list;
     int _selected_level_index;
