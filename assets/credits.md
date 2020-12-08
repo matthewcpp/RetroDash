@@ -17,3 +17,6 @@ http://modarchive.org/index.php?request=view_by_moduleid&query=131400
 
 _80s by Beldoroon 96_  
 http://modarchive.org/index.php?request=view_by_moduleid&query=35556
+
+_battle_  
+https://modarchive.org/index.php?request=view_by_moduleid&query=35416

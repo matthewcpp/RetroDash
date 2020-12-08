@@ -1,0 +1,26 @@
+{
+    "sprite": "/the_factory/the_factory",
+    "debris": 15,
+    "tiles": [
+        "solid",
+        "solid",
+        "solid",
+        "tunnel",
+        "tunnel",
+        "tunnel",
+
+        "solid",
+        "solid",
+        "solid",
+        "triangle",
+        "solid",
+        "solid",
+
+        "solid",
+        "solid",
+        "solid",
+        "brick",
+        "solid",
+        "solid"
+    ]
+}
