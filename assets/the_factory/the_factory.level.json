@@ -1,6 +1,7 @@
 {
     "name": "The Factory",
     "order": 0,
+    "difficulty": 0,
     "tileSet": "/the_factory/the_factory.tileset",
     "music": "/the_factory/battle",
     "startPos": {

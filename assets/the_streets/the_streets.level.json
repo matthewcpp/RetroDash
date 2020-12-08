@@ -1,6 +1,7 @@
 {
     "name": "The Streets",
     "order": 1,
+    "difficulty": 1,
     "tileSet": "/the_streets/the_streets.tileset",
     "music": "/the_streets/synth_attack_4",
     "startPos": {
