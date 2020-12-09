@@ -14,15 +14,15 @@ static void set_selected_level(StateLevelSelect* level_select, int index) {
     if (index == level_select->_selected_level_index)
         return;
 
-    if (level_select->music)
-        audio_destroy_music(level_select->_audio, level_select->music);
+    if (level_select->_preview_music)
+        audio_destroy_music(level_select->_audio, level_select->_preview_music);
 
     if (level_select->_selected_level_name_sprite) {
         renderer_destroy_sprite(level_select->_renderer, level_select->_selected_level_name_sprite);
     }
 
     level_select->_selected_level_name_sprite = renderer_create_text_sprite(level_select->_renderer, level_select->_level_title_font, level_select->_level_list.levels[index].name);
-    level_select->music = audio_load_music(level_select->_audio, level_select->_level_list.levels[index].music);
+    level_select->_preview_music = audio_load_music(level_select->_audio, level_select->_level_list.levels[index].music);
 
     switch (level_select->_level_list.levels[index].difficulty) {
         case LEVEL_DIFFICULTY_EASY:
@@ -38,7 +38,8 @@ static void set_selected_level(StateLevelSelect* level_select, int index) {
             break;
     }
 
-    //audio_play_music(level_select->_audio, level_select->music);
+    level_select->_preview_music_state = PREVIEW_MUSIC_WAITING;
+    level_select->_preview_music_time = 0.0f;
 
     level_select->_selected_level_index = index;
 }
@@ -83,7 +84,7 @@ StateLevelSelect* state_level_select_create(Audio* audio, Input* input, Renderer
     level_select->_title_sprite = renderer_load_sprite(level_select->_renderer, "level_select/select_level");
     level_select->_selector_arrows = renderer_load_sprite(level_select->_renderer, "level_select/selector_arrows");
     level_select->_selector_dots = renderer_load_sprite(level_select->_renderer, "level_select/selector_dots");
-    level_select->music = NULL;
+    level_select->_preview_music = NULL;
     level_select->_selected_level_name_sprite = NULL;
 
     renderer_get_screen_size(level_select->_renderer, &level_select->_screen_size);
@@ -96,7 +97,9 @@ StateLevelSelect* state_level_select_create(Audio* audio, Input* input, Renderer
 }
 
 void state_level_select_destroy(StateLevelSelect* level_select) {
-    audio_destroy_music(level_select->_audio, level_select->music);
+    audio_set_music_volume(level_select->_audio, 1.0f); // TODO: create a transition_out method or something for things like this?
+    audio_destroy_music(level_select->_audio, level_select->_preview_music);
+
     renderer_destroy_sprite(level_select->_renderer, level_select->_title_sprite);
     renderer_destroy_sprite(level_select->_renderer, level_select->_selector_arrows);
     renderer_destroy_sprite(level_select->_renderer, level_select->_selector_dots);
@@ -113,6 +116,57 @@ void state_level_select_destroy(StateLevelSelect* level_select) {
     free(level_select->_level_list.levels);
 
     free(level_select);
+}
+
+#define PREVIEW_MUSIC_WAITING_TIME 0.75f
+#define PREVIEW_MUSIC_FADE_TIME 1.0f
+#define PREVIEW_MUSIC_PLAYING_TIME 10.0f
+
+static void _update_preview_music(StateLevelSelect* level_select, float time_delta) {
+    level_select->_preview_music_time += time_delta;
+
+    switch (level_select->_preview_music_state) {
+        case PREVIEW_MUSIC_WAITING:
+            if (level_select->_preview_music_time >= PREVIEW_MUSIC_WAITING_TIME) {
+                audio_set_music_volume(level_select->_audio, 0.0f);
+                audio_play_music(level_select->_audio, level_select->_preview_music);
+
+                level_select->_preview_music_time = 0.0f;
+                level_select->_preview_music_state = PREVIEW_MUSIC_FADE_IN;
+            }
+            break;
+
+        case PREVIEW_MUSIC_FADE_IN:
+            if (level_select->_preview_music_time >= PREVIEW_MUSIC_FADE_TIME) {
+                audio_set_music_volume(level_select->_audio, 1.0f);
+                level_select->_preview_music_time = 0.0f;
+                level_select->_preview_music_state = PREVIEW_MUSIC_PLAYING;
+            }
+            else {
+                audio_set_music_volume(level_select->_audio, level_select->_preview_music_time / PREVIEW_MUSIC_FADE_TIME);
+            }
+            break;
+
+        case PREVIEW_MUSIC_PLAYING:
+            if (level_select->_preview_music_time >= PREVIEW_MUSIC_PLAYING_TIME) {
+                level_select->_preview_music_time = 0.0f;
+                level_select->_preview_music_state = PREVIEW_MUSIC_FADE_OUT;
+            }
+            break;
+
+        case PREVIEW_MUSIC_FADE_OUT:
+            if (level_select->_preview_music_time >= PREVIEW_MUSIC_FADE_TIME) {
+                level_select->_preview_music_time = 0.0f;
+                level_select->_preview_music_state = PREVIEW_MUSIC_DONE;
+            }
+            else {
+                audio_set_music_volume(level_select->_audio, 1.0f - (level_select->_preview_music_time / PREVIEW_MUSIC_FADE_TIME));
+            }
+            break;
+
+        case PREVIEW_MUSIC_DONE:
+            break;
+    }
 }
 
 void state_level_select_update(StateLevelSelect* level_select, float time_delta){
@@ -137,6 +191,8 @@ void state_level_select_update(StateLevelSelect* level_select, float time_delta)
     if (input_button_is_down(level_select->_input, CONTROLLER_1, CONTROLLER_BUTTON_B)) {
         level_select->transition = GAME_STATE_TITLE;
     }
+
+    _update_preview_music(level_select, time_delta);
 }
 
 static void draw_selector_arrows(StateLevelSelect* level_select) {

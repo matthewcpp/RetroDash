@@ -19,6 +19,14 @@ typedef struct {
     char* data;
 } LevelList;
 
+typedef enum {
+    PREVIEW_MUSIC_WAITING,
+    PREVIEW_MUSIC_FADE_IN,
+    PREVIEW_MUSIC_PLAYING,
+    PREVIEW_MUSIC_FADE_OUT,
+    PREVIEW_MUSIC_DONE
+} PreviewMusicState;
+
 typedef struct {
     Audio* _audio;
     Input* _input;
@@ -26,12 +34,16 @@ typedef struct {
 
     Font* _level_title_font;
     Font* _level_info_font;
-    Music* music;
+
     Sprite* _title_sprite;
     Sprite* _selector_arrows;
     Sprite* _selector_dots;
     Sprite* _selected_level_name_sprite;
     Sprite* _selected_level_difficulty_sprite;
+
+    Music* _preview_music;
+    PreviewMusicState _preview_music_state;
+    float _preview_music_time;
 
     LevelList _level_list;
     int _selected_level_index;
