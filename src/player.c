@@ -5,7 +5,7 @@
 #include <math.h>
 #include <stdlib.h>
 
-#define PLAYER_SPEED 8.0f
+
 #define PLAYER_DEATH_TIME 1.0f
 
 typedef struct {
