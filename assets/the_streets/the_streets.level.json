@@ -5,9 +5,9 @@
     "music": "/the_streets/synth_attack_4",
     "startPos": {
         "x": 0,
-        "y": 2.0
+        "y": 2
     },
-    "goal": 434,
+    "goal": 426,
 
     "pieces": [
         "the_streets.tiles.1",
