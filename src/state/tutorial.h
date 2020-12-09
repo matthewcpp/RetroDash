@@ -1,9 +1,6 @@
 #ifndef TUTORIAL
 #define TUTORIAL
 
-// icons:
-// https://www.ssbwiki.com/Category:Button_icons_(N64)
-
 #include "playing_base.h"
 #include "states.h"
 
@@ -25,6 +22,7 @@ typedef enum {
     TUTORIAL_PHASE_START_JUMP_TO_LEDGE,
     TUTORIAL_PHASE_JUMPING_TO_LEDGE,
     TUTORIAL_PHASE_MID_AIR_SIZE_CHANGE,
+    TUTORIAL_PHASE_RUN_TO_PRACTICE,
     TUTORIAL_PHASE_PRACTICE,
 } TutorialPhase;
 

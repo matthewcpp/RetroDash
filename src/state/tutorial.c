@@ -201,6 +201,18 @@ static void update_phase_mid_air_size_change(StateTutorial* tutorial, float time
     if (input_button_is_down(tutorial->base._input, CONTROLLER_1, CONTROLLER_BUTTON_C_LEFT) || input_button_is_down(tutorial->base._input, CONTROLLER_1, CONTROLLER_BUTTON_DPAD_LEFT) ) {
         player_try_set_size(tutorial->base.player, PLAYER_SIZE_SMALL);
         clear_info_texts(tutorial);
+        tutorial->phase = TUTORIAL_PHASE_RUN_TO_PRACTICE;
+    }
+}
+
+static void update_phase_run_to_practice(StateTutorial* tutorial, float time_delta) {
+    state_playing_base_update(&tutorial->base, time_delta);
+
+    if (tutorial->base.player->prev_pos.x < 120.0f && tutorial->base.player->entity.position.x >= 120.0f) {
+        player_try_set_size(tutorial->base.player, PLAYER_SIZE_MEDIUM);
+    }
+    else if (tutorial->base.player->prev_pos.x < 130.0f && tutorial->base.player->entity.position.x >= 130.0f) {
+        clear_info_texts(tutorial);
 
         tutorial->base.level->start_pos.x = 130.0f;
         tutorial->base.player->distance_travelled = 0.0f;
@@ -292,6 +304,10 @@ void state_tutorial_update(StateTutorial* tutorial, float time_delta){
 
         case TUTORIAL_PHASE_MID_AIR_SIZE_CHANGE:
             update_phase_mid_air_size_change(tutorial, time_delta);
+            break;
+
+        case TUTORIAL_PHASE_RUN_TO_PRACTICE:
+            update_phase_run_to_practice(tutorial, time_delta);
             break;
 
         case TUTORIAL_PHASE_PRACTICE:
