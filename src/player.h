@@ -31,6 +31,8 @@ typedef enum {
     PLAYER_ANIMATION_CHANGE_SIZE
 } PlayerAnimation;
 
+#define PLAYER_SPEED 6.0f
+
 typedef struct {
     Entity entity;
     PlayerSize current_size;

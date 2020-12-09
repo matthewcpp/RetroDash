@@ -11,13 +11,12 @@ typedef struct {
     char* hint;
 } PracticeHint;
 
-#define PRACTICE_HINT_COUNT 5
+#define PRACTICE_HINT_COUNT 4
 static PracticeHint practice_hints[PRACTICE_HINT_COUNT] = {
-    {140.5f, "CLEAR ALL OBSTACLES TO FINISH"},
-    {167.0f, "GO LARGE TO MAKE THE JUMP"},
-    {178.0f, "GO MEDIUM TO DODGE THE SPIKES"},
-    {195.0f, "GO SMALL MID JUMP TO LAND IN TUNNEL"},
-    {215.0f, "GO BIG TO SMASH BRICKS"}
+    {153.0f, "GO LARGE TO MAKE THE JUMP"},
+    {164.0f, "GO MEDIUM TO DODGE THE SPIKES"},
+    {181.0f, "GO SMALL MID JUMP TO LAND IN TUNNEL"},
+    {208.0f, "GO BIG TO SMASH BRICKS"}
 };
 
 StateTutorial* state_tutorial_create(Audio* audio, Input* input, Renderer* renderer) {
@@ -69,7 +68,7 @@ static void update_phase_info(StateTutorial* tutorial) {
 static void update_phase_basic_movement(StateTutorial* tutorial, float time_delta) {
     state_playing_base_update(&tutorial->base, time_delta);
 
-    if (tutorial->base.player->entity.position.x >= 40.0f) {
+    if (tutorial->base.player->entity.position.x >= 32.0f) {
         clear_info_texts(tutorial);
         tutorial->_info_text[0] = renderer_create_text_sprite(tutorial->base._renderer, tutorial->base._info_font, "AVOID OBSTACLES IN YOUR PATH");
         tutorial->_info_text[1] = renderer_create_text_sprite(tutorial->base._renderer, tutorial->base._info_font, "JUMP WITH # OR $");
@@ -88,7 +87,7 @@ static void update_phase_jump(StateTutorial* tutorial, float time_delta) {
 static void update_phase_run_to_jump2(StateTutorial* tutorial, float time_delta) {
     state_playing_base_update(&tutorial->base, time_delta);
 
-    if (tutorial->base.player->entity.position.x >= 48.0f) {
+    if (tutorial->base.player->entity.position.x >= 40.0f) {
         clear_info_texts(tutorial);
         tutorial->_info_text[0] = renderer_create_text_sprite(tutorial->base._renderer, tutorial->base._info_font, "LARGE SIZE INCREASES JUMP HEIGHT");
         tutorial->_info_text[1] = renderer_create_text_sprite(tutorial->base._renderer, tutorial->base._info_font, "CHANGE TO LARGE SIZE WITH ' OR &");
@@ -102,9 +101,9 @@ static void update_phase_change_to_large(StateTutorial* tutorial, float time_del
 
     if (player->current_size == PLAYER_SIZE_LARGE && player->_animation.current_animation != player->_animation.animations + PLAYER_ANIMATION_CHANGE_SIZE) {
         state_playing_base_update(&tutorial->base, time_delta);
-        player->velocity.x = 8.0f;
+        player->velocity.x = PLAYER_SPEED;
 
-        if (player->entity.position.x >= 51.0f) {
+        if (player->entity.position.x >= 42.0f) {
             clear_info_texts(tutorial);
             tutorial->_info_text[0] = renderer_create_text_sprite(tutorial->base._renderer, tutorial->base._info_font, "CLEAR THE OBSTACLE");
             tutorial->phase = TUTORIAL_PHASE_CLEAR_LARGE_OBSTACLE;
@@ -131,12 +130,12 @@ static void update_phase_smash_bricks(StateTutorial* tutorial, float time_delta)
     state_playing_base_update(&tutorial->base, time_delta);
     Player* player = tutorial->base.player;
 
-    if (player->prev_pos.x < 65.0f && player->entity.position.x >= 65.0f) {
+    if (player->prev_pos.x < 55.0f && player->entity.position.x >= 55.0f) {
         clear_info_texts(tutorial);
         tutorial->_info_text[0] = renderer_create_text_sprite(tutorial->base._renderer, tutorial->base._info_font, "YOU CAN SMASH BRICKS WHILE LARGE");
     }
 
-    if (player->entity.position.x >= 86.0f) {
+    if (player->entity.position.x >= 75.0f) {
         clear_info_texts(tutorial);
         tutorial->_info_text[0] = renderer_create_text_sprite(tutorial->base._renderer, tutorial->base._info_font, "YOU ARE TOO BIG TO CONTINUE");
         tutorial->_info_text[1] = renderer_create_text_sprite(tutorial->base._renderer, tutorial->base._info_font, "CHANGE TO SMALL SIZE WITH ( OR )");
@@ -155,7 +154,7 @@ static void update_phase_change_to_small(StateTutorial* tutorial, float time_del
 static void update_phase_run_though_small_area(StateTutorial* tutorial, float time_delta) {
     state_playing_base_update(&tutorial->base, time_delta);
 
-    if (tutorial->base.player->entity.position.x >= 105.0f) {
+    if (tutorial->base.player->entity.position.x >= 88.0) {
         clear_info_texts(tutorial);
         tutorial->_info_text[0] = renderer_create_text_sprite(tutorial->base._renderer, tutorial->base._info_font, "RETURN TO NORMAL SIZE WITH * OR +");
         tutorial->phase = TUTORIAL_PHASE_CHANGE_TO_MEDIUM;
@@ -173,7 +172,7 @@ static void update_phase_change_to_medium(StateTutorial* tutorial, float time_de
 static void update_phase_continue_to_ledge_jump(StateTutorial* tutorial, float time_delta) {
     state_playing_base_update(&tutorial->base, time_delta);
 
-    if (tutorial->base.player->prev_pos.x < 113.0f && tutorial->base.player->entity.position.x >= 113.0f) {
+    if (tutorial->base.player->prev_pos.x < 96.5f && tutorial->base.player->entity.position.x >= 96.5f) {
         clear_info_texts(tutorial);
         tutorial->_info_text[0] = renderer_create_text_sprite(tutorial->base._renderer, tutorial->base._info_font, "JUMP TO THE LEDGE WITH # OR $");
         tutorial->phase = TUTORIAL_PHASE_START_JUMP_TO_LEDGE;
@@ -191,7 +190,7 @@ static void update_phase_start_jump_to_ledge(StateTutorial* tutorial, float time
 static void update_phase_jumping_to_ledge(StateTutorial* tutorial, float time_delta) {
     state_playing_base_update(&tutorial->base, time_delta);
 
-    if (tutorial->base.player->prev_pos.x < 114.5f && tutorial->base.player->entity.position.x >= 114.5f) {
+    if (tutorial->base.player->prev_pos.x < 97.5f && tutorial->base.player->entity.position.x >= 97.5f) {
         tutorial->_info_text[0] = renderer_create_text_sprite(tutorial->base._renderer, tutorial->base._info_font, "YOU WILL NOT FIT ON THE LEDGE");
         tutorial->_info_text[1] = renderer_create_text_sprite(tutorial->base._renderer, tutorial->base._info_font, "CHANGE TO SMALL IN AIR WITH ( OR )");
         tutorial->phase = TUTORIAL_PHASE_MID_AIR_SIZE_CHANGE;
@@ -203,7 +202,7 @@ static void update_phase_mid_air_size_change(StateTutorial* tutorial, float time
         player_try_set_size(tutorial->base.player, PLAYER_SIZE_SMALL);
         clear_info_texts(tutorial);
 
-        tutorial->base.level->start_pos.x = 140.0f;
+        tutorial->base.level->start_pos.x = 130.0f;
         tutorial->base.player->distance_travelled = 0.0f;
         tutorial->phase = TUTORIAL_PHASE_PRACTICE;
     }
@@ -214,7 +213,7 @@ static void update_phase_practice(StateTutorial* tutorial, float time_delta) {
 
     Player* player = tutorial->base.player;
 
-    if (player->prev_pos.x < 140.5f && player->entity.position.x >= 140.5f) {
+    if (player->prev_pos.x < 130.5f && player->entity.position.x >= 130.5f) {
         clear_info_texts(tutorial);
         tutorial->_info_text[0] = renderer_create_text_sprite(tutorial->base._renderer, tutorial->base._info_font, "NAVIGATE ALL OBSTACLES TO FINISH");
         tutorial->_info_text[1] = renderer_create_text_sprite(tutorial->base._renderer, tutorial->base._info_font, "THE TUTORIAL");

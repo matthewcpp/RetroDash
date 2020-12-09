@@ -4,10 +4,10 @@
     "tileSet": "/the_heights/the_heights.tileset",
     "music": "/the_heights/bd_80s",
     "startPos": {
-        "x": 2.0,
+        "x": 0,
         "y": 2.0
     },
-    "goal": 437,
+    "goal": 388,
 
     "pieces": [
         "the_heights.tiles.1",
