@@ -7,7 +7,7 @@
         "x": 3.0,
         "y": 2.0
     },
-    "goal": 250,
+    "goal": 235,
 
     "pieces": [
         "tutorial.tiles.guided",
