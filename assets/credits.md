@@ -1,14 +1,18 @@
-### Retro Dash Asset Credits
-#### Sprites
+## Retro Dash Asset Credits
+### Sprites
 
 _Pixel Adventure by Pixel Frog_  
 https://pixelfrog-store.itch.io/pixel-adventure-1
 
-#### Fonts
+### Fonts
 _Lazer 84 and Basic Lazer_  
 https://www.sunrise-digital.net/font.html
 
-#### Music
+### Icons
+_N64 Button Icons_  
+https://www.ssbwiki.com/Category:Button_icons_(N64)
+
+### Music
 _80's rewind_  
 http://modarchive.org/index.php?request=view_by_moduleid&query=61856
 
