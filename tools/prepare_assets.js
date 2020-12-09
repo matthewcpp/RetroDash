@@ -168,7 +168,8 @@ function prepareLevel(srcPath, destPath, options) {
         name: levelUppercaseName,
         path: destPath.substring(options.destDir.length),
         music: level.music,
-        order: level.order
+        order: level.order,
+        difficulty: level.difficulty
     })
 }
 
@@ -253,14 +254,16 @@ function prepareLevelList(destDir, littleEndian) {
         levelDataIndices.music = bufferPayloadSize;
         bufferPayloadSize += Buffer.byteLength(level.music, "utf8") + 1;
 
+        levelDataIndices.difficulty = level.difficulty;
+
         dataIndices.push(levelDataIndices);
     }
 
-    let bufferIndicesSize = 4 + levelList.length * 12; // level count + 3 payload indicies per level info
+    let bufferIndicesSize = 4 + levelList.length * 16; // level count + 3 payload indices and difficulty rating per level info
 
     const buffer = Buffer.alloc(4 /* payload size prefix*/ + bufferPayloadSize + bufferIndicesSize);
 
-    // write all strings into the payload
+    // write all data into the payload
     let offset = writeUint32(bufferPayloadSize, buffer, 0, littleEndian);
     for (const level of levelList) {
         offset += buffer.write(level.name, offset);
@@ -279,6 +282,7 @@ function prepareLevelList(destDir, littleEndian) {
         offset = writeUint32(levelDataIndices.name, buffer, offset, littleEndian);
         offset = writeUint32(levelDataIndices.path, buffer, offset, littleEndian);
         offset = writeUint32(levelDataIndices.music, buffer, offset, littleEndian);
+        offset = writeUint32(levelDataIndices.difficulty, buffer, offset, littleEndian);
     }
 
     fs.writeFileSync(buildPath, buffer);

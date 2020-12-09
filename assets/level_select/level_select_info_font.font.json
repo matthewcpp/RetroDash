@@ -1,0 +1,149 @@
+{
+  "size": "18",
+  "glyphs": [
+    {
+      "ch": " ",
+      "top": -13,
+      "left": 0,
+      "bottom": 14,
+      "width": 5,
+      "x": 0,
+      "y": 0
+    },
+    {
+      "ch": ":",
+      "top": -5,
+      "left": 0,
+      "bottom": 14,
+      "width": 5,
+      "x": 6,
+      "y": 0
+    },
+    {
+      "ch": "A",
+      "top": -4,
+      "left": 1,
+      "bottom": 14,
+      "width": 10,
+      "x": 12,
+      "y": 0
+    },
+    {
+      "ch": "C",
+      "top": -4,
+      "left": 1,
+      "bottom": 14,
+      "width": 8,
+      "x": 23,
+      "y": 0
+    },
+    {
+      "ch": "D",
+      "top": -4,
+      "left": 1,
+      "bottom": 14,
+      "width": 9,
+      "x": 32,
+      "y": 0
+    },
+    {
+      "ch": "E",
+      "top": -4,
+      "left": 1,
+      "bottom": 14,
+      "width": 8,
+      "x": 42,
+      "y": 0
+    },
+    {
+      "ch": "F",
+      "top": -4,
+      "left": 1,
+      "bottom": 14,
+      "width": 8,
+      "x": 51,
+      "y": 0
+    },
+    {
+      "ch": "H",
+      "top": -4,
+      "left": 1,
+      "bottom": 14,
+      "width": 9,
+      "x": 60,
+      "y": 0
+    },
+    {
+      "ch": "I",
+      "top": -4,
+      "left": 1,
+      "bottom": 14,
+      "width": 3,
+      "x": 70,
+      "y": 0
+    },
+    {
+      "ch": "L",
+      "top": -4,
+      "left": 1,
+      "bottom": 14,
+      "width": 7,
+      "x": 74,
+      "y": 0
+    },
+    {
+      "ch": "M",
+      "top": -4,
+      "left": 2,
+      "bottom": 14,
+      "width": 12,
+      "x": 82,
+      "y": 0
+    },
+    {
+      "ch": "R",
+      "top": -4,
+      "left": 1,
+      "bottom": 14,
+      "width": 8,
+      "x": 95,
+      "y": 0
+    },
+    {
+      "ch": "S",
+      "top": -4,
+      "left": 2,
+      "bottom": 14,
+      "width": 7,
+      "x": 104,
+      "y": 0
+    },
+    {
+      "ch": "T",
+      "top": -4,
+      "left": 1,
+      "bottom": 14,
+      "width": 8,
+      "x": 112,
+      "y": 0
+    },
+    {
+      "ch": "U",
+      "top": -4,
+      "left": 1,
+      "bottom": 14,
+      "width": 9,
+      "x": 121,
+      "y": 0
+    },
+    {
+      "ch": "Y",
+      "top": -4,
+      "left": 2,
+      "bottom": 14,
+      "width": 9,
+      "x": 131,
+      "y": 0
+    }
+  ]
+}

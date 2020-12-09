@@ -80,3 +80,8 @@ void audio_restart_music(Audio* audio) {
     Mix_ResumeMusic();
     (void)audio;
 }
+
+void audio_set_music_volume(Audio* audio, float volume) {
+    Mix_VolumeMusic((int)(volume * MIX_MAX_VOLUME));
+    (void)audio;
+}

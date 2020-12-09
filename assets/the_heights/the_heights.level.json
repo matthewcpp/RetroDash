@@ -1,6 +1,7 @@
 {
     "name": "The Heights",
     "order": 2,
+    "difficulty": 2,
     "tileSet": "/the_heights/the_heights.tileset",
     "music": "/the_heights/bd_80s",
     "startPos": {
