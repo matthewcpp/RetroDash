@@ -175,7 +175,7 @@ void renderer_begin_tile_drawing(Renderer* renderer, Sprite* sprite) {
 }
 
 void renderer_draw_tile(Renderer* renderer, int index, int x, int y) {
-    if (x >= 0)
+    if (x >= 0 && y >= 0)
         tile_batch_add(renderer->tile_batches[index], x, y);
     else
         software_tile_batch_add(&renderer->software_tiles, index, x, y);
