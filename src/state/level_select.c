@@ -130,6 +130,9 @@ static void _update_preview_music(StateLevelSelect* level_select, float time_del
             if (level_select->_preview_music_time >= PREVIEW_MUSIC_WAITING_TIME) {
                 audio_set_music_volume(level_select->_audio, 0.0f);
                 audio_play_music(level_select->_audio, level_select->_preview_music);
+                #ifdef EMSCRIPTEN
+                    audio_restart_music(level_select->_audio);
+                #endif
 
                 level_select->_preview_music_time = 0.0f;
                 level_select->_preview_music_state = PREVIEW_MUSIC_FADE_IN;
