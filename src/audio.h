@@ -12,5 +12,6 @@ void audio_play_music(Audio* audio, Music* music);
 void audio_pause_music(Audio* audio);
 void audio_resume_music(Audio* audio);
 void audio_restart_music(Audio* audio);
+void audio_set_music_volume(Audio* audio, float volume);
 
 #endif

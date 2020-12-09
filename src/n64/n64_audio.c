@@ -102,3 +102,8 @@ void audio_restart_music(Audio* audio) {
     Player_SetPosition(0);
     (void)audio;
 }
+
+void audio_set_music_volume(Audio* audio, float volume) {
+    Player_SetVolume((int)(volume * 128.0f));
+    (void)audio;
+}
