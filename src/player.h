@@ -57,6 +57,8 @@ typedef struct {
     float distance_travelled;
     int attempt_count;
     int jump_count;
+    int brick_count;
+    int size_change_count;
 
     /** If zero, the player will not poll input for jumping or size changes. */
     int process_input;
@@ -81,6 +83,9 @@ void player_kill(Player* player);
  * Resets player to initial state.  Note they will not be running.
  */
 void player_reset(Player* player);
+
+/** Clears the players tracked stats such as jump count, brick count, distance travelled... */
+void player_clear_stats(Player* player);
 
 /**
  * Starts the player running though the level.

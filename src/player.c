@@ -106,6 +106,7 @@ static void player_break_brick(Player* player, int tile_x, int tile_y) {
 
     level_set_tile(player->_level, tile_x, tile_y, TILE_EMPTY);
     brick_particles_add(&player->_level->brick_particles, &debris_pos);
+    player->brick_count += 1;
 }
 
 /**
@@ -170,6 +171,7 @@ void player_try_set_size(Player* player, PlayerSize size) {
         return;
 
     player->state = PLAYER_STATE_CHANGING_SIZE;
+    player->size_change_count += 1;
     player->target_size = size;
     player->current_size = size;
     player->state_time = 0.0f;
@@ -329,6 +331,13 @@ void player_kill(Player* player) {
     animation_player_set_current(&player->_animation, PLAYER_ANIMATION_DEATH, 0);
 }
 
+void player_clear_stats(Player* player) {
+    player->distance_travelled = 0.0f;
+    player->jump_count = 0;
+    player->size_change_count = 0;
+    player->brick_count = 0;
+}
+
 void player_reset(Player* player) {
     player->current_size = PLAYER_SIZE_MEDIUM;
     player->target_size = PLAYER_SIZE_MEDIUM;
@@ -348,8 +357,7 @@ void player_reset(Player* player) {
     player->on_ground = 1;
     player->is_jumping = 0;
 
-    player->distance_travelled = 0.0f;
-    player->jump_count = 0;
+    player_clear_stats(player);
 }
 
 // TODO: This should take previous position into account to prevent "falling through tiles"

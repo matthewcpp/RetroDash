@@ -215,7 +215,7 @@ static void update_phase_run_to_practice(StateTutorial* tutorial, float time_del
         clear_info_texts(tutorial);
 
         tutorial->base.level->start_pos.x = 130.0f;
-        tutorial->base.player->distance_travelled = 0.0f;
+        player_clear_stats(tutorial->base.player);
         tutorial->phase = TUTORIAL_PHASE_PRACTICE;
     }
 }

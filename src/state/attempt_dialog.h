@@ -16,6 +16,7 @@ typedef struct {
     Sprite* _attempt_count_sprite;
     Sprite* _percent_complete_sprite;
     Sprite* _jump_count_sprite;
+    Sprite* _size_changes_sprite;
     Sprite* _retry_sprite;
     Sprite* _return_sprite;
 } AttemptDialog;

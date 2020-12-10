@@ -23,6 +23,7 @@ static void clear_results_sprites(AttemptDialog* dialog) {
         renderer_destroy_sprite(dialog->base._renderer, dialog->_attempt_count_sprite);
         renderer_destroy_sprite(dialog->base._renderer, dialog->_percent_complete_sprite);
         renderer_destroy_sprite(dialog->base._renderer, dialog->_jump_count_sprite);
+        renderer_destroy_sprite(dialog->base._renderer, dialog->_size_changes_sprite);
     }
 }
 
@@ -47,6 +48,9 @@ void compute_results_sprites(AttemptDialog* dialog) {
 
     sprintf(str_buffer, "JUMPS: %d", dialog->_player->jump_count);
     dialog->_jump_count_sprite = renderer_create_text_sprite(dialog->base._renderer, dialog->_info_font, str_buffer);
+
+    sprintf(str_buffer, "SIZE CHANGES: %d", dialog->_player->size_change_count);
+    dialog->_size_changes_sprite = renderer_create_text_sprite(dialog->base._renderer, dialog->_info_font, str_buffer);
 }
 
 void attempt_dialog_show(AttemptDialog* dialog) {
@@ -60,7 +64,7 @@ void attempt_dialog_update(AttemptDialog* dialog){
 }
 
 #define DIALOG_WIDTH 220
-#define DIALOG_HEIGHT 164
+#define DIALOG_HEIGHT 188
 
 #define PROGRESS_BAR_WIDTH 200
 #define PROGRESS_BAR_HEIGHT 18
@@ -112,6 +116,11 @@ void attempt_dialog_draw(AttemptDialog* dialog) {
     x_pos = dialog_rect.x + dialog_rect.w / 2 - sprite_width(dialog->_jump_count_sprite) / 2;
 
     renderer_draw_sprite(dialog->base._renderer, dialog->_jump_count_sprite, x_pos, y_pos);
+
+    y_pos += 18 + 5;
+
+    x_pos = dialog_rect.x + dialog_rect.w / 2 - sprite_width(dialog->_size_changes_sprite) / 2;
+    renderer_draw_sprite(dialog->base._renderer, dialog->_size_changes_sprite, x_pos, y_pos);
 
     y_pos += 18 + 15;
 
