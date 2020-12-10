@@ -1,6 +1,8 @@
 #ifndef INPUT_H
 #define INPUT_H
 
+#include "rect.h"
+
 typedef struct Input Input;
 
 
@@ -32,6 +34,7 @@ typedef enum {
 } ControllerIndex;
 
 int input_button_is_down(Input* input, ControllerIndex controller, ControllerButton button);
+void input_axis_values(Input* input, Vec2* current, Vec2* prev);
 int input_button_is_up(Input* input, ControllerIndex controller, ControllerButton button);
 int input_button_is_held(Input* input, ControllerIndex controller, ControllerButton button);
 
