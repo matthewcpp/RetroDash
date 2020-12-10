@@ -1,6 +1,7 @@
 #include "level_select.h"
 
 #include "../filesystem.h"
+#include "screen_util.h"
 
 #include <stdlib.h>
 
@@ -179,21 +180,17 @@ static void _update_preview_music(StateLevelSelect* level_select, float time_del
 }
 
 void state_level_select_update(StateLevelSelect* level_select, float time_delta){
-    if (input_button_is_down(level_select->_input, CONTROLLER_1, CONTROLLER_BUTTON_DPAD_RIGHT) ||
-        input_button_is_down(level_select->_input, CONTROLLER_1, CONTROLLER_BUTTON_C_RIGHT)) {
+    if (screen_util_ui_nav_right(level_select->_input)) {
         if (level_select->_selected_level_index < level_select->_level_list.count - 1)
             set_selected_level(level_select, level_select->_selected_level_index + 1);
     }
 
-    if (input_button_is_down(level_select->_input, CONTROLLER_1, CONTROLLER_BUTTON_DPAD_LEFT) ||
-        input_button_is_down(level_select->_input, CONTROLLER_1, CONTROLLER_BUTTON_C_LEFT)) {
+    if (screen_util_ui_nav_left(level_select->_input)) {
         if (level_select->_selected_level_index > 0)
             set_selected_level(level_select, level_select->_selected_level_index - 1);
     }
 
-    if (input_button_is_down(level_select->_input, CONTROLLER_1, CONTROLLER_BUTTON_A) ||
-        input_button_is_down(level_select->_input, CONTROLLER_1, CONTROLLER_BUTTON_Z) ||
-        input_button_is_down(level_select->_input, CONTROLLER_1, CONTROLLER_BUTTON_START) ) {
+    if (screen_util_ui_button_accept(level_select->_input) ) {
         level_select->transition = GAME_STATE_PLAYING;
     }
 

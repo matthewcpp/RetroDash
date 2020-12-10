@@ -1,5 +1,7 @@
 #include "settings.h"
 
+#include "screen_util.h"
+
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -62,11 +64,11 @@ void state_settings_update(StateSettings* settings, float time_delta) {
         settings->transition = GAME_STATE_TITLE;
     }
 
-    if (input_button_is_down(settings->_input, CONTROLLER_1, CONTROLLER_BUTTON_DPAD_LEFT) && settings->_settings->player_speed_modifier > SETTINGS_SPEED_MIN) {
+    if (screen_util_ui_nav_left(settings->_input) && settings->_settings->player_speed_modifier > SETTINGS_SPEED_MIN) {
         settings->_settings->player_speed_modifier -= SETTINGS_SPEED_STEP;
         settings_set_game_speed_sprite(settings);
     }
-    else if (input_button_is_down(settings->_input, CONTROLLER_1, CONTROLLER_BUTTON_DPAD_RIGHT) &&  settings->_settings->player_speed_modifier < SETTINGS_SPEED_MAX) {
+    else if (screen_util_ui_nav_right(settings->_input) &&  settings->_settings->player_speed_modifier < SETTINGS_SPEED_MAX) {
         settings->_settings->player_speed_modifier += SETTINGS_SPEED_STEP;
         settings_set_game_speed_sprite(settings);
     }
