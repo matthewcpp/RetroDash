@@ -32,6 +32,7 @@ set(game_src
     src/state/pause_dialog.h src/state/pause_dialog.c
     src/state/playing_base.h src/state/playing_base.c
     src/state/playing.h src/state/playing.c
+    src/state/settings.h src/state/settings.c
     src/state/title.h src/state/title.c
     src/state/tutorial.h src/state/tutorial.c)
 

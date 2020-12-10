@@ -20,8 +20,8 @@ StateTitle* state_title_create(Audio* audio, Input* input, Renderer* renderer){
     title->_character_top = renderer_load_sprite(title->_renderer, "title/title_idle_top");
     title->_character_bottom = renderer_load_sprite(title->_renderer, "title/title_idle_bottom");
     title->_platform = renderer_load_sprite(title->_renderer, "title/title_platform");
-    title->_menu_font = renderer_load_font(title->_renderer, "title/title_menu");
-    title->_menu_font_selected = renderer_load_font(title->_renderer, "title/title_menu_selected");
+    title->_menu_font = renderer_load_font(title->_renderer, "title/title_menu_font");
+    title->_menu_font_selected = renderer_load_font(title->_renderer, "title/title_menu_font_selected");
     create_menu(title);
 
     title->_music = audio_load_music(title->_audio, "title/title_music");
@@ -79,6 +79,10 @@ void state_title_update(StateTitle* title, float time_delta){
             case TITLE_MENU_TUTORIAL:
                 title->transition = GAME_STATE_TUTORIAL;
                 break;
+
+            case TITLE_MENU_SETTINGS:
+                title->transition = GAME_STATE_SETTINGS;
+                break;
         }
     }
 }
@@ -106,7 +110,7 @@ static void draw_character(StateTitle* title, Point* screen_size) {
 static void draw_menu(StateTitle* title, Point* screen_size) {
     int size = font_size(title->_menu_font);
     int x_pos = screen_size->x - sprite_width(title->_menu_sprite[TITLE_MENU_START]) - 10;
-    int y_pos = screen_size->y - TITLE_MENU_COUNT * size - 15;
+    int y_pos = screen_size->y - TITLE_MENU_COUNT * size - 10;
 
     for (int i = 0; i < TITLE_MENU_COUNT; i++) {
         renderer_draw_sprite(title->_renderer, title->menu_selection == i ? title->_menu_sprite_selected[i] : title->_menu_sprite[i], x_pos, y_pos);
@@ -138,4 +142,7 @@ void create_menu(StateTitle* title) {
 
     title->_menu_sprite[1] = renderer_create_text_sprite(title->_renderer, title->_menu_font, "TUTORIAL");
     title->_menu_sprite_selected[1] = renderer_create_text_sprite(title->_renderer, title->_menu_font_selected, "TUTORIAL");
+
+    title->_menu_sprite[2] = renderer_create_text_sprite(title->_renderer, title->_menu_font, "SETTINGS");
+    title->_menu_sprite_selected[2] = renderer_create_text_sprite(title->_renderer, title->_menu_font_selected, "SETTINGS");
 }
