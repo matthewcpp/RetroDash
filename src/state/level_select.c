@@ -21,6 +21,10 @@ static void set_selected_level(StateLevelSelect* level_select, int index) {
         renderer_destroy_sprite(level_select->_renderer, level_select->_selected_level_name_sprite);
     }
 
+    if (level_select->_selected_level_difficulty_sprite) {
+        renderer_destroy_sprite(level_select->_renderer, level_select->_selected_level_difficulty_sprite);
+    }
+
     level_select->_selected_level_name_sprite = renderer_create_text_sprite(level_select->_renderer, level_select->_level_title_font, level_select->_level_list.levels[index].name);
     level_select->_preview_music = audio_load_music(level_select->_audio, level_select->_level_list.levels[index].music);
 
