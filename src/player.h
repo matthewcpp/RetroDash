@@ -53,6 +53,7 @@ typedef struct {
     int on_ground;
     int is_jumping;
 
+    float speed_modifier;
     float distance_travelled;
     int attempt_count;
     int jump_count;

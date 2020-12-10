@@ -6,10 +6,12 @@ static void on_teleport_in_complete(void* user_data);
 static void on_teleport_out_complete(void* user_data);
 static void on_dialog_return(void* user_data);
 
-StatePlaying* state_playing_create(Audio* audio, Renderer* renderer, Input* input, const char* level_path) {
+StatePlaying* state_playing_create(Audio* audio, Renderer* renderer, Input* input, const char* level_path, Settings* settings) {
     StatePlaying* state = malloc(sizeof(StatePlaying));
 
     state_playing_base_init(&state->base, audio, renderer, input, level_path, "/dialog/dialog_info_font");
+    state->base.player->speed_modifier = settings->player_speed_modifier;
+
     state->transition = GAME_STATE_NONE;
     state->base.teleport_in_hook = on_teleport_in_complete;
     state->base.teleport_out_hook = on_teleport_out_complete;

@@ -43,6 +43,7 @@ Player* player_create(Level* level, Renderer* renderer, Camera* camera, Input* i
     animation_player_init(&player->_animation);
     animation_player_load(&player->_animation, "/player.animation");
 
+    player->speed_modifier = 1.0f;
     player->process_input = 1;
     player->attempt_count = 0;
     player_reset(player);
@@ -202,8 +203,8 @@ void player_update_movement(Player* player, float time_delta) {
     player->prev_pos = player->entity.position;
 
     // step vertical
-    player->velocity.y -= player->_level->gravity * time_delta;
-    player->entity.position.y += player->velocity.y * time_delta;
+    player->velocity.y -= player->_level->gravity * (time_delta * player->speed_modifier);
+    player->entity.position.y += player->velocity.y * (time_delta * player->speed_modifier);
 
     PlayerQuery query;
     player_query_init(&query, player);
@@ -211,7 +212,7 @@ void player_update_movement(Player* player, float time_delta) {
     check_floor(player, &query);
 
     // step horizontal
-    player->entity.position.x += player->velocity.x * time_delta;
+    player->entity.position.x += player->velocity.x * (time_delta * player->speed_modifier);
     player->distance_travelled += player->entity.position.x - player->prev_pos.x;
     check_collisions(player, &query);
 

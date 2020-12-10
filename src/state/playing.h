@@ -8,6 +8,7 @@
 #include "../teleport.h"
 
 #include "playing_base.h"
+#include "settings.h"
 #include "states.h"
 
 typedef struct {
@@ -15,7 +16,7 @@ typedef struct {
     GameState transition;
 } StatePlaying;
 
-StatePlaying* state_playing_create(Audio* audio, Renderer* renderer, Input* input, const char* level_path);
+StatePlaying* state_playing_create(Audio* audio, Renderer* renderer, Input* input, const char* level_path, Settings* settings);
 void state_playing_destroy(StatePlaying* state);
 
 void state_playing_update(StatePlaying* state, float time_delta);
