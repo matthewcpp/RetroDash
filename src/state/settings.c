@@ -29,6 +29,10 @@ StateSettings* state_settings_create(Renderer* renderer, Input* input, Settings*
 
     state->_title_sprite = renderer_load_sprite(state->_renderer, "settings/settings");
     state->_arrows_sprite = renderer_load_sprite(state->_renderer, "settings/arrows");
+    Font* nav_font = renderer_load_font(state->_renderer, "common/nav_font");
+    state->_nav_sprite = renderer_create_text_sprite(state->_renderer, nav_font, ") ACCEPT");
+    renderer_destroy_font(renderer, nav_font);
+
     state->_settings_font = renderer_load_font(state->_renderer, "dialog/dialog_title_font");
 
     state->_game_speed_label_sprite = renderer_create_text_sprite(state->_renderer, state->_settings_font, "GAME SPEED:");
@@ -41,12 +45,10 @@ StateSettings* state_settings_create(Renderer* renderer, Input* input, Settings*
 void state_settings_destroy(StateSettings* settings) {
     renderer_destroy_sprite(settings->_renderer, settings->_title_sprite);
     renderer_destroy_sprite(settings->_renderer, settings->_game_speed_label_sprite);
-    renderer_destroy_font(settings->_renderer, settings->_settings_font);
-
-    if (settings->_game_speed_sprite)
-        renderer_destroy_sprite(settings->_renderer, settings->_game_speed_sprite);
-
+    renderer_destroy_sprite(settings->_renderer, settings->_game_speed_sprite);
+    renderer_destroy_sprite(settings->_renderer, settings->_nav_sprite);
     renderer_destroy_sprite(settings->_renderer, settings->_arrows_sprite);
+    renderer_destroy_font(settings->_renderer, settings->_settings_font);
 
     free(settings);
 }
@@ -56,8 +58,7 @@ void state_settings_destroy(StateSettings* settings) {
 #define SETTINGS_SPEED_STEP 0.1f
 
 void state_settings_update(StateSettings* settings, float time_delta) {
-    if (input_button_is_down(settings->_input, CONTROLLER_1, CONTROLLER_BUTTON_B) ||
-        input_button_is_down(settings->_input, CONTROLLER_1, CONTROLLER_BUTTON_L)) {
+    if (input_button_is_down(settings->_input, CONTROLLER_1, CONTROLLER_BUTTON_START)) {
         settings->transition = GAME_STATE_TITLE;
     }
 
@@ -75,6 +76,7 @@ void state_settings_update(StateSettings* settings, float time_delta) {
 #define SETTINGS_PADDING 30
 #define ARROW_PADDING 16
 #define GAME_SPEED_SPRITE_ALLOCATED_SIZE 55
+#define NAV_SPRITE_PADDING 6
 
 void state_settings_draw(StateSettings* settings) {
     renderer_set_color(settings->_renderer, 33, 7, 58, 255);
@@ -104,4 +106,6 @@ void state_settings_draw(StateSettings* settings) {
     x_pos -= ARROW_PADDING + arrow_size;
     if (settings->_settings->player_speed_modifier > SETTINGS_SPEED_MIN)
         renderer_draw_sprite_frame(settings->_renderer, settings->_arrows_sprite, 0, x_pos, y_pos + arrow_offset);
+
+    renderer_draw_sprite(settings->_renderer, settings->_nav_sprite, NAV_SPRITE_PADDING, screen_size.y - sprite_height(settings->_nav_sprite) - NAV_SPRITE_PADDING);
 }

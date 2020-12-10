@@ -19,6 +19,7 @@ typedef struct {
     Sprite* _arrows_sprite;
     Sprite* _game_speed_label_sprite;
     Sprite* _game_speed_sprite;
+    Sprite* _nav_sprite;
     Font* _settings_font;
     GameState transition;
 } StateSettings;

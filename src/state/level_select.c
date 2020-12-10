@@ -80,6 +80,9 @@ StateLevelSelect* state_level_select_create(Audio* audio, Input* input, Renderer
 
     level_select->_level_title_font = renderer_load_font(renderer, "level_select/level_select_font");
     level_select->_level_info_font = renderer_load_font(renderer, "level_select/level_select_info_font");
+    Font* nav_font = renderer_load_font(renderer, "common/nav_font");
+    level_select->_nav_sprite = renderer_create_text_sprite(renderer, nav_font, "( RETURN");
+    renderer_destroy_font(renderer, nav_font);
 
     level_select->_title_sprite = renderer_load_sprite(level_select->_renderer, "level_select/select_level");
     level_select->_selector_arrows = renderer_load_sprite(level_select->_renderer, "level_select/selector_arrows");
@@ -103,6 +106,8 @@ void state_level_select_destroy(StateLevelSelect* level_select) {
     renderer_destroy_sprite(level_select->_renderer, level_select->_title_sprite);
     renderer_destroy_sprite(level_select->_renderer, level_select->_selector_arrows);
     renderer_destroy_sprite(level_select->_renderer, level_select->_selector_dots);
+    renderer_destroy_sprite(level_select->_renderer, level_select->_nav_sprite);
+
     renderer_destroy_font(level_select->_renderer, level_select->_level_title_font);
     renderer_destroy_font(level_select->_renderer, level_select->_level_info_font);
 
@@ -229,6 +234,7 @@ static void draw_selector_dots(StateLevelSelect* level_select) {
 }
 
 #define LEVEL_SELECT_GRID_SIZE 32
+#define LEVEL_SELECT_NAV_PADDING 5
 
 void state_level_select_draw(StateLevelSelect* level_select) {
     renderer_set_color(level_select->_renderer, 33, 7, 58, 255);
@@ -247,6 +253,8 @@ void state_level_select_draw(StateLevelSelect* level_select) {
 
     draw_selector_arrows(level_select);
     draw_selector_dots(level_select);
+
+    renderer_draw_sprite(level_select->_renderer, level_select->_nav_sprite, LEVEL_SELECT_NAV_PADDING, level_select->_screen_size.y - sprite_height(level_select->_nav_sprite) - LEVEL_SELECT_NAV_PADDING);
 }
 
 char* state_level_select_get_selected_path(StateLevelSelect* level_select) {
