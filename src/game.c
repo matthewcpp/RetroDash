@@ -64,7 +64,7 @@ static void game_set_state(Game* game, GameState state) {
             char level_path[32];
             strcpy(level_path, state_level_select_get_selected_path(game->state.level_select));
             game_destroy_current_state(game);
-            game->state.playing = state_playing_create(game->_audio, game->_renderer, game->_input, level_path);
+            game->state.playing = state_playing_create(game->_audio, game->_renderer, game->_input, level_path, &game->settings);
             break;
         }
 

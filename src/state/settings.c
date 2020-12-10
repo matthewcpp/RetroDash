@@ -1,5 +1,6 @@
 #include "settings.h"
 
+#include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -12,7 +13,7 @@ static void settings_set_game_speed_sprite(StateSettings* settings) {
         renderer_destroy_sprite(settings->_renderer, settings->_game_speed_sprite);
 
     char buffer[8];
-    int value = (int)(settings->_settings->player_speed_modifier * 100.0f);
+    int value = (int)roundf(settings->_settings->player_speed_modifier * 100.0f);
     sprintf(buffer, "%d%%", value);
 
     settings->_game_speed_sprite = renderer_create_text_sprite(settings->_renderer, settings->_settings_font, buffer);
@@ -73,6 +74,7 @@ void state_settings_update(StateSettings* settings, float time_delta) {
 #define SETTINGS_GRID_SIZE 32
 #define SETTINGS_PADDING 30
 #define ARROW_PADDING 16
+#define GAME_SPEED_SPRITE_ALLOCATED_SIZE 55
 
 void state_settings_draw(StateSettings* settings) {
     renderer_set_color(settings->_renderer, 33, 7, 58, 255);
@@ -95,8 +97,9 @@ void state_settings_draw(StateSettings* settings) {
     if (settings->_settings->player_speed_modifier < SETTINGS_SPEED_MAX)
         renderer_draw_sprite_frame(settings->_renderer, settings->_arrows_sprite, 1, x_pos, y_pos + arrow_offset);
 
-    x_pos -= ARROW_PADDING + sprite_width(settings->_game_speed_sprite);
-    renderer_draw_sprite(settings->_renderer, settings->_game_speed_sprite, x_pos, y_pos);
+    x_pos -= ARROW_PADDING + GAME_SPEED_SPRITE_ALLOCATED_SIZE;
+    int offset = (GAME_SPEED_SPRITE_ALLOCATED_SIZE - sprite_width(settings->_game_speed_sprite)) / 2; // center sprite in its allocated space
+    renderer_draw_sprite(settings->_renderer, settings->_game_speed_sprite, x_pos + offset, y_pos);
 
     x_pos -= ARROW_PADDING + arrow_size;
     if (settings->_settings->player_speed_modifier > SETTINGS_SPEED_MIN)
