@@ -12,14 +12,14 @@
 #include "states.h"
 
 typedef struct {
-    StatePlayingBase base;
+    PlayingScreenBase base;
     GameState transition;
-} StatePlaying;
+} PlayingScreen;
 
-StatePlaying* state_playing_create(Audio* audio, Renderer* renderer, Input* input, const char* level_path, Settings* settings);
-void state_playing_destroy(StatePlaying* state);
+PlayingScreen* playing_screen_create(Audio* audio, Renderer* renderer, Input* input, const char* level_path, Settings* settings);
+void playing_screen_destroy(PlayingScreen* playing_screen);
 
-void state_playing_update(StatePlaying* state, float time_delta);
-void state_playing_draw(StatePlaying* state);
+void playing_screen_update(PlayingScreen* playing_screen, float time_delta);
+void playing_screen_draw(PlayingScreen* playing_screen);
 
 #endif

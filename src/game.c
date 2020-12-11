@@ -10,11 +10,11 @@
 #include <string.h>
 
 typedef union {
-    StatePlaying* playing;
-    StateTitle* title;
-    StateLevelSelect* level_select;
-    StateTutorial* tutorial;
-    StateSettings * settings;
+    PlayingScreen* playing;
+    TitleScreen* title;
+    LevelSelectScreen* level_select;
+    TutorialScreen* tutorial;
+    SettingsScreen * settings;
 } State;
 
 struct Game {
@@ -29,23 +29,23 @@ struct Game {
 static void game_destroy_current_state(Game* game) {
     switch (game->current_state) {
         case GAME_STATE_TITLE:
-            state_title_destroy(game->state.title);
+            title_screen_destroy(game->state.title);
             break;
 
         case GAME_STATE_PLAYING:
-            state_playing_destroy(game->state.playing);
+            playing_screen_destroy(game->state.playing);
             break;
 
         case GAME_STATE_LEVEL_SELECT:
-            state_level_select_destroy(game->state.level_select);
+            level_select_screen_destroy(game->state.level_select);
             break;
 
         case GAME_STATE_TUTORIAL:
-            state_tutorial_destroy(game->state.tutorial);
+            tutorial_screen_destroy(game->state.tutorial);
             break;
 
         case GAME_STATE_SETTINGS:
-            state_settings_destroy(game->state.settings);
+            settings_screen_destroy(game->state.settings);
             break;
 
         case GAME_STATE_NONE:
@@ -57,30 +57,31 @@ static void game_set_state(Game* game, GameState state) {
     switch (state) {
         case GAME_STATE_TITLE:
             game_destroy_current_state(game);
-            game->state.title = state_title_create(game->_audio, game->_input, game->_renderer);
+            game->state.title = title_screen_create(game->_audio, game->_input, game->_renderer);
             break;
 
         case GAME_STATE_PLAYING: {
             char level_path[32];
-            strcpy(level_path, state_level_select_get_selected_path(game->state.level_select));
+            strcpy(level_path, level_select_screen_get_selected_path(game->state.level_select));
             game_destroy_current_state(game);
-            game->state.playing = state_playing_create(game->_audio, game->_renderer, game->_input, level_path, &game->settings);
+            game->state.playing = playing_screen_create(game->_audio, game->_renderer, game->_input, level_path,
+                                                        &game->settings);
             break;
         }
 
         case GAME_STATE_LEVEL_SELECT:
             game_destroy_current_state(game);
-            game->state.level_select = state_level_select_create(game->_audio, game->_input, game->_renderer);
+            game->state.level_select = level_select_screen_create(game->_audio, game->_input, game->_renderer);
             break;
 
         case GAME_STATE_TUTORIAL:
             game_destroy_current_state(game);
-            game->state.tutorial = state_tutorial_create(game->_audio, game->_input, game->_renderer);
+            game->state.tutorial = tutorial_screen_create(game->_audio, game->_input, game->_renderer);
             break;
 
         case GAME_STATE_SETTINGS:
             game_destroy_current_state(game);
-            game->state.settings = state_settings_create(game->_renderer, game->_input, &game->settings);
+            game->state.settings = settings_screen_create(game->_renderer, game->_input, &game->settings);
             break;
 
         case GAME_STATE_NONE:
@@ -115,27 +116,27 @@ void game_update(Game* game, float time_delta){
 
     switch (game->current_state) {
         case GAME_STATE_TITLE:
-            state_title_update(game->state.title, time_delta);
+            title_screen_update(game->state.title, time_delta);
             state_transition = game->state.title->transition;
             break;
 
         case GAME_STATE_PLAYING:
-            state_playing_update(game->state.playing, time_delta);
+            playing_screen_update(game->state.playing, time_delta);
             state_transition = game->state.playing->transition;
             break;
 
         case GAME_STATE_LEVEL_SELECT:
-            state_level_select_update(game->state.level_select, time_delta);
+            level_select_screen_update(game->state.level_select, time_delta);
             state_transition = game->state.level_select->transition;
             break;
 
         case GAME_STATE_TUTORIAL:
-            state_tutorial_update(game->state.tutorial, time_delta);
+            tutorial_screen_update(game->state.tutorial, time_delta);
             state_transition = game->state.tutorial->transition;
             break;
 
         case GAME_STATE_SETTINGS:
-            state_settings_update(game->state.settings, time_delta);
+            settings_screen_update(game->state.settings, time_delta);
             state_transition = game->state.settings->transition;
             break;
 
@@ -150,23 +151,23 @@ void game_update(Game* game, float time_delta){
 void game_draw(Game* game){
     switch (game->current_state) {
         case GAME_STATE_TITLE:
-            state_title_draw(game->state.title);
+            title_screen_draw(game->state.title);
             break;
 
         case GAME_STATE_PLAYING:
-            state_playing_draw(game->state.playing);
+            playing_screen_draw(game->state.playing);
             break;
 
         case GAME_STATE_LEVEL_SELECT:
-            state_level_select_draw(game->state.level_select);
+            level_select_screen_draw(game->state.level_select);
             break;
 
         case GAME_STATE_TUTORIAL:
-            state_tutorial_draw(game->state.tutorial);
+            tutorial_screen_draw(game->state.tutorial);
             break;
 
         case GAME_STATE_SETTINGS:
-            state_settings_draw(game->state.settings);
+            settings_screen_draw(game->state.settings);
             break;
 
         case GAME_STATE_NONE:

@@ -50,14 +50,14 @@ typedef struct {
     int _selected_level_index;
     Point _screen_size;
     GameState transition;
-} StateLevelSelect;
+} LevelSelectScreen;
 
-StateLevelSelect* state_level_select_create(Audio* audio, Input* input, Renderer* renderer);
-void state_level_select_destroy(StateLevelSelect* level_select);
+LevelSelectScreen* level_select_screen_create(Audio* audio, Input* input, Renderer* renderer);
+void level_select_screen_destroy(LevelSelectScreen* level_select);
 
-void state_level_select_update(StateLevelSelect* level_select, float time_delta);
-void state_level_select_draw(StateLevelSelect* level_select);
+void level_select_screen_update(LevelSelectScreen* level_select, float time_delta);
+void level_select_screen_draw(LevelSelectScreen* level_select);
 
-char* state_level_select_get_selected_path(StateLevelSelect* level_select);
+char* level_select_screen_get_selected_path(LevelSelectScreen* level_select);
 
 #endif

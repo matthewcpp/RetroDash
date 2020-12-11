@@ -6,10 +6,10 @@ static void on_teleport_in_complete(void* user_data);
 static void on_teleport_out_complete(void* user_data);
 static void on_dialog_return(void* user_data);
 
-StatePlaying* state_playing_create(Audio* audio, Renderer* renderer, Input* input, const char* level_path, Settings* settings) {
-    StatePlaying* state = malloc(sizeof(StatePlaying));
+PlayingScreen* playing_screen_create(Audio* audio, Renderer* renderer, Input* input, const char* level_path, Settings* settings) {
+    PlayingScreen* state = malloc(sizeof(PlayingScreen));
 
-    state_playing_base_init(&state->base, audio, renderer, input, level_path, "/dialog/dialog_info_font");
+    playing_screen_base_init(&state->base, audio, renderer, input, level_path, "/dialog/dialog_info_font");
     state->base.player->speed_modifier = settings->player_speed_modifier;
 
     state->transition = GAME_STATE_NONE;
@@ -21,34 +21,34 @@ StatePlaying* state_playing_create(Audio* audio, Renderer* renderer, Input* inpu
     return state;
 }
 
-void state_playing_destroy(StatePlaying* state){
-    state_playing_base_uninit(&state->base);
+void playing_screen_destroy(PlayingScreen* state){
+    playing_screen_base_uninit(&state->base);
     free(state);
 }
 
-void state_playing_update(StatePlaying* state, float time_delta){
-    state_playing_base_update(&state->base, time_delta);
+void playing_screen_update(PlayingScreen* state, float time_delta){
+    playing_screen_base_update(&state->base, time_delta);
 }
 
-void state_playing_draw(StatePlaying* state) {
-    state_playing_base_draw(&state->base);
+void playing_screen_draw(PlayingScreen* state) {
+    playing_screen_base_draw(&state->base);
 }
 
 void on_teleport_in_complete(void* user_data) {
-    StatePlaying* state = (StatePlaying*)user_data;
+    PlayingScreen* state = (PlayingScreen*)user_data;
 
     player_start(state->base.player);
 }
 
 void on_teleport_out_complete(void* user_data) {
-    StatePlaying* state = (StatePlaying*)user_data;
+    PlayingScreen* state = (PlayingScreen*)user_data;
 
     attempt_dialog_show(&state->base._attempt_dialog);
     audio_pause_music(state->base._audio);
 }
 
 void on_dialog_return(void* user_data) {
-    StatePlaying* state = (StatePlaying*)user_data;
+    PlayingScreen* state = (PlayingScreen*)user_data;
 
     state->transition = GAME_STATE_LEVEL_SELECT;
 }

@@ -27,16 +27,16 @@ typedef enum {
 } TutorialPhase;
 
 typedef struct {
-    StatePlayingBase base;
+    PlayingScreenBase base;
     GameState transition;
     TutorialPhase phase;
     Sprite* _info_text[INFO_TEXT_LINE_COUNT];
     int practice_hint_index;
-} StateTutorial;
+} TutorialScreen;
 
-StateTutorial* state_tutorial_create(Audio* audio, Input* input, Renderer* renderer);
-void state_tutorial_destroy(StateTutorial* tutorial);
-void state_tutorial_update(StateTutorial* tutorial, float time_delta);
-void state_tutorial_draw(StateTutorial* tutorial);
+TutorialScreen* tutorial_screen_create(Audio* audio, Input* input, Renderer* renderer);
+void tutorial_screen_destroy(TutorialScreen* tutorial);
+void tutorial_screen_update(TutorialScreen* tutorial, float time_delta);
+void tutorial_screen_draw(TutorialScreen* tutorial);
 
 #endif

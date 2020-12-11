@@ -6,10 +6,10 @@
 
 #define CHARACTER_SCALE 1.25f
 
-static void create_menu(StateTitle* title);
+static void create_menu(TitleScreen* title);
 
-StateTitle* state_title_create(Audio* audio, Input* input, Renderer* renderer){
-    StateTitle* title = malloc(sizeof(StateTitle));
+TitleScreen* title_screen_create(Audio* audio, Input* input, Renderer* renderer){
+    TitleScreen* title = malloc(sizeof(TitleScreen));
 
     title->_audio = audio;
     title->_input = input;
@@ -40,7 +40,7 @@ StateTitle* state_title_create(Audio* audio, Input* input, Renderer* renderer){
     return title;
 }
 
-void state_title_destroy(StateTitle* title){
+void title_screen_destroy(TitleScreen* title){
     renderer_destroy_sprite(title->_renderer, title->_title_sprite);
     renderer_destroy_sprite(title->_renderer, title->_character_top);
     renderer_destroy_sprite(title->_renderer, title->_character_bottom);
@@ -58,7 +58,7 @@ void state_title_destroy(StateTitle* title){
     free(title);
 }
 
-void state_title_update(StateTitle* title, float time_delta){
+void title_screen_update(TitleScreen* title, float time_delta){
     animation_player_update(&title->_animation, time_delta);
 
     if (screen_util_ui_nav_down(title->_input)) {
@@ -87,7 +87,7 @@ void state_title_update(StateTitle* title, float time_delta){
     }
 }
 
-static void draw_character(StateTitle* title, Point* screen_size) {
+static void draw_character(TitleScreen* title, Point* screen_size) {
     int platform_top = screen_size->y - (int)(sprite_vertical_frame_size(title->_platform) * CHARACTER_SCALE);
     int character_slice_height = (int)(sprite_vertical_frame_size(title->_character_top) * CHARACTER_SCALE);
 
@@ -107,7 +107,7 @@ static void draw_character(StateTitle* title, Point* screen_size) {
                                 title->_animation.frame);
 }
 
-static void draw_menu(StateTitle* title, Point* screen_size) {
+static void draw_menu(TitleScreen* title, Point* screen_size) {
     int size = font_size(title->_menu_font);
     int x_pos = screen_size->x - sprite_width(title->_menu_sprite[TITLE_MENU_START]) - 10;
     int y_pos = screen_size->y - TITLE_MENU_COUNT * size - 10;
@@ -120,7 +120,7 @@ static void draw_menu(StateTitle* title, Point* screen_size) {
 
 #define TITLE_SCREEN_GRID_SIZE 32
 
-void state_title_draw(StateTitle* title){
+void title_screen_draw(TitleScreen* title){
     Point screen_size;
     renderer_get_screen_size(title->_renderer, &screen_size);
 
@@ -136,7 +136,7 @@ void state_title_draw(StateTitle* title){
     draw_menu(title, &screen_size);
 }
 
-void create_menu(StateTitle* title) {
+void create_menu(TitleScreen* title) {
     title->_menu_sprite[0] = renderer_create_text_sprite(title->_renderer, title->_menu_font, "START GAME");
     title->_menu_sprite_selected[0] = renderer_create_text_sprite(title->_renderer, title->_menu_font_selected, "START GAME");
 

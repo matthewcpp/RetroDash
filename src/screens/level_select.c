@@ -11,7 +11,7 @@ typedef enum {
     LEVEL_DIFFICULTY_HARD
 } LevelDifficulty;
 
-static void set_selected_level(StateLevelSelect* level_select, int index) {
+static void set_selected_level(LevelSelectScreen* level_select, int index) {
     if (index == level_select->_selected_level_index)
         return;
 
@@ -46,7 +46,7 @@ static void set_selected_level(StateLevelSelect* level_select, int index) {
     level_select->_selected_level_index = index;
 }
 
-static void load_level_list(StateLevelSelect* level_select) {
+static void load_level_list(LevelSelectScreen* level_select) {
     int level_list_handle = filesystem_open("/level_list");
 
     uint32_t payload_size;
@@ -72,8 +72,8 @@ static void load_level_list(StateLevelSelect* level_select) {
     filesystem_close(level_list_handle);
 }
 
-StateLevelSelect* state_level_select_create(Audio* audio, Input* input, Renderer* renderer){
-    StateLevelSelect* level_select = malloc(sizeof(StateLevelSelect));
+LevelSelectScreen* level_select_screen_create(Audio* audio, Input* input, Renderer* renderer){
+    LevelSelectScreen* level_select = malloc(sizeof(LevelSelectScreen));
 
     level_select->_audio = audio;
     level_select->_input = input;
@@ -101,7 +101,7 @@ StateLevelSelect* state_level_select_create(Audio* audio, Input* input, Renderer
     return level_select;
 }
 
-void state_level_select_destroy(StateLevelSelect* level_select) {
+void level_select_screen_destroy(LevelSelectScreen* level_select) {
     audio_set_music_volume(level_select->_audio, 1.0f); // TODO: create a transition_out method or something for things like this?
     audio_destroy_music(level_select->_audio, level_select->_preview_music);
 
@@ -129,7 +129,7 @@ void state_level_select_destroy(StateLevelSelect* level_select) {
 #define PREVIEW_MUSIC_FADE_TIME 1.0f
 #define PREVIEW_MUSIC_PLAYING_TIME 10.0f
 
-static void _update_preview_music(StateLevelSelect* level_select, float time_delta) {
+static void _update_preview_music(LevelSelectScreen* level_select, float time_delta) {
     level_select->_preview_music_time += time_delta;
 
     switch (level_select->_preview_music_state) {
@@ -179,7 +179,7 @@ static void _update_preview_music(StateLevelSelect* level_select, float time_del
     }
 }
 
-void state_level_select_update(StateLevelSelect* level_select, float time_delta){
+void level_select_screen_update(LevelSelectScreen* level_select, float time_delta){
     if (screen_util_ui_nav_right(level_select->_input)) {
         if (level_select->_selected_level_index < level_select->_level_list.count - 1)
             set_selected_level(level_select, level_select->_selected_level_index + 1);
@@ -201,7 +201,7 @@ void state_level_select_update(StateLevelSelect* level_select, float time_delta)
     _update_preview_music(level_select, time_delta);
 }
 
-static void draw_selector_arrows(StateLevelSelect* level_select) {
+static void draw_selector_arrows(LevelSelectScreen* level_select) {
     int selector_arrow_height = sprite_height(level_select->_selector_arrows);
 
     if (level_select->_selected_level_index > 0) {
@@ -215,7 +215,7 @@ static void draw_selector_arrows(StateLevelSelect* level_select) {
 
 #define SELECTOR_DOT_SPACER 5
 
-static void draw_selector_dots(StateLevelSelect* level_select) {
+static void draw_selector_dots(LevelSelectScreen* level_select) {
     int dot_width = sprite_horizontal_frame_size(level_select->_selector_dots);
 
     int total_width = dot_width * level_select->_level_list.count + SELECTOR_DOT_SPACER * (level_select->_level_list.count - 1);
@@ -234,7 +234,7 @@ static void draw_selector_dots(StateLevelSelect* level_select) {
 #define LEVEL_SELECT_GRID_SIZE 32
 #define LEVEL_SELECT_NAV_PADDING 5
 
-void state_level_select_draw(StateLevelSelect* level_select) {
+void level_select_screen_draw(LevelSelectScreen* level_select) {
     renderer_set_color(level_select->_renderer, 33, 7, 58, 255);
     renderer_draw_grid(level_select->_renderer, 0, LEVEL_SELECT_GRID_SIZE);
 
@@ -255,6 +255,6 @@ void state_level_select_draw(StateLevelSelect* level_select) {
     renderer_draw_sprite(level_select->_renderer, level_select->_nav_sprite, LEVEL_SELECT_NAV_PADDING, level_select->_screen_size.y - sprite_height(level_select->_nav_sprite) - LEVEL_SELECT_NAV_PADDING);
 }
 
-char* state_level_select_get_selected_path(StateLevelSelect* level_select) {
+char* level_select_screen_get_selected_path(LevelSelectScreen* level_select) {
     return level_select->_level_list.levels[level_select->_selected_level_index].path;
 }

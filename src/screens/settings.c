@@ -10,7 +10,7 @@ void settings_init(Settings* settings) {
     settings->player_speed_modifier = 1.0f;
 }
 
-static void settings_set_game_speed_sprite(StateSettings* settings) {
+static void settings_set_game_speed_sprite(SettingsScreen* settings) {
     if (settings->_game_speed_sprite)
         renderer_destroy_sprite(settings->_renderer, settings->_game_speed_sprite);
 
@@ -21,8 +21,8 @@ static void settings_set_game_speed_sprite(StateSettings* settings) {
     settings->_game_speed_sprite = renderer_create_text_sprite(settings->_renderer, settings->_settings_font, buffer);
 }
 
-StateSettings* state_settings_create(Renderer* renderer, Input* input, Settings* settings) {
-    StateSettings* state = malloc(sizeof(StateSettings));
+SettingsScreen* settings_screen_create(Renderer* renderer, Input* input, Settings* settings) {
+    SettingsScreen* state = malloc(sizeof(SettingsScreen));
 
     state->_renderer = renderer;
     state->_input = input;
@@ -44,7 +44,7 @@ StateSettings* state_settings_create(Renderer* renderer, Input* input, Settings*
     return state;
 }
 
-void state_settings_destroy(StateSettings* settings) {
+void settings_screen_destroy(SettingsScreen* settings) {
     renderer_destroy_sprite(settings->_renderer, settings->_title_sprite);
     renderer_destroy_sprite(settings->_renderer, settings->_game_speed_label_sprite);
     renderer_destroy_sprite(settings->_renderer, settings->_game_speed_sprite);
@@ -59,7 +59,7 @@ void state_settings_destroy(StateSettings* settings) {
 #define SETTINGS_SPEED_MAX 1.5
 #define SETTINGS_SPEED_STEP 0.1f
 
-void state_settings_update(StateSettings* settings, float time_delta) {
+void settings_screen_update(SettingsScreen* settings, float time_delta) {
     if (input_button_is_down(settings->_input, CONTROLLER_1, CONTROLLER_BUTTON_START)) {
         settings->transition = GAME_STATE_TITLE;
     }
@@ -80,7 +80,7 @@ void state_settings_update(StateSettings* settings, float time_delta) {
 #define GAME_SPEED_SPRITE_ALLOCATED_SIZE 55
 #define NAV_SPRITE_PADDING 6
 
-void state_settings_draw(StateSettings* settings) {
+void settings_screen_draw(SettingsScreen* settings) {
     renderer_set_color(settings->_renderer, 33, 7, 58, 255);
     renderer_draw_grid(settings->_renderer, 0, SETTINGS_GRID_SIZE);
 
