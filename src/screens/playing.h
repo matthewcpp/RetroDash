@@ -13,7 +13,7 @@
 
 typedef struct {
     PlayingScreenBase base;
-    GameState transition;
+    GameScreen transition;
 } PlayingScreen;
 
 PlayingScreen* playing_screen_create(Audio* audio, Renderer* renderer, Input* input, const char* level_path, Settings* settings);

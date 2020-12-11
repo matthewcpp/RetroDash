@@ -12,7 +12,7 @@ PlayingScreen* playing_screen_create(Audio* audio, Renderer* renderer, Input* in
     playing_screen_base_init(&state->base, audio, renderer, input, level_path, "/dialog/dialog_info_font");
     state->base.player->speed_modifier = settings->player_speed_modifier;
 
-    state->transition = GAME_STATE_NONE;
+    state->transition = GAME_SCREEN_NONE;
     state->base.teleport_in_hook = on_teleport_in_complete;
     state->base.teleport_out_hook = on_teleport_out_complete;
     state->base.dialog_return_hook = on_dialog_return;
@@ -50,5 +50,5 @@ void on_teleport_out_complete(void* user_data) {
 void on_dialog_return(void* user_data) {
     PlayingScreen* state = (PlayingScreen*)user_data;
 
-    state->transition = GAME_STATE_LEVEL_SELECT;
+    state->transition = GAME_SCREEN_LEVEL_SELECT;
 }

@@ -14,7 +14,7 @@ TitleScreen* title_screen_create(Audio* audio, Input* input, Renderer* renderer)
     title->_audio = audio;
     title->_input = input;
     title->_renderer = renderer;
-    title->transition = GAME_STATE_NONE;
+    title->transition = GAME_SCREEN_NONE;
     title->menu_selection = TITLE_MENU_START;
 
     title->_title_sprite = NULL;
@@ -73,15 +73,15 @@ void title_screen_update(TitleScreen* title, float time_delta){
 
         switch (title->menu_selection) {
             case TITLE_MENU_START:
-                title->transition = GAME_STATE_LEVEL_SELECT;
+                title->transition = GAME_SCREEN_LEVEL_SELECT;
                 break;
 
             case TITLE_MENU_TUTORIAL:
-                title->transition = GAME_STATE_TUTORIAL;
+                title->transition = GAME_SCREEN_TUTORIAL;
                 break;
 
             case TITLE_MENU_SETTINGS:
-                title->transition = GAME_STATE_SETTINGS;
+                title->transition = GAME_SCREEN_SETTINGS;
                 break;
         }
     }

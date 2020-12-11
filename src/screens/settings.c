@@ -27,7 +27,7 @@ SettingsScreen* settings_screen_create(Renderer* renderer, Input* input, Setting
     state->_renderer = renderer;
     state->_input = input;
     state->_settings = settings;
-    state->transition = GAME_STATE_NONE;
+    state->transition = GAME_SCREEN_NONE;
 
     state->_title_sprite = renderer_load_sprite(state->_renderer, "settings/settings");
     state->_arrows_sprite = renderer_load_sprite(state->_renderer, "settings/arrows");
@@ -61,7 +61,7 @@ void settings_screen_destroy(SettingsScreen* settings) {
 
 void settings_screen_update(SettingsScreen* settings, float time_delta) {
     if (input_button_is_down(settings->_input, CONTROLLER_1, CONTROLLER_BUTTON_START)) {
-        settings->transition = GAME_STATE_TITLE;
+        settings->transition = GAME_SCREEN_TITLE;
     }
 
     if (screen_util_ui_nav_left(settings->_input) && settings->_settings->player_speed_modifier > SETTINGS_SPEED_MIN) {

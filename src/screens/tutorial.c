@@ -25,7 +25,7 @@ TutorialScreen* tutorial_screen_create(Audio* audio, Input* input, Renderer* ren
     playing_screen_base_init(&tutorial->base, audio, renderer, input, "/tutorial/tutorial.level",
                              "/tutorial/tutorial_info_font");
 
-    tutorial->transition = GAME_STATE_NONE;
+    tutorial->transition = GAME_SCREEN_NONE;
     tutorial->phase = TUTORIAL_PHASE_WAITING_FOR_TELEPORT_IN;
     tutorial->base.teleport_in_hook = on_teleport_in_complete;
     tutorial->base.teleport_out_hook = on_teleport_out_complete;
@@ -358,5 +358,5 @@ void on_teleport_out_complete(void* user_data) {
 void on_dialog_return(void* user_data) {
     TutorialScreen* state = (TutorialScreen*)user_data;
 
-    state->transition = GAME_STATE_TITLE;
+    state->transition = GAME_SCREEN_TITLE;
 }

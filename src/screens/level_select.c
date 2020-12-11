@@ -78,7 +78,7 @@ LevelSelectScreen* level_select_screen_create(Audio* audio, Input* input, Render
     level_select->_audio = audio;
     level_select->_input = input;
     level_select->_renderer = renderer;
-    level_select->transition = GAME_STATE_NONE;
+    level_select->transition = GAME_SCREEN_NONE;
 
     level_select->_level_title_font = renderer_load_font(renderer, "level_select/level_select_font");
     level_select->_level_info_font = renderer_load_font(renderer, "level_select/level_select_info_font");
@@ -191,11 +191,11 @@ void level_select_screen_update(LevelSelectScreen* level_select, float time_delt
     }
 
     if (screen_util_ui_button_accept(level_select->_input) ) {
-        level_select->transition = GAME_STATE_PLAYING;
+        level_select->transition = GAME_SCREEN_PLAYING;
     }
 
     if (input_button_is_down(level_select->_input, CONTROLLER_1, CONTROLLER_BUTTON_B)) {
-        level_select->transition = GAME_STATE_TITLE;
+        level_select->transition = GAME_SCREEN_TITLE;
     }
 
     _update_preview_music(level_select, time_delta);

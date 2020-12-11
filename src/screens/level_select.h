@@ -49,7 +49,7 @@ typedef struct {
     LevelList _level_list;
     int _selected_level_index;
     Point _screen_size;
-    GameState transition;
+    GameScreen transition;
 } LevelSelectScreen;
 
 LevelSelectScreen* level_select_screen_create(Audio* audio, Input* input, Renderer* renderer);

@@ -18,7 +18,7 @@ typedef struct {
     Audio* _audio;
     Input* _input;
     Renderer* _renderer;
-    GameState transition;
+    GameScreen transition;
 
     Sprite* _title_sprite;
     Sprite* _character_top;

@@ -21,7 +21,7 @@ typedef struct {
     Sprite* _game_speed_sprite;
     Sprite* _nav_sprite;
     Font* _settings_font;
-    GameState transition;
+    GameScreen transition;
 } SettingsScreen;
 
 SettingsScreen* settings_screen_create(Renderer* renderer, Input* input, Settings* settings);

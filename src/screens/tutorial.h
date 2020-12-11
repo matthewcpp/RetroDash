@@ -28,7 +28,7 @@ typedef enum {
 
 typedef struct {
     PlayingScreenBase base;
-    GameState transition;
+    GameScreen transition;
     TutorialPhase phase;
     Sprite* _info_text[INFO_TEXT_LINE_COUNT];
     int practice_hint_index;
