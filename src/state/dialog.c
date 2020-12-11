@@ -1,5 +1,7 @@
 #include "dialog.h"
 
+#include "screen_util.h"
+
 void dialog_init(Dialog* dialog, Input* input, Renderer* renderer){
     dialog->shown = 0;
     dialog->action = DIALOG_ACTION_NONE;
@@ -10,20 +12,14 @@ void dialog_init(Dialog* dialog, Input* input, Renderer* renderer){
 }
 
 void dialog_update(Dialog* dialog) {
-    if (input_button_is_down(dialog->_input, CONTROLLER_1, CONTROLLER_BUTTON_A) ||
-        input_button_is_down(dialog->_input, CONTROLLER_1, CONTROLLER_BUTTON_Z) ||
-        input_button_is_down(dialog->_input, CONTROLLER_1, CONTROLLER_BUTTON_START) ) {
+    if (screen_util_ui_button_accept(dialog->_input) ) {
         dialog->action = dialog->_selected_action;
     }
 
-    if (dialog->_selected_action == DIALOG_ACTION_RETRY &&
-        (input_button_is_down(dialog->_input, CONTROLLER_1, CONTROLLER_BUTTON_DPAD_RIGHT) ||
-         input_button_is_down(dialog->_input, CONTROLLER_1, CONTROLLER_BUTTON_C_RIGHT))) {
+    if (dialog->_selected_action == DIALOG_ACTION_RETRY && screen_util_ui_nav_right(dialog->_input)) {
         dialog->_selected_action = DIALOG_ACTION_RETURN;
     }
-    else if (dialog->_selected_action == DIALOG_ACTION_RETURN &&
-            (input_button_is_down(dialog->_input, CONTROLLER_1, CONTROLLER_BUTTON_DPAD_LEFT) ||
-             input_button_is_down(dialog->_input, CONTROLLER_1, CONTROLLER_BUTTON_C_LEFT)))
+    else if (dialog->_selected_action == DIALOG_ACTION_RETURN && screen_util_ui_nav_left(dialog->_input))
         dialog->_selected_action = DIALOG_ACTION_RETRY;
 }
 

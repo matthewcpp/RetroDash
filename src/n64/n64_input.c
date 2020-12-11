@@ -11,12 +11,24 @@ Input* n64_input_create() {
     return input;
 }
 
-void n64_input_update(Input* input) {
-    controller_scan();
+#define AXIS_MIN_VAL -127.0f
+#define AXIS_MAX_VAL 127.0f
+#define AXIS_MAPPED_MIN -1.0f
+#define AXIS_MAPPED_MAX 1.0f
 
-    input->buttons_down = get_keys_down();
-    input->buttons_up = get_keys_up();
-    input->buttons_held = get_keys_held();
+static float map_controller_axis_value(int value) {
+    float t = ((float)value - AXIS_MIN_VAL) /  (AXIS_MAX_VAL - AXIS_MIN_VAL);
+    float result =  AXIS_MAPPED_MIN + t * (AXIS_MAPPED_MAX - AXIS_MAPPED_MIN);
+    return result;
+}
+
+void n64_input_update(Input* input) {
+    input->previous_state = input->current_state;
+    input->axis_prev = input->axis_current;
+
+    controller_read(&input->current_state);
+    input->axis_current.x = map_controller_axis_value(input->current_state.c[0].x);
+    input->axis_current.y = map_controller_axis_value(input->current_state.c[0].y);
 }
 
 int get_input_value(struct controller_data* controller_state, ControllerIndex controller, ControllerButton button) {
@@ -70,13 +82,18 @@ int get_input_value(struct controller_data* controller_state, ControllerIndex co
 
 
 int input_button_is_down(Input* input, ControllerIndex controller, ControllerButton button) {
-    return get_input_value(&input->buttons_down, controller, button);
+    return get_input_value(&input->current_state, controller, button) && !get_input_value(&input->previous_state, controller, button);
 }
 
 int input_button_is_up(Input* input, ControllerIndex controller, ControllerButton button) {
-    return get_input_value(&input->buttons_up, controller, button);
+    return 0; //return get_input_value(&input->buttons_up, controller, button);
 }
 
 int input_button_is_held(Input* input, ControllerIndex controller, ControllerButton button) {
-    return get_input_value(&input->buttons_held, controller, button);
+    return 0; //return get_input_value(&input->buttons_held, controller, button);
+}
+
+void input_axis_values(Input* input, Vec2* current, Vec2* prev) {
+    *current = input->axis_current;
+    *prev = input->axis_prev;
 }

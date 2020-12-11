@@ -1,5 +1,7 @@
 #include "title.h"
 
+#include "screen_util.h"
+
 #include <stdlib.h>
 
 #define CHARACTER_SCALE 1.25f
@@ -59,17 +61,15 @@ void state_title_destroy(StateTitle* title){
 void state_title_update(StateTitle* title, float time_delta){
     animation_player_update(&title->_animation, time_delta);
 
-    if (input_button_is_down(title->_input, CONTROLLER_1, CONTROLLER_BUTTON_DPAD_DOWN)) {
+    if (screen_util_ui_nav_down(title->_input)) {
         if (title->menu_selection < TITLE_MENU_COUNT - 1)
             title->menu_selection += 1;
     }
-    else if (input_button_is_down(title->_input, CONTROLLER_1, CONTROLLER_BUTTON_DPAD_UP)) {
+    else if (screen_util_ui_nav_up(title->_input)) {
         if (title->menu_selection > 0)
             title->menu_selection -= 1;
     }
-    if (input_button_is_down(title->_input, CONTROLLER_1, CONTROLLER_BUTTON_START) ||
-        input_button_is_down(title->_input, CONTROLLER_1, CONTROLLER_BUTTON_A) ||
-        input_button_is_down(title->_input, CONTROLLER_1, CONTROLLER_BUTTON_Z)){
+    if (screen_util_ui_button_accept(title->_input)){
 
         switch (title->menu_selection) {
             case TITLE_MENU_START:
