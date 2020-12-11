@@ -14,9 +14,9 @@ typedef struct {
 #define PRACTICE_HINT_COUNT 4
 static PracticeHint practice_hints[PRACTICE_HINT_COUNT] = {
     {153.0f, "GO LARGE TO MAKE THE JUMP"},
-    {164.0f, "GO MEDIUM TO DODGE THE SPIKES"},
-    {181.0f, "GO SMALL MID JUMP TO LAND IN TUNNEL"},
-    {208.0f, "GO BIG TO SMASH BRICKS"}
+    {162.0f, "GO MEDIUM TO DODGE THE SPIKES"},
+    {179.0f, "GO SMALL MID JUMP TO LAND IN TUNNEL"},
+    {205.0f, "GO BIG TO SMASH BRICKS"}
 };
 
 TutorialScreen* tutorial_screen_create(Audio* audio, Input* input, Renderer* renderer) {
