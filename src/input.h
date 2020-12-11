@@ -35,7 +35,5 @@ typedef enum {
 
 int input_button_is_down(Input* input, ControllerIndex controller, ControllerButton button);
 void input_axis_values(Input* input, Vec2* current, Vec2* prev);
-int input_button_is_up(Input* input, ControllerIndex controller, ControllerButton button);
-int input_button_is_held(Input* input, ControllerIndex controller, ControllerButton button);
 
 #endif

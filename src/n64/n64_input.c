@@ -85,14 +85,6 @@ int input_button_is_down(Input* input, ControllerIndex controller, ControllerBut
     return get_input_value(&input->current_state, controller, button) && !get_input_value(&input->previous_state, controller, button);
 }
 
-int input_button_is_up(Input* input, ControllerIndex controller, ControllerButton button) {
-    return 0; //return get_input_value(&input->buttons_up, controller, button);
-}
-
-int input_button_is_held(Input* input, ControllerIndex controller, ControllerButton button) {
-    return 0; //return get_input_value(&input->buttons_held, controller, button);
-}
-
 void input_axis_values(Input* input, Vec2* current, Vec2* prev) {
     *current = input->axis_current;
     *prev = input->axis_prev;
