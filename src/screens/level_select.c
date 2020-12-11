@@ -168,6 +168,7 @@ static void _update_preview_music(LevelSelectScreen* level_select, float time_de
             if (level_select->_preview_music_time >= PREVIEW_MUSIC_FADE_TIME) {
                 level_select->_preview_music_time = 0.0f;
                 level_select->_preview_music_state = PREVIEW_MUSIC_DONE;
+                audio_pause_music(level_select->_audio);
             }
             else {
                 audio_set_music_volume(level_select->_audio, 1.0f - (level_select->_preview_music_time / PREVIEW_MUSIC_FADE_TIME));

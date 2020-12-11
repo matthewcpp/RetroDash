@@ -11,8 +11,8 @@ Input* n64_input_create() {
     return input;
 }
 
-#define AXIS_MIN_VAL -127.0f
-#define AXIS_MAX_VAL 127.0f
+#define AXIS_MIN_VAL -75.0f
+#define AXIS_MAX_VAL 75.0f
 #define AXIS_MAPPED_MIN -1.0f
 #define AXIS_MAPPED_MAX 1.0f
 
