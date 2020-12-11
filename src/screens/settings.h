@@ -6,6 +6,12 @@
 #include "../renderer.h"
 #include "states.h"
 
+typedef enum {
+    SETTINGS_MENU_SPEED,
+    SETTINGS_MENU_CHECKPOINTS,
+    SETTINGS_MENU_ITEM_COUNT
+} SettingsMenuItem;
+
 typedef struct {
     Renderer* _renderer;
     Input* _input;
@@ -14,9 +20,13 @@ typedef struct {
     Sprite* _arrows_sprite;
     Sprite* _game_speed_label_sprite;
     Sprite* _game_speed_sprite;
+    Sprite* _enable_checkpoints_label_sprite;
+    Sprite* _enable_checkpoints_sprite;
     Sprite* _nav_sprite;
     Font* _settings_font;
+    SettingsMenuItem _active_item;
     GameScreen transition;
+    Point* _screen_size;
 } SettingsScreen;
 
 SettingsScreen* settings_screen_create(Renderer* renderer, Input* input, GameSettings* settings);
