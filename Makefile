@@ -1,5 +1,5 @@
-SRC_FILES = $(wildcard src/*.c) $(wildcard src/state/*.c) $(wildcard src/n64/*.c)
-HEADER_FILES = $(wildcard src/*.h) $(wildcard src/n64/*.h)
+SRC_FILES = $(wildcard src/*.c) $(wildcard src/screens/*.c) $(wildcard src/n64/*.c)
+HEADER_FILES = $(wildcard src/*.h) $(wildcard src/screens/*.h) $(wildcard src/n64/*.h)
 
 OBJ_FILES = $(SRC_FILES:.c=.o)
 
@@ -43,4 +43,4 @@ RetroDash.dfs:
 all: $(PROG_NAME)$(ROM_EXTENSION)
 
 clean:
-	rm -f *.v64 *.z64 *.elf src/*.o src/state/*.o src/n64/*.o *.bin *.dfs
+	rm -f *.v64 *.z64 *.elf src/*.o src/screens/*.o src/n64/*.o *.bin *.dfs

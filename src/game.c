@@ -1,10 +1,10 @@
 #include "game.h"
 
-#include "state/level_select.h"
-#include "state/playing.h"
-#include "state/settings.h"
-#include "state/title.h"
-#include "state/tutorial.h"
+#include "screens/level_select.h"
+#include "screens/playing.h"
+#include "screens/settings.h"
+#include "screens/title.h"
+#include "screens/tutorial.h"
 
 #include <stdlib.h>
 #include <string.h>
