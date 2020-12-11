@@ -23,7 +23,7 @@ struct Game {
     Renderer* _renderer;
     GameScreen current_state;
     State state;
-    Settings settings;
+    GameSettings settings;
 };
 
 static void game_destroy_current_state(Game* game) {
@@ -76,7 +76,7 @@ static void game_set_state(Game* game, GameScreen state) {
 
         case GAME_SCREEN_TUTORIAL:
             game_destroy_current_state(game);
-            game->state.tutorial = tutorial_screen_create(game->_audio, game->_input, game->_renderer);
+            game->state.tutorial = tutorial_screen_create(game->_audio, game->_input, game->_renderer, &game->settings);
             break;
 
         case GAME_SCREEN_SETTINGS:

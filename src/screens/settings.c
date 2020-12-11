@@ -6,10 +6,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-void settings_init(Settings* settings) {
-    settings->player_speed_modifier = 1.0f;
-}
-
 static void settings_set_game_speed_sprite(SettingsScreen* settings) {
     if (settings->_game_speed_sprite)
         renderer_destroy_sprite(settings->_renderer, settings->_game_speed_sprite);
@@ -21,7 +17,7 @@ static void settings_set_game_speed_sprite(SettingsScreen* settings) {
     settings->_game_speed_sprite = renderer_create_text_sprite(settings->_renderer, settings->_settings_font, buffer);
 }
 
-SettingsScreen* settings_screen_create(Renderer* renderer, Input* input, Settings* settings) {
+SettingsScreen* settings_screen_create(Renderer* renderer, Input* input, GameSettings* settings) {
     SettingsScreen* state = malloc(sizeof(SettingsScreen));
 
     state->_renderer = renderer;

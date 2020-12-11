@@ -34,7 +34,7 @@ typedef struct {
     int practice_hint_index;
 } TutorialScreen;
 
-TutorialScreen* tutorial_screen_create(Audio* audio, Input* input, Renderer* renderer);
+TutorialScreen* tutorial_screen_create(Audio* audio, Input* input, Renderer* renderer, GameSettings* settings);
 void tutorial_screen_destroy(TutorialScreen* tutorial);
 void tutorial_screen_update(TutorialScreen* tutorial, float time_delta);
 void tutorial_screen_draw(TutorialScreen* tutorial);

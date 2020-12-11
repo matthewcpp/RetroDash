@@ -15,6 +15,7 @@ set(game_src
     src/filesystem.h
     src/font_private.h src/font.c
     src/game.h src/game.c
+    src/game_settings.h src/game_settings.c
     src/input.h
     src/intersection.h src/intersection.c
     src/level.h src/level.c
@@ -26,16 +27,16 @@ set(game_src
     src/tile_collision.h src/tile_collision.c
     src/tile_set.h src/tile_set.c
 
-        src/screens/attempt_dialog.h src/screens/attempt_dialog.c
-        src/screens/dialog.h src/screens/dialog.c
-        src/screens/level_select.h src/screens/level_select.c
-        src/screens/pause_dialog.h src/screens/pause_dialog.c
-        src/screens/playing_base.h src/screens/playing_base.c
-        src/screens/playing.h src/screens/playing.c
-        src/screens/screen_util.h src/screens/screen_util.c
-        src/screens/settings.h src/screens/settings.c
-        src/screens/title.h src/screens/title.c
-        src/screens/tutorial.h src/screens/tutorial.c)
+    src/screens/attempt_dialog.h src/screens/attempt_dialog.c
+    src/screens/dialog.h src/screens/dialog.c
+    src/screens/level_select.h src/screens/level_select.c
+    src/screens/pause_dialog.h src/screens/pause_dialog.c
+    src/screens/playing_base.h src/screens/playing_base.c
+    src/screens/playing.h src/screens/playing.c
+    src/screens/screen_util.h src/screens/screen_util.c
+    src/screens/settings.h src/screens/settings.c
+    src/screens/title.h src/screens/title.c
+    src/screens/tutorial.h src/screens/tutorial.c)
 
 set(sdl_src
     src/sdl/sdl_audio.h src/sdl/sdl_audio.c

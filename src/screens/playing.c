@@ -6,11 +6,10 @@ static void on_teleport_in_complete(void* user_data);
 static void on_teleport_out_complete(void* user_data);
 static void on_dialog_return(void* user_data);
 
-PlayingScreen* playing_screen_create(Audio* audio, Renderer* renderer, Input* input, const char* level_path, Settings* settings) {
+PlayingScreen* playing_screen_create(Audio* audio, Renderer* renderer, Input* input, const char* level_path, GameSettings* settings) {
     PlayingScreen* state = malloc(sizeof(PlayingScreen));
 
-    playing_screen_base_init(&state->base, audio, renderer, input, level_path, "/dialog/dialog_info_font");
-    state->base.player->speed_modifier = settings->player_speed_modifier;
+    playing_screen_base_init(&state->base, audio, renderer, input, level_path, "/dialog/dialog_info_font", settings);
 
     state->transition = GAME_SCREEN_NONE;
     state->base.teleport_in_hook = on_teleport_in_complete;

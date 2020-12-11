@@ -2,7 +2,7 @@
 
 #include <stddef.h>
 
-void playing_screen_base_init(PlayingScreenBase* screen, Audio* audio, Renderer* renderer, Input* input, const char* level_path, const char* info_font_path){
+void playing_screen_base_init(PlayingScreenBase* screen, Audio* audio, Renderer* renderer, Input* input, const char* level_path, const char* info_font_path, GameSettings* settings){
     screen->_audio = audio;
     screen->_input = input;
     screen->_renderer = renderer;
@@ -21,7 +21,7 @@ void playing_screen_base_init(PlayingScreenBase* screen, Audio* audio, Renderer*
 
     level_load(screen->level, level_path);
 
-    screen->player = player_create(screen->level, renderer, screen->camera, input);
+    screen->player = player_create(screen->level, renderer, screen->camera, input, settings);
     camera_set_target(screen->camera, &screen->player->entity);
     camera_set_safe_margins(screen->camera, -1.5f, 5.0f);
     camera_update(screen->camera);

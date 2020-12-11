@@ -32,7 +32,7 @@ static Point sprite_draw_offset = {0, 2};
 
 static void player_query_init(PlayerQuery* query, Player* player);
 
-Player* player_create(Level* level, Renderer* renderer, Camera* camera, Input* input) {
+Player* player_create(Level* level, Renderer* renderer, Camera* camera, Input* input, GameSettings* settings) {
     Player* player = malloc(sizeof(Player));
 
     player->_level = level;
@@ -43,7 +43,7 @@ Player* player_create(Level* level, Renderer* renderer, Camera* camera, Input* i
     animation_player_init(&player->_animation);
     animation_player_load(&player->_animation, "/player.animation");
 
-    player->speed_modifier = 1.0f;
+    player->_settings = settings;
     player->process_input = 1;
     player->attempt_count = 0;
     player_reset(player);
@@ -205,8 +205,8 @@ void player_update_movement(Player* player, float time_delta) {
     player->prev_pos = player->entity.position;
 
     // step vertical
-    player->velocity.y -= player->_level->gravity * (time_delta * player->speed_modifier);
-    player->entity.position.y += player->velocity.y * (time_delta * player->speed_modifier);
+    player->velocity.y -= player->_level->gravity * (time_delta * player->_settings->player_speed_modifier);
+    player->entity.position.y += player->velocity.y * (time_delta * player->_settings->player_speed_modifier);
 
     PlayerQuery query;
     player_query_init(&query, player);
@@ -214,7 +214,7 @@ void player_update_movement(Player* player, float time_delta) {
     check_floor(player, &query);
 
     // step horizontal
-    player->entity.position.x += player->velocity.x * (time_delta * player->speed_modifier);
+    player->entity.position.x += player->velocity.x * (time_delta * player->_settings->player_speed_modifier);
     player->distance_travelled += player->entity.position.x - player->prev_pos.x;
     check_collisions(player, &query);
 
