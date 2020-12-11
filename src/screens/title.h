@@ -18,7 +18,7 @@ typedef struct {
     Audio* _audio;
     Input* _input;
     Renderer* _renderer;
-    GameState transition;
+    GameScreen transition;
 
     Sprite* _title_sprite;
     Sprite* _character_top;
@@ -31,12 +31,12 @@ typedef struct {
     Music* _music;
     AnimationPlayer _animation;
     int menu_selection;
-} StateTitle;
+} TitleScreen;
 
-StateTitle* state_title_create(Audio* audio, Input* input, Renderer* renderer);
-void state_title_destroy(StateTitle* title);
+TitleScreen* title_screen_create(Audio* audio, Input* input, Renderer* renderer);
+void title_screen_destroy(TitleScreen* title);
 
-void state_title_update(StateTitle* title, float time_delta);
-void state_title_draw(StateTitle* title);
+void title_screen_update(TitleScreen* title, float time_delta);
+void title_screen_draw(TitleScreen* title);
 
 #endif

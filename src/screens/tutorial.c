@@ -19,12 +19,13 @@ static PracticeHint practice_hints[PRACTICE_HINT_COUNT] = {
     {208.0f, "GO BIG TO SMASH BRICKS"}
 };
 
-StateTutorial* state_tutorial_create(Audio* audio, Input* input, Renderer* renderer) {
-    StateTutorial* tutorial = malloc(sizeof(StateTutorial));
+TutorialScreen* tutorial_screen_create(Audio* audio, Input* input, Renderer* renderer) {
+    TutorialScreen* tutorial = malloc(sizeof(TutorialScreen));
 
-    state_playing_base_init(&tutorial->base, audio, renderer, input, "/tutorial/tutorial.level", "/tutorial/tutorial_info_font");
+    playing_screen_base_init(&tutorial->base, audio, renderer, input, "/tutorial/tutorial.level",
+                             "/tutorial/tutorial_info_font");
 
-    tutorial->transition = GAME_STATE_NONE;
+    tutorial->transition = GAME_SCREEN_NONE;
     tutorial->phase = TUTORIAL_PHASE_WAITING_FOR_TELEPORT_IN;
     tutorial->base.teleport_in_hook = on_teleport_in_complete;
     tutorial->base.teleport_out_hook = on_teleport_out_complete;
@@ -40,7 +41,7 @@ StateTutorial* state_tutorial_create(Audio* audio, Input* input, Renderer* rende
     return tutorial;
 }
 
-static void clear_info_texts(StateTutorial* tutorial) {
+static void clear_info_texts(TutorialScreen* tutorial) {
     for (int i = 0; i < INFO_TEXT_LINE_COUNT; i++) {
         if (tutorial->_info_text[i]) {
             renderer_destroy_sprite(tutorial->base._renderer, tutorial->_info_text[i]);
@@ -49,13 +50,13 @@ static void clear_info_texts(StateTutorial* tutorial) {
     }
 }
 
-void state_tutorial_destroy(StateTutorial* tutorial){
+void tutorial_screen_destroy(TutorialScreen* tutorial){
     clear_info_texts(tutorial);
-    state_playing_base_uninit(&tutorial->base);
+    playing_screen_base_uninit(&tutorial->base);
     free(tutorial);
 }
 
-static void update_phase_info(StateTutorial* tutorial) {
+static void update_phase_info(TutorialScreen* tutorial) {
     if (input_button_is_down(tutorial->base._input, CONTROLLER_1, CONTROLLER_BUTTON_START)) {
         tutorial->phase = TUTORIAL_STATE_BASIC_MOVEMENT;
         clear_info_texts(tutorial);
@@ -65,8 +66,8 @@ static void update_phase_info(StateTutorial* tutorial) {
     }
 }
 
-static void update_phase_basic_movement(StateTutorial* tutorial, float time_delta) {
-    state_playing_base_update(&tutorial->base, time_delta);
+static void update_phase_basic_movement(TutorialScreen* tutorial, float time_delta) {
+    playing_screen_base_update(&tutorial->base, time_delta);
 
     if (tutorial->base.player->entity.position.x >= 32.0f) {
         clear_info_texts(tutorial);
@@ -76,7 +77,7 @@ static void update_phase_basic_movement(StateTutorial* tutorial, float time_delt
     }
 }
 
-static void update_phase_jump(StateTutorial* tutorial, float time_delta) {
+static void update_phase_jump(TutorialScreen* tutorial, float time_delta) {
     if (input_button_is_down(tutorial->base._input, CONTROLLER_1, CONTROLLER_BUTTON_A) || input_button_is_down(tutorial->base._input, CONTROLLER_1, CONTROLLER_BUTTON_Z) ) {
         clear_info_texts(tutorial);
         player_try_jump(tutorial->base.player);
@@ -84,8 +85,8 @@ static void update_phase_jump(StateTutorial* tutorial, float time_delta) {
     }
 }
 
-static void update_phase_run_to_jump2(StateTutorial* tutorial, float time_delta) {
-    state_playing_base_update(&tutorial->base, time_delta);
+static void update_phase_run_to_jump2(TutorialScreen* tutorial, float time_delta) {
+    playing_screen_base_update(&tutorial->base, time_delta);
 
     if (tutorial->base.player->entity.position.x >= 40.0f) {
         clear_info_texts(tutorial);
@@ -95,12 +96,12 @@ static void update_phase_run_to_jump2(StateTutorial* tutorial, float time_delta)
     }
 }
 
-static void update_phase_change_to_large(StateTutorial* tutorial, float time_delta) {
+static void update_phase_change_to_large(TutorialScreen* tutorial, float time_delta) {
     Player* player = tutorial->base.player;
 
 
     if (player->current_size == PLAYER_SIZE_LARGE && player->_animation.current_animation != player->_animation.animations + PLAYER_ANIMATION_CHANGE_SIZE) {
-        state_playing_base_update(&tutorial->base, time_delta);
+        playing_screen_base_update(&tutorial->base, time_delta);
         player->velocity.x = PLAYER_SPEED;
 
         if (player->entity.position.x >= 42.0f) {
@@ -110,7 +111,7 @@ static void update_phase_change_to_large(StateTutorial* tutorial, float time_del
         }
     }
     else if (player->state == PLAYER_STATE_CHANGING_SIZE) {
-        state_playing_base_update(&tutorial->base, time_delta);
+        playing_screen_base_update(&tutorial->base, time_delta);
     }
     else if (input_button_is_down(tutorial->base._input, CONTROLLER_1, CONTROLLER_BUTTON_C_RIGHT) || input_button_is_down(tutorial->base._input, CONTROLLER_1, CONTROLLER_BUTTON_DPAD_RIGHT) ) {
         tutorial->base.player->velocity.x = 0;
@@ -118,7 +119,7 @@ static void update_phase_change_to_large(StateTutorial* tutorial, float time_del
     }
 }
 
-static void update_phase_clear_large_obstacle(StateTutorial* tutorial, float time_delta) {
+static void update_phase_clear_large_obstacle(TutorialScreen* tutorial, float time_delta) {
     if (input_button_is_down(tutorial->base._input, CONTROLLER_1, CONTROLLER_BUTTON_A) || input_button_is_down(tutorial->base._input, CONTROLLER_1, CONTROLLER_BUTTON_Z) ) {
         player_try_jump(tutorial->base.player);
         clear_info_texts(tutorial);
@@ -126,8 +127,8 @@ static void update_phase_clear_large_obstacle(StateTutorial* tutorial, float tim
     }
 }
 
-static void update_phase_smash_bricks(StateTutorial* tutorial, float time_delta) {
-    state_playing_base_update(&tutorial->base, time_delta);
+static void update_phase_smash_bricks(TutorialScreen* tutorial, float time_delta) {
+    playing_screen_base_update(&tutorial->base, time_delta);
     Player* player = tutorial->base.player;
 
     if (player->prev_pos.x < 55.0f && player->entity.position.x >= 55.0f) {
@@ -143,7 +144,7 @@ static void update_phase_smash_bricks(StateTutorial* tutorial, float time_delta)
     }
 }
 
-static void update_phase_change_to_small(StateTutorial* tutorial, float time_delta) {
+static void update_phase_change_to_small(TutorialScreen* tutorial, float time_delta) {
     if (input_button_is_down(tutorial->base._input, CONTROLLER_1, CONTROLLER_BUTTON_C_LEFT) || input_button_is_down(tutorial->base._input, CONTROLLER_1, CONTROLLER_BUTTON_DPAD_LEFT) ) {
         clear_info_texts(tutorial);
         player_try_set_size(tutorial->base.player, PLAYER_SIZE_SMALL);
@@ -151,8 +152,8 @@ static void update_phase_change_to_small(StateTutorial* tutorial, float time_del
     }
 }
 
-static void update_phase_run_though_small_area(StateTutorial* tutorial, float time_delta) {
-    state_playing_base_update(&tutorial->base, time_delta);
+static void update_phase_run_though_small_area(TutorialScreen* tutorial, float time_delta) {
+    playing_screen_base_update(&tutorial->base, time_delta);
 
     if (tutorial->base.player->entity.position.x >= 88.0) {
         clear_info_texts(tutorial);
@@ -161,7 +162,7 @@ static void update_phase_run_though_small_area(StateTutorial* tutorial, float ti
     }
 }
 
-static void update_phase_change_to_medium(StateTutorial* tutorial, float time_delta) {
+static void update_phase_change_to_medium(TutorialScreen* tutorial, float time_delta) {
     if (input_button_is_down(tutorial->base._input, CONTROLLER_1, CONTROLLER_BUTTON_C_UP) || input_button_is_down(tutorial->base._input, CONTROLLER_1, CONTROLLER_BUTTON_DPAD_UP) ) {
         player_try_set_size(tutorial->base.player, PLAYER_SIZE_MEDIUM);
         clear_info_texts(tutorial);
@@ -169,8 +170,8 @@ static void update_phase_change_to_medium(StateTutorial* tutorial, float time_de
     }
 }
 
-static void update_phase_continue_to_ledge_jump(StateTutorial* tutorial, float time_delta) {
-    state_playing_base_update(&tutorial->base, time_delta);
+static void update_phase_continue_to_ledge_jump(TutorialScreen* tutorial, float time_delta) {
+    playing_screen_base_update(&tutorial->base, time_delta);
 
     if (tutorial->base.player->prev_pos.x < 96.5f && tutorial->base.player->entity.position.x >= 96.5f) {
         clear_info_texts(tutorial);
@@ -179,7 +180,7 @@ static void update_phase_continue_to_ledge_jump(StateTutorial* tutorial, float t
     }
 }
 
-static void update_phase_start_jump_to_ledge(StateTutorial* tutorial, float time_delta) {
+static void update_phase_start_jump_to_ledge(TutorialScreen* tutorial, float time_delta) {
     if (input_button_is_down(tutorial->base._input, CONTROLLER_1, CONTROLLER_BUTTON_A) || input_button_is_down(tutorial->base._input, CONTROLLER_1, CONTROLLER_BUTTON_Z) ) {
         player_try_jump(tutorial->base.player);
         clear_info_texts(tutorial);
@@ -187,8 +188,8 @@ static void update_phase_start_jump_to_ledge(StateTutorial* tutorial, float time
     }
 }
 
-static void update_phase_jumping_to_ledge(StateTutorial* tutorial, float time_delta) {
-    state_playing_base_update(&tutorial->base, time_delta);
+static void update_phase_jumping_to_ledge(TutorialScreen* tutorial, float time_delta) {
+    playing_screen_base_update(&tutorial->base, time_delta);
 
     if (tutorial->base.player->prev_pos.x < 97.5f && tutorial->base.player->entity.position.x >= 97.5f) {
         tutorial->_info_text[0] = renderer_create_text_sprite(tutorial->base._renderer, tutorial->base._info_font, "YOU WILL NOT FIT ON THE LEDGE");
@@ -197,7 +198,7 @@ static void update_phase_jumping_to_ledge(StateTutorial* tutorial, float time_de
     }
 }
 
-static void update_phase_mid_air_size_change(StateTutorial* tutorial, float time_delta) {
+static void update_phase_mid_air_size_change(TutorialScreen* tutorial, float time_delta) {
     if (input_button_is_down(tutorial->base._input, CONTROLLER_1, CONTROLLER_BUTTON_C_LEFT) || input_button_is_down(tutorial->base._input, CONTROLLER_1, CONTROLLER_BUTTON_DPAD_LEFT) ) {
         player_try_set_size(tutorial->base.player, PLAYER_SIZE_SMALL);
         clear_info_texts(tutorial);
@@ -205,8 +206,8 @@ static void update_phase_mid_air_size_change(StateTutorial* tutorial, float time
     }
 }
 
-static void update_phase_run_to_practice(StateTutorial* tutorial, float time_delta) {
-    state_playing_base_update(&tutorial->base, time_delta);
+static void update_phase_run_to_practice(TutorialScreen* tutorial, float time_delta) {
+    playing_screen_base_update(&tutorial->base, time_delta);
 
     if (tutorial->base.player->prev_pos.x < 120.0f && tutorial->base.player->entity.position.x >= 120.0f) {
         player_try_set_size(tutorial->base.player, PLAYER_SIZE_MEDIUM);
@@ -220,8 +221,8 @@ static void update_phase_run_to_practice(StateTutorial* tutorial, float time_del
     }
 }
 
-static void update_phase_practice(StateTutorial* tutorial, float time_delta) {
-    state_playing_base_update(&tutorial->base, time_delta);
+static void update_phase_practice(TutorialScreen* tutorial, float time_delta) {
+    playing_screen_base_update(&tutorial->base, time_delta);
 
     Player* player = tutorial->base.player;
 
@@ -245,10 +246,10 @@ static void update_phase_practice(StateTutorial* tutorial, float time_delta) {
     }
 }
 
-void state_tutorial_update(StateTutorial* tutorial, float time_delta){
+void tutorial_screen_update(TutorialScreen* tutorial, float time_delta){
     switch(tutorial->phase) {
         case TUTORIAL_PHASE_WAITING_FOR_TELEPORT_IN:
-            state_playing_base_update(&tutorial->base, time_delta);
+            playing_screen_base_update(&tutorial->base, time_delta);
             break;
         case TUTORIAL_PHASE_INFO:
             update_phase_info(tutorial);
@@ -316,8 +317,8 @@ void state_tutorial_update(StateTutorial* tutorial, float time_delta){
     }
 }
 
-void state_tutorial_draw(StateTutorial* tutorial) {
-    state_playing_base_draw(&tutorial->base);
+void tutorial_screen_draw(TutorialScreen* tutorial) {
+    playing_screen_base_draw(&tutorial->base);
 
     if (tutorial->base._pause_dialog.base.shown || tutorial->base._attempt_dialog.base.shown)
         return;
@@ -333,7 +334,7 @@ void state_tutorial_draw(StateTutorial* tutorial) {
 }
 
 void on_teleport_in_complete(void* user_data) {
-    StateTutorial* tutorial = (StateTutorial*)user_data;
+    TutorialScreen* tutorial = (TutorialScreen*)user_data;
 
     if (tutorial->phase == TUTORIAL_PHASE_PRACTICE) {
         tutorial->practice_hint_index = 0;
@@ -348,14 +349,14 @@ void on_teleport_in_complete(void* user_data) {
 }
 
 void on_teleport_out_complete(void* user_data) {
-    StateTutorial* tutorial = (StateTutorial*)user_data;
+    TutorialScreen* tutorial = (TutorialScreen*)user_data;
 
     attempt_dialog_show(&tutorial->base._attempt_dialog);
     audio_pause_music(tutorial->base._audio);
 }
 
 void on_dialog_return(void* user_data) {
-    StateTutorial* state = (StateTutorial*)user_data;
+    TutorialScreen* state = (TutorialScreen*)user_data;
 
-    state->transition = GAME_STATE_TITLE;
+    state->transition = GAME_SCREEN_TITLE;
 }

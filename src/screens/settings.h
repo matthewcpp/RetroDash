@@ -21,14 +21,14 @@ typedef struct {
     Sprite* _game_speed_sprite;
     Sprite* _nav_sprite;
     Font* _settings_font;
-    GameState transition;
-} StateSettings;
+    GameScreen transition;
+} SettingsScreen;
 
-StateSettings* state_settings_create(Renderer* renderer, Input* input, Settings* settings);
-void state_settings_destroy(StateSettings* settings);
+SettingsScreen* settings_screen_create(Renderer* renderer, Input* input, Settings* settings);
+void settings_screen_destroy(SettingsScreen* settings);
 
-void state_settings_update(StateSettings* settings, float time_delta);
-void state_settings_draw(StateSettings* settings);
+void settings_screen_update(SettingsScreen* settings, float time_delta);
+void settings_screen_draw(SettingsScreen* settings);
 
 
 #endif

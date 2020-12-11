@@ -26,16 +26,16 @@ set(game_src
     src/tile_collision.h src/tile_collision.c
     src/tile_set.h src/tile_set.c
 
-    src/state/attempt_dialog.h src/state/attempt_dialog.c
-    src/state/dialog.h src/state/dialog.c
-    src/state/level_select.h src/state/level_select.c
-    src/state/pause_dialog.h src/state/pause_dialog.c
-    src/state/playing_base.h src/state/playing_base.c
-    src/state/playing.h src/state/playing.c
-    src/state/screen_util.h src/state/screen_util.c
-    src/state/settings.h src/state/settings.c
-    src/state/title.h src/state/title.c
-    src/state/tutorial.h src/state/tutorial.c)
+        src/screens/attempt_dialog.h src/screens/attempt_dialog.c
+        src/screens/dialog.h src/screens/dialog.c
+        src/screens/level_select.h src/screens/level_select.c
+        src/screens/pause_dialog.h src/screens/pause_dialog.c
+        src/screens/playing_base.h src/screens/playing_base.c
+        src/screens/playing.h src/screens/playing.c
+        src/screens/screen_util.h src/screens/screen_util.c
+        src/screens/settings.h src/screens/settings.c
+        src/screens/title.h src/screens/title.c
+        src/screens/tutorial.h src/screens/tutorial.c)
 
 set(sdl_src
     src/sdl/sdl_audio.h src/sdl/sdl_audio.c

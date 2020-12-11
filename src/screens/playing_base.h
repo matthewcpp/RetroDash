@@ -36,12 +36,12 @@ typedef struct {
     TeleportCallback teleport_out_hook;
     TeleportCallback dialog_return_hook;
     void* hook_user_data;
-} StatePlayingBase;
+} PlayingScreenBase;
 
-void state_playing_base_init(StatePlayingBase* state, Audio* audio, Renderer* renderer, Input* input, const char* level_path, const char* info_font_path);
-void state_playing_base_uninit(StatePlayingBase* state);
+void playing_screen_base_init(PlayingScreenBase* screen, Audio* audio, Renderer* renderer, Input* input, const char* level_path, const char* info_font_path);
+void playing_screen_base_uninit(PlayingScreenBase* screen);
 
-void state_playing_base_update(StatePlayingBase* state, float time_delta);
-void state_playing_base_draw(StatePlayingBase* state);
+void playing_screen_base_update(PlayingScreenBase* screen, float time_delta);
+void playing_screen_base_draw(PlayingScreenBase* screen);
 
 #endif

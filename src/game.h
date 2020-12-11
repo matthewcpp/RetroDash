@@ -4,7 +4,7 @@
 #include "audio.h"
 #include "input.h"
 #include "renderer.h"
-#include "state/states.h"
+#include "screens/states.h"
 
 typedef struct Game Game;
 

@@ -112,11 +112,3 @@ void sdl_input_update(Input* input) {
 int input_button_is_down(Input* input, ControllerIndex controller, ControllerButton button) {
     return input->controller_buttons[button].prev_state == 0 && input->controller_buttons[button].cur_state != 0;
 }
-
-int input_button_is_up(Input* input, ControllerIndex controller, ControllerButton button) {
-    return 0;
-}
-
-int input_button_is_held(Input* input, ControllerIndex controller, ControllerButton button) {
-    return 0;
-}
