@@ -4,6 +4,7 @@
 #include "../audio.h"
 #include "../background.h"
 #include "../camera.h"
+#include "../game_settings.h"
 #include "../level.h"
 #include "../player.h"
 #include "../teleport.h"
@@ -38,7 +39,7 @@ typedef struct {
     void* hook_user_data;
 } PlayingScreenBase;
 
-void playing_screen_base_init(PlayingScreenBase* screen, Audio* audio, Renderer* renderer, Input* input, const char* level_path, const char* info_font_path);
+void playing_screen_base_init(PlayingScreenBase* screen, Audio* audio, Renderer* renderer, Input* input, const char* level_path, const char* info_font_path, GameSettings* settings);
 void playing_screen_base_uninit(PlayingScreenBase* screen);
 
 void playing_screen_base_update(PlayingScreenBase* screen, float time_delta);

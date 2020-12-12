@@ -14,5 +14,23 @@
         "the_heights.tiles.1",
         "the_heights.tiles.2",
         "the_heights.tiles.3"
+    ],
+
+    "checkpoints": [
+        {
+            "x": 97,
+            "y": 6,
+            "size": "small"
+        },
+        {
+            "x": 180,
+            "y": 4,
+            "size": "large"
+        },
+        {
+            "x": 249,
+            "y": 2,
+            "size": "large"
+        }
     ]
 }

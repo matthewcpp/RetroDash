@@ -19,11 +19,10 @@ static PracticeHint practice_hints[PRACTICE_HINT_COUNT] = {
     {205.0f, "GO BIG TO SMASH BRICKS"}
 };
 
-TutorialScreen* tutorial_screen_create(Audio* audio, Input* input, Renderer* renderer) {
+TutorialScreen* tutorial_screen_create(Audio* audio, Input* input, Renderer* renderer, GameSettings* settings) {
     TutorialScreen* tutorial = malloc(sizeof(TutorialScreen));
 
-    playing_screen_base_init(&tutorial->base, audio, renderer, input, "/tutorial/tutorial.level",
-                             "/tutorial/tutorial_info_font");
+    playing_screen_base_init(&tutorial->base, audio, renderer, input, "/tutorial/tutorial.level",  "/tutorial/tutorial_info_font", settings);
 
     tutorial->transition = GAME_SCREEN_NONE;
     tutorial->phase = TUTORIAL_PHASE_WAITING_FOR_TELEPORT_IN;

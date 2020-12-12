@@ -16,7 +16,7 @@ typedef struct {
     GameScreen transition;
 } PlayingScreen;
 
-PlayingScreen* playing_screen_create(Audio* audio, Renderer* renderer, Input* input, const char* level_path, Settings* settings);
+PlayingScreen* playing_screen_create(Audio* audio, Renderer* renderer, Input* input, const char* level_path, GameSettings* settings);
 void playing_screen_destroy(PlayingScreen* playing_screen);
 
 void playing_screen_update(PlayingScreen* playing_screen, float time_delta);

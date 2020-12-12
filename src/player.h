@@ -4,6 +4,7 @@
 #include "animation_player.h"
 #include "camera.h"
 #include "entity.h"
+#include "game_settings.h"
 #include "input.h"
 #include "level.h"
 #include "rect.h"
@@ -53,7 +54,6 @@ typedef struct {
     int on_ground;
     int is_jumping;
 
-    float speed_modifier;
     float distance_travelled;
     int attempt_count;
     int jump_count;
@@ -63,6 +63,7 @@ typedef struct {
     /** If zero, the player will not poll input for jumping or size changes. */
     int process_input;
 
+    GameSettings* _settings;
     Sprite* _sprite;
     Level* _level;
     Renderer* _renderer;
@@ -71,7 +72,7 @@ typedef struct {
     AnimationPlayer _animation;
 } Player;
 
-Player* player_create(Level* level, Renderer* renderer, Camera* camera, Input* input);
+Player* player_create(Level* level, Renderer* renderer, Camera* camera, Input* input, GameSettings* settings);
 void player_destroy(Player* player);
 
 void player_update(Player* player, float time_delta);
