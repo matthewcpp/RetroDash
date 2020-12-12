@@ -46,6 +46,8 @@ Player* player_create(Level* level, Renderer* renderer, Camera* camera, Input* i
     player->_settings = settings;
     player->process_input = 1;
     player->attempt_count = 0;
+    vec2_set(&player->entity.position, 0.0f, 0.0f);
+    player->state = PLAYER_STATE_IDLE;
     player_reset(player);
 
     player->_sprite = renderer_load_sprite(player->_renderer, "/player");
@@ -338,10 +340,30 @@ void player_clear_stats(Player* player) {
     player->brick_count = 0;
 }
 
-void player_reset(Player* player) {
+static void player_reset_load_checkpoint(Player* player) {
+    if (player->state == PLAYER_STATE_DEAD && player->_settings->enable_checkpoints) {
+        for (int i = (int)player->_level->checkpoint_count - 1; i >= 0; i--) {
+            Checkpoint* checkpoint = player->_level->checkpoints + i;
+
+            if (player->entity.position.x >= checkpoint->x) {
+                player->entity.position.x = checkpoint->x;
+                player->entity.position.y = checkpoint->y;
+                player->current_size = checkpoint->size;
+                player->distance_travelled = checkpoint->x - player->_level->start_pos.x;
+                return;
+            }
+        }
+    }
+
+    player->entity.position = player->_level->start_pos;
     player->current_size = PLAYER_SIZE_MEDIUM;
-    player->target_size = PLAYER_SIZE_MEDIUM;
-    player->entity.size = player_hit_sizes[PLAYER_SIZE_MEDIUM];
+}
+
+void player_reset(Player* player) {
+    player_clear_stats(player);
+    player_reset_load_checkpoint(player);
+    player->target_size = player->current_size;
+    player->entity.size = player_hit_sizes[player->current_size];
 
     player->state = PLAYER_STATE_IDLE;
     player->state_time = 0.0f;
@@ -349,15 +371,13 @@ void player_reset(Player* player) {
     player->_animation.speed = 1.0f;
     animation_player_set_current(&player->_animation, PLAYER_ANIMATION_RUN, 1); // TODO: Idle
 
-    player->entity.position = player->_level->start_pos;
+
     player->prev_pos = player->entity.position;
     player->velocity.x = 0.0f;
     player->velocity.y = 0.0f;
 
     player->on_ground = 1;
     player->is_jumping = 0;
-
-    player_clear_stats(player);
 }
 
 // TODO: This should take previous position into account to prevent "falling through tiles"

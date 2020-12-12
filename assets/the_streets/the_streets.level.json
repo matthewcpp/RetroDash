@@ -14,5 +14,23 @@
         "the_streets.tiles.1",
         "the_streets.tiles.2",
         "the_streets.tiles.3"
+    ],
+
+    "checkpoints": [
+        {
+            "x": 106.5,
+            "y": 2,
+            "size": "medium"
+        },
+        {
+            "x": 193,
+            "y": 3,
+            "size": "small"
+        },
+        {
+            "x": 288,
+            "y": 3,
+            "size": "medium"
+        }
     ]
 }

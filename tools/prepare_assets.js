@@ -10,6 +10,13 @@ const TileTypeValues = {
     brick: 4
 }
 
+// Note: This should match up with the PlayerSize enum in player.h
+const PlayerSizes = {
+    small: 0,
+    medium: 1,
+    large: 2
+}
+
 const levelList = [];
 
 const musicFormats = new Set([".mod", ".xm", ".ogg"]);
@@ -142,7 +149,8 @@ function prepareLevel(srcPath, destPath, options) {
     const nameLength = Buffer.byteLength(level.name, "utf8");
     const tileSetLength = Buffer.byteLength(level.tileSet, "utf8");
     const musicLength = Buffer.byteLength(level.music, "utf8");
-    const bufferSize = 12 + nameLength + tileSetLength + musicLength + 8 /*level dimensions */ + 12 /*level start & goal*/;
+    let bufferSize = 12 + nameLength + tileSetLength + musicLength + 8 /*level dimensions */ + 12 /*level start & goal*/;
+    bufferSize += 4 + level.checkpoints.length * 12;
 
     const buffer = Buffer.alloc(bufferSize);
     let offset = writeUint32(nameLength, buffer, 0, options.littleEndian);
@@ -155,7 +163,19 @@ function prepareLevel(srcPath, destPath, options) {
     offset = writeUint32(tileData.height, buffer, offset, options.littleEndian);
     offset = writeFloat(level.startPos.x, buffer, offset, options.littleEndian);
     offset = writeFloat(level.startPos.y, buffer, offset, options.littleEndian);
-    writeFloat(level.goal, buffer, offset, options.littleEndian);
+    offset = writeFloat(level.goal, buffer, offset, options.littleEndian);
+
+    offset = writeUint32(level.checkpoints.length, buffer, offset, options.littleEndian);
+    for (const checkpoint of level.checkpoints) {
+        offset = writeFloat(checkpoint.x, buffer, offset, options.littleEndian);
+        offset = writeFloat(checkpoint.y, buffer, offset, options.littleEndian);
+
+        const size = checkpoint.size.toLowerCase();
+        if (!PlayerSizes.hasOwnProperty(size))
+            throw new Error(`Unexpected player size: ${checkpoint.size}`);
+
+        offset = writeUint32(PlayerSizes[size], buffer, offset, options.littleEndian);
+    }
 
     fs.writeFileSync(destPath, Buffer.concat([buffer, tileData.tiles]));
 

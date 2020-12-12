@@ -12,6 +12,12 @@
 #define TILE_EMPTY UINT8_MAX
 
 typedef struct {
+    float x;
+    float y;
+    uint32_t size;
+} Checkpoint;
+
+typedef struct {
     uint32_t width;
     uint32_t height;
     Vec2 start_pos;
@@ -23,6 +29,9 @@ typedef struct {
 
     TileSet tile_set;
     uint8_t* _tile_map;
+
+    uint32_t checkpoint_count;
+    Checkpoint* checkpoints;
 
     Renderer* _renderer;
     Audio* _audio;

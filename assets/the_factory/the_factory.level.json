@@ -13,5 +13,23 @@
     "pieces": [
         "the_factory.tiles.1",
         "the_factory.tiles.2"
+    ],
+
+    "checkpoints": [
+        {
+            "x": 61,
+            "y": 1,
+            "size": "medium"
+        },
+        {
+            "x": 120,
+            "y": 6,
+            "size": "medium"
+        },
+        {
+            "x": 223,
+            "y": 1,
+            "size": "medium"
+        }
     ]
 }

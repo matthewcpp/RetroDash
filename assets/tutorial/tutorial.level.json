@@ -12,5 +12,7 @@
     "pieces": [
         "tutorial.tiles.guided",
         "tutorial.tiles.practice"
-    ]
+    ],
+
+    "checkpoints": []
 }

@@ -23,6 +23,9 @@ Level* level_create(Audio* audio, Renderer* renderer, Camera* camera) {
     level->gravity = 30.0f;
     level->_file_handle = -1;
 
+    level->checkpoint_count = 0;
+    level->checkpoints = NULL;
+
     brick_particles_init(&level->brick_particles, level->_camera, level->_renderer);
 
     return level;
@@ -50,6 +53,12 @@ void level_clear(Level* level) {
     if (level->music) {
         audio_destroy_music(level->_audio, level->music);
         level->music = NULL;
+    }
+
+    if (level->checkpoints) {
+        free(level->checkpoints);
+        level->checkpoints = NULL;
+        level->checkpoint_count = 0;
     }
 }
 
@@ -196,6 +205,14 @@ int level_load(Level* level, const char* path) {
     filesystem_read(&level->start_pos.x, sizeof(float), 1, level->_file_handle);
     filesystem_read(&level->start_pos.y, sizeof(float), 1, level->_file_handle);
     filesystem_read(&level->goal_dist, sizeof(float), 1, level->_file_handle);
+
+    // Read Checkpoints
+    filesystem_read(&level->checkpoint_count, sizeof(uint32_t), 1, level->_file_handle);
+
+    if (level->checkpoint_count > 0) {
+        level->checkpoints = malloc(sizeof (Checkpoint) * level->checkpoint_count);
+        filesystem_read(level->checkpoints, sizeof(Checkpoint), level->checkpoint_count, level->_file_handle);
+    }
 
     level->_tile_map = malloc(level->width * level->height);
     filesystem_read(level->_tile_map, 1, level->width * level->height, level->_file_handle);
