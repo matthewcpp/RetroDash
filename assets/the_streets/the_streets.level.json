@@ -4,6 +4,7 @@
     "difficulty": 1,
     "tileSet": "/the_streets/the_streets.tileset",
     "music": "/the_streets/synth_attack_4",
+    "description": "precise jumps and size changes",
     "startPos": {
         "x": 0,
         "y": 2

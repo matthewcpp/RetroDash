@@ -190,7 +190,8 @@ function prepareLevel(srcPath, destPath, options) {
         path: destPath.substring(options.destDir.length),
         music: level.music,
         order: level.order,
-        difficulty: level.difficulty
+        difficulty: level.difficulty,
+        description: level.description.toUpperCase()
     })
 }
 
@@ -275,12 +276,15 @@ function prepareLevelList(destDir, littleEndian) {
         levelDataIndices.music = bufferPayloadSize;
         bufferPayloadSize += Buffer.byteLength(level.music, "utf8") + 1;
 
+        levelDataIndices.description = bufferPayloadSize;
+        bufferPayloadSize += Buffer.byteLength(level.description, "utf8") + 1;
+
         levelDataIndices.difficulty = level.difficulty;
 
         dataIndices.push(levelDataIndices);
     }
 
-    let bufferIndicesSize = 4 + levelList.length * 16; // level count + 3 payload indices and difficulty rating per level info
+    let bufferIndicesSize = 4 + levelList.length * 20; // level count + 4 payload indices and difficulty rating per level info
 
     const buffer = Buffer.alloc(4 /* payload size prefix*/ + bufferPayloadSize + bufferIndicesSize);
 
@@ -295,6 +299,9 @@ function prepareLevelList(destDir, littleEndian) {
 
         offset += buffer.write(level.music, offset);
         offset = buffer.writeUInt8(0, offset);
+
+        offset += buffer.write(level.description, offset);
+        offset = buffer.writeUInt8(0, offset);
     }
 
     // write all indices into the payload
@@ -303,6 +310,7 @@ function prepareLevelList(destDir, littleEndian) {
         offset = writeUint32(levelDataIndices.name, buffer, offset, littleEndian);
         offset = writeUint32(levelDataIndices.path, buffer, offset, littleEndian);
         offset = writeUint32(levelDataIndices.music, buffer, offset, littleEndian);
+        offset = writeUint32(levelDataIndices.description, buffer, offset, littleEndian);
         offset = writeUint32(levelDataIndices.difficulty, buffer, offset, littleEndian);
     }
 

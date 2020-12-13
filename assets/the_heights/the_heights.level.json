@@ -4,6 +4,7 @@
     "difficulty": 2,
     "tileSet": "/the_heights/the_heights.tileset",
     "music": "/the_heights/bd_80s",
+    "description": "precise jumps and mid air size changes",
     "startPos": {
         "x": 0,
         "y": 2.0

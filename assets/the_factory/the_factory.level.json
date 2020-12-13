@@ -4,6 +4,7 @@
     "difficulty": 0,
     "tileSet": "/the_factory/the_factory.tileset",
     "music": "/the_factory/battle",
+    "description": "basic jumps and size changes",
     "startPos": {
         "x": 0,
         "y": 2.0

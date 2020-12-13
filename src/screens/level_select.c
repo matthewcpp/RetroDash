@@ -21,6 +21,7 @@ static void set_selected_level(LevelSelectScreen* level_select, int index) {
     if (level_select->_selected_level_name_sprite) {
         renderer_destroy_sprite(level_select->_renderer, level_select->_selected_level_name_sprite);
         renderer_destroy_sprite(level_select->_renderer, level_select->_selected_level_difficulty_sprite);
+        renderer_destroy_sprite(level_select->_renderer, level_select->_selected_level_description_sprite);
     }
 
     level_select->_selected_level_name_sprite = renderer_create_text_sprite(level_select->_renderer, level_select->_level_title_font, level_select->_level_list.levels[index].name);
@@ -39,6 +40,8 @@ static void set_selected_level(LevelSelectScreen* level_select, int index) {
             level_select->_selected_level_difficulty_sprite = renderer_create_text_sprite(level_select->_renderer, level_select->_level_info_font, "DIFFICULTY: HARD");
             break;
     }
+
+    level_select->_selected_level_description_sprite = renderer_create_text_sprite(level_select->_renderer, level_select->_level_info_font, level_select->_level_list.levels[index].description);
 
     level_select->_preview_music_state = PREVIEW_MUSIC_WAITING;
     level_select->_preview_music_time = 0.0f;
@@ -59,12 +62,13 @@ static void load_level_list(LevelSelectScreen* level_select) {
 
     for (uint32_t i = 0; i < level_select->_level_list.count; i++) {
         LevelInfo* info = level_select->_level_list.levels + i;
-        uint32_t indices[3];
-        filesystem_read(indices , sizeof(uint32_t), 3, level_list_handle);
+        uint32_t indices[4];
+        filesystem_read(indices , sizeof(uint32_t), 4, level_list_handle);
 
         info->name = level_select->_level_list.data + indices[0];
         info->path = level_select->_level_list.data + indices[1];
         info->music = level_select->_level_list.data + indices[2];
+        info->description = level_select->_level_list.data + indices[3];
 
         filesystem_read(&info->difficulty , sizeof(uint32_t), 1, level_list_handle);
     }
@@ -81,7 +85,7 @@ LevelSelectScreen* level_select_screen_create(Audio* audio, Input* input, Render
     level_select->transition = GAME_SCREEN_NONE;
 
     level_select->_level_title_font = renderer_load_font(renderer, "level_select/level_select_font");
-    level_select->_level_info_font = renderer_load_font(renderer, "level_select/level_select_info_font");
+    level_select->_level_info_font = renderer_load_font(renderer, "dialog/dialog_info_font");
     Font* nav_font = renderer_load_font(renderer, "common/nav_font");
     level_select->_nav_sprite = renderer_create_text_sprite(renderer, nav_font, "( RETURN");
     renderer_destroy_font(renderer, nav_font);
@@ -91,6 +95,7 @@ LevelSelectScreen* level_select_screen_create(Audio* audio, Input* input, Render
     level_select->_selector_dots = renderer_load_sprite(level_select->_renderer, "level_select/selector_dots");
     level_select->_preview_music = NULL;
     level_select->_selected_level_name_sprite = NULL;
+    level_select->_selected_level_description_sprite = NULL;
 
     renderer_get_screen_size(level_select->_renderer, &level_select->_screen_size);
     load_level_list(level_select);
@@ -118,6 +123,9 @@ void level_select_screen_destroy(LevelSelectScreen* level_select) {
 
     if (level_select->_selected_level_difficulty_sprite)
         renderer_destroy_sprite(level_select->_renderer, level_select->_selected_level_difficulty_sprite);
+
+    if (level_select->_selected_level_description_sprite)
+        renderer_destroy_sprite(level_select->_renderer, level_select->_selected_level_description_sprite);
 
     free(level_select->_level_list.data);
     free(level_select->_level_list.levels);
@@ -249,6 +257,10 @@ void level_select_screen_draw(LevelSelectScreen* level_select) {
     y_pos += font_size(level_select->_level_title_font) + 5;
     x_pos = (level_select->_screen_size.x / 2) - (sprite_width(level_select->_selected_level_difficulty_sprite) / 2);
     renderer_draw_sprite(level_select->_renderer, level_select->_selected_level_difficulty_sprite, x_pos, y_pos);
+
+    y_pos += font_size(level_select->_level_info_font) + 10;
+    x_pos = (level_select->_screen_size.x / 2) - (sprite_width(level_select->_selected_level_description_sprite) / 2);
+    renderer_draw_sprite(level_select->_renderer, level_select->_selected_level_description_sprite, x_pos, y_pos);
 
     draw_selector_arrows(level_select);
     draw_selector_dots(level_select);
