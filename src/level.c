@@ -123,10 +123,10 @@ void level_draw(Level* level) {
     camera_screen_pos_to_world_pos(level->_camera, &screen_size, &bottom_left_world);
 
     // get grid coordinates that are seen by camera
-    top_right_world.x = floor(top_right_world.x);
-    top_right_world.y = ceil(top_right_world.y);
-    bottom_left_world.x = ceil(bottom_left_world.x);
-    bottom_left_world.y = floor(bottom_left_world.y);
+    top_right_world.x = floorf(top_right_world.x);
+    top_right_world.y = ceilf(top_right_world.y);
+    bottom_left_world.x = ceilf(bottom_left_world.x);
+    bottom_left_world.y = floorf(bottom_left_world.y);
 
     // ensure that we will not try to draw cells outside the bounds of the level
     bound_vector(level, &top_right_world);
