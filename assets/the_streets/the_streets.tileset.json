@@ -21,6 +21,13 @@
         "brick",
         "none",
         "none",
-        "none"
+        "none",
+
+        "half",
+        "half",
+        "solid",
+        "solid",
+        "solid",
+        "solid"
     ]
 }

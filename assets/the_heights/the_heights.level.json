@@ -8,7 +8,7 @@
         "x": 0,
         "y": 2.0
     },
-    "goal": 395,
+    "goal": 398,
 
     "pieces": [
         "the_heights.tiles.1",
@@ -23,14 +23,14 @@
             "size": "small"
         },
         {
-            "x": 180,
-            "y": 4,
-            "size": "large"
+            "x": 205,
+            "y": 6,
+            "size": "small"
         },
         {
-            "x": 249,
-            "y": 2,
-            "size": "large"
+            "x": 317,
+            "y": 10,
+            "size": "small"
         }
     ]
 }
