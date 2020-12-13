@@ -103,7 +103,7 @@ static void check_floor(Player* player, PlayerQuery* query) {
             case TILE_TYPE_SOLID:{
                 float tile_top = (float)query->min_y + 1.0f;
                 if (player->prev_pos.y >= tile_top - TILE_FLOOR_GRACE ||
-                    player->entity.position.y <= tile_top && player->entity.position.y >= tile_top - TILE_FLOOR_GRACE) {
+                    (player->entity.position.y <= tile_top && player->entity.position.y >= tile_top - TILE_FLOOR_GRACE)) {
                     player->entity.position.y = ceilf(player->entity.position.y);
                     set_player_landed_on_ground(player, query);
                     return;

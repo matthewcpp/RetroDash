@@ -11,12 +11,13 @@ typedef struct {
     char* hint;
 } PracticeHint;
 
-#define PRACTICE_HINT_COUNT 4
+#define PRACTICE_HINT_COUNT 5
 static PracticeHint practice_hints[PRACTICE_HINT_COUNT] = {
-    {153.0f, "GO LARGE TO MAKE THE JUMP"},
+    {151.0f, "GO LARGE TO MAKE THE JUMP"},
     {162.0f, "GO MEDIUM TO DODGE THE SPIKES"},
     {179.0f, "GO SMALL MID JUMP TO LAND IN TUNNEL"},
-    {205.0f, "GO BIG TO SMASH BRICKS"}
+    {205.0f, "GO BIG TO SMASH BRICKS"},
+    {215.0f, "ENABLE CHECKPOINTS IF YOU GET STUCK"}
 };
 
 TutorialScreen* tutorial_screen_create(Audio* audio, Input* input, Renderer* renderer, GameSettings* settings) {
@@ -67,6 +68,11 @@ static void update_phase_info(TutorialScreen* tutorial) {
 
 static void update_phase_basic_movement(TutorialScreen* tutorial, float time_delta) {
     playing_screen_base_update(&tutorial->base, time_delta);
+
+    if (tutorial->base.player->prev_pos.x < 17.0f && tutorial->base.player->entity.position.x >= 17.0f) {
+        clear_info_texts(tutorial);
+        tutorial->_info_text[0] = renderer_create_text_sprite(tutorial->base._renderer, tutorial->base._info_font, "ADJUST GAME SPEED IN SETTINGS ");
+    }
 
     if (tutorial->base.player->entity.position.x >= 32.0f) {
         clear_info_texts(tutorial);

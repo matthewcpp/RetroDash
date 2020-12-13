@@ -119,6 +119,9 @@ void settings_screen_update(SettingsScreen* settings, float time_delta) {
         case SETTINGS_MENU_CHECKPOINTS:
             settings_screen_update_checkpoints(settings);
             break;
+
+        default:
+            break;
     }
 }
 
