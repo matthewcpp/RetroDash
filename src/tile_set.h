@@ -8,7 +8,8 @@ typedef enum {
     TILE_TYPE_SOLID = 1,
     TILE_TYPE_TRIANGLE = 2,
     TILE_TYPE_TUNNEL = 3,
-    TILE_TYPE_BRICK = 4
+    TILE_TYPE_BRICK = 4,
+    TILE_TYPE_HALF = 5
 } TileType;
 
 typedef struct {

@@ -7,7 +7,8 @@ const TileTypeValues = {
     solid: 1,
     triangle: 2,
     tunnel: 3,
-    brick: 4
+    brick: 4,
+    half: 5
 }
 
 // Note: This should match up with the PlayerSize enum in player.h

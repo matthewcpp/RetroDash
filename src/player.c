@@ -61,6 +61,30 @@ void player_destroy(Player* player) {
     free(player);
 }
 
+static void set_player_landed_on_ground(Player* player, PlayerQuery* query) {
+    player->on_ground = 1;
+    player->velocity.y = 0.0f;
+
+    // need to update the query
+    query->min_y = (int)player->entity.position.y;
+    query->max_y = (int)floorf(player->entity.position.y + player_hit_sizes[player->current_size].y);
+
+    if (player->is_jumping) {
+        player->is_jumping = 0;
+
+        // Animation will be set to running when size change animation completes
+        if (player->state != PLAYER_STATE_CHANGING_SIZE)
+            animation_player_set_current(&player->_animation, PLAYER_ANIMATION_RUN, 1);
+    }
+}
+
+/**
+ * This grace value allows for forgiving the player for less than totally accurate jumps.
+ * This comes into play when jumping to tile platforms and the player's jump arc may not place them totally on top of the tile
+ * In the case they hit the tile within the grace range, we will not penalize them, and instead bump them to the top of the tile
+ */
+#define TILE_FLOOR_GRACE 0.2f
+
 /**
  * Checks to see if the player is standing on safe ground.
  * In the event they are, it will update the position such that they are standing on the top of the tile.
@@ -76,23 +100,28 @@ static void check_floor(Player* player, PlayerQuery* query) {
 
         switch (tile->type) {
             // if the player has fallen into a solid tile, update their position so that they are standing on it
-            case TILE_TYPE_SOLID:
-                player->entity.position.y = ceil(player->entity.position.y);
-                player->on_ground = 1;
-                player->velocity.y = 0.0f;
-
-                // need to update the query
-                query->min_y = (int)player->entity.position.y;
-                query->max_y = (int)floor(player->entity.position.y + player_hit_sizes[player->current_size].y);
-
-                if (player->is_jumping) {
-                    player->is_jumping = 0;
-
-                    // Animation will be set to running when size change animation completes
-                    if (player->state != PLAYER_STATE_CHANGING_SIZE)
-                        animation_player_set_current(&player->_animation, PLAYER_ANIMATION_RUN, 1);
+            case TILE_TYPE_SOLID:{
+                float tile_top = (float)query->min_y + 1.0f;
+                if (player->prev_pos.y >= tile_top - TILE_FLOOR_GRACE ||
+                    player->entity.position.y <= tile_top && player->entity.position.y >= tile_top - TILE_FLOOR_GRACE) {
+                    player->entity.position.y = ceilf(player->entity.position.y);
+                    set_player_landed_on_ground(player, query);
+                    return;
                 }
-                return;
+
+                break;
+            }
+
+            case TILE_TYPE_HALF:{
+                float tile_top = (float)query->min_y + 0.5f;
+                if (player->entity.position.y <= tile_top && player->entity.position.y >= tile_top - TILE_FLOOR_GRACE) {
+                    player->entity.position.y = tile_top;
+                    set_player_landed_on_ground(player, query);
+                }
+
+                break;
+            }
+
         }
     }
 }
@@ -131,7 +160,15 @@ static void check_collisions(Player* player, PlayerQuery* query) {
 
             case TILE_TYPE_SOLID:
                 player_kill(player);
-                return;
+                break;
+            case TILE_TYPE_HALF:{
+                float tile_height = (float)y + 0.5f;
+                if (player->entity.position.y < tile_height) {
+                    player_kill(player);
+                    return;
+                }
+                break;
+            }
 
             case TILE_TYPE_TUNNEL:
                 if (player->current_size != PLAYER_SIZE_SMALL) {
@@ -382,16 +419,16 @@ void player_reset(Player* player) {
 
 // TODO: This should take previous position into account to prevent "falling through tiles"
 void player_query_init(PlayerQuery* query, Player* player) {
-    query->max_x = (int)floor(player->entity.position.x + player_hit_sizes[player->current_size].x / 2.0f); // right
+    query->max_x = (int)floorf(player->entity.position.x + player_hit_sizes[player->current_size].x / 2.0f); // right
     if (query->max_x >= player->_level->width) query->max_x = player->_level->width - 1;
 
-    query->max_y = (int)floor(player->entity.position.y + player_hit_sizes[player->current_size].y); // top
+    query->max_y = (int)floorf(player->entity.position.y + player_hit_sizes[player->current_size].y); // top
     if (query->max_y >= player->_level->height) query->max_y = player->_level->height - 1;
 
-    query->min_y = (int)floor(player->entity.position.y); // bottom
+    query->min_y = (int)floorf(player->entity.position.y); // bottom
     if (query->min_y < 0) query->min_y = 0;
 
-    query->min_x = (int)floor(player->entity.position.x - player_hit_sizes[player->current_size].x / 2.0f); // left
+    query->min_x = (int)floorf(player->entity.position.x - player_hit_sizes[player->current_size].x / 2.0f); // left
     if (query->min_x < 0) query->min_x = 0;
 }
 
