@@ -1,6 +1,7 @@
 #include "sdl_renderer.h"
 
 #include "../filesystem.h"
+#include "../util.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -38,6 +39,7 @@ void renderer_get_screen_size(Renderer* renderer, Point* screen_size) {
 Sprite* renderer_load_sprite(Renderer* renderer, const char* sprite_base_path) {
     char* path_buffer = malloc(strlen(renderer->asset_dir) + strlen(sprite_base_path) + 13); // separator & .sprite
     sprintf(path_buffer, "%s/%s.png", renderer->asset_dir, sprite_base_path);
+    massage_path(path_buffer, strlen(path_buffer));
 
     SDL_Surface* surface = IMG_Load(path_buffer);
     if (!surface) return NULL;
@@ -50,6 +52,8 @@ Sprite* renderer_load_sprite(Renderer* renderer, const char* sprite_base_path) {
     SDL_QueryTexture(sprite->texture, NULL, NULL, &sprite->width, &sprite->height);
 
     sprintf(path_buffer, "%s/%s.sprite", renderer->asset_dir, sprite_base_path);
+    massage_path(path_buffer, strlen(path_buffer));
+
     FILE* sprite_info_file = fopen(path_buffer, "rb");
     fread(&sprite->horizontal_slices, sizeof(uint32_t), 1, sprite_info_file);
     fread(&sprite->vertical_slices, sizeof(uint32_t), 1, sprite_info_file);

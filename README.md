@@ -45,17 +45,16 @@ mkdir build && cd build
 cmake .. -DCMAKE_BUILD_TYPE=Release
 ```
 
-#### Building for Xbox:
+### Building for Xbox:
 
 Clone the [nxdk](https://github.com/XboxDev/nxdk) repo from github and follow the instructions for configuring the SDK.
 Note that on Ubuntu 20.04 you may need to append to your path directory for the `llvm-lib` command to work during the build process:
 ```
 PATH=$PATH:/usr/lib/llvm-10/bin
 ```
-Prepare Assets  
-
-Generate your xbe
+Prepare Assets and Generate your xbe
 ```shell script
+node tools/prepare_sdl_assets.js
 make -f Makefile.xbox NXDK_DIR=/path/to/nxdk
 ```
 

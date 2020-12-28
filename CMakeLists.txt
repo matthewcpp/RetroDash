@@ -26,6 +26,7 @@ set(game_src
     src/teleport.h src/teleport.c
     src/tile_collision.h src/tile_collision.c
     src/tile_set.h src/tile_set.c
+    src/util.h src/util.c
 
     src/screens/attempt_dialog.h src/screens/attempt_dialog.c
     src/screens/dialog.h src/screens/dialog.c

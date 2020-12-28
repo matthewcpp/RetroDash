@@ -21,12 +21,17 @@ static void xbox_fatal_error(const char* description)
 
 #define ASSET_DIR "D:\\build_sdl"
 
+#define XBOX_SCREEN_WIDTH 640
+#define XBOX_SCREEN_HEIGHT 480
+
+#define GAME_SCREEN_WIDTH 320
+#define GAME_SCREEN_HEIGHT 240
+
 int main(int argc, char** argv) {
+    XVideoSetMode(XBOX_SCREEN_WIDTH, XBOX_SCREEN_HEIGHT, 32, REFRESH_DEFAULT);
+
     SDL_VideoInit(NULL);
-
-    const int screen_width = 320, screen_height = 240;
-
-    SDL_Window* window = SDL_CreateWindow("Retro Dash", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, screen_width, screen_height,SDL_WINDOW_SHOWN);
+    SDL_Window* window = SDL_CreateWindow("Retro Dash", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, GAME_SCREEN_WIDTH, GAME_SCREEN_HEIGHT,SDL_WINDOW_SHOWN);
     SDL_InitSubSystem(SDL_INIT_GAMECONTROLLER);
 
     filesystem_init(ASSET_DIR);

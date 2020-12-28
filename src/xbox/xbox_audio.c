@@ -1,5 +1,7 @@
 #include "xbox_audio.h"
 
+#include "../util.h"
+
 #include "stb_vorbis.c"
 
 #include <hal/audio.h>
@@ -38,13 +40,6 @@ void xbox_audio_init(Audio* audio) {
     XAudioInit(16, 2, &xbox_audio_callback, audio);
 }
 
-void massage_path(char* path, size_t path_len) {
-    for (size_t i = 0; i < path_len; i++) {
-        if (path[i] == '/')
-            path[i] = '\\';
-    }
-}
-
 #define MIN(x,y) ((x)<(y)?(x):(y))
 
 void xbox_audio_callback(void* device, void* data) {
@@ -70,10 +65,8 @@ void xbox_audio_callback(void* device, void* data) {
 Music* audio_load_music(Audio* audio, const char* path){
     size_t path_len = strlen(audio->_asset_dir) + strlen(path) + 2;
     char* full_path = malloc(path_len);
-    sprintf(full_path, "%s%s", audio->_asset_dir, path);
+    sprintf(full_path, "%s/%s", audio->_asset_dir, path);
     massage_path(full_path, path_len);
-
-    debugPrint("Load: %s\n", full_path);
 
     short* decoded;
     int channels, len,  sample_rate;
