@@ -1,0 +1,24 @@
+# Note that NXDK_DIR needs to be passed to the makefile via command line.
+# Example: make -f Makefile.xbox NXDK_DIR=/path/to/nxdk
+
+XBE_TITLE = RetroDash
+GEN_XISO = $(XBE_TITLE).iso
+NXDK_SDL = y
+
+SRCS =  $(wildcard src/*.c) \
+		$(wildcard src/screens/*.c) \
+		src/sdl/sdl_filesystem.c \
+		src/sdl/sdl_font.c \
+		src/sdl/sdl_input.c \
+		src/sdl/sdl_renderer.c \
+		$(wildcard src/xbox/*.c)
+
+CFLAGS := $(CFLAGS) -I$(CURDIR)/lib/stb -DPLATFORM_XBOX
+
+all_local: cp_assets all
+
+include $(NXDK_DIR)/Makefile
+
+cp_assets:
+	@mkdir -p $(OUTPUT_DIR)
+	cp -r assets/build_sdl $(OUTPUT_DIR)

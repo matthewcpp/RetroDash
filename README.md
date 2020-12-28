@@ -12,8 +12,8 @@ You will need to have nodejs and docker installed.
 1. From the root of the repo run `npm install` to install the [libdragon docker container](https://github.com/anacierdem/libdragon-docker).
 1. Run `npx libdragon start` to start the docker container.
 1. Run `node tools/prepare_n64_assets.js /path/to/libdragon/tools/mksprite/mksprite` to prepare the game assets.
-1. Run `npx libdragon make clean` to clear previous build artifacts.
-1. Run `npx libdragon make` to build the ROM file.
+1. Run `npx libdragon make -f Makefile.n64 clean` to clear previous build artifacts.
+1. Run `npx libdragon make -f Makefile.n64` to build the ROM file.
 
 
 ### Testing with cen64
@@ -43,6 +43,20 @@ Windows: `cd build && conan install .. --build=sdl2_mixer`
 node tools/prepare_sdl_assets.js
 mkdir build && cd build
 cmake .. -DCMAKE_BUILD_TYPE=Release
+```
+
+#### Building for Xbox:
+
+Clone the [nxdk](https://github.com/XboxDev/nxdk) repo from github and follow the instructions for configuring the SDK.
+Note that on Ubuntu 20.04 you may need to append to your path directory for the `llvm-lib` command to work during the build process:
+```
+PATH=$PATH:/usr/lib/llvm-10/bin
+```
+Prepare Assets  
+
+Generate your xbe
+```shell script
+make -f Makefile.xbox NXDK_DIR=/path/to/nxdk
 ```
 
 ### Building with Emscripten
