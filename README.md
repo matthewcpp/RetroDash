@@ -47,15 +47,12 @@ cmake .. -DCMAKE_BUILD_TYPE=Release
 
 ### Building for Xbox:
 
-Clone the [nxdk](https://github.com/XboxDev/nxdk) repo from github and follow the instructions for configuring the SDK.
-Note that on Ubuntu 20.04 you may need to append to your path directory for the `llvm-lib` command to work during the build process:
-```
-PATH=$PATH:/usr/lib/llvm-10/bin
-```
-Prepare Assets and Generate your xbe
+The game can easily be built for the xbox using [nxdk](https://github.com/XboxDev/nxdk).
+A pre-configured docker image is the suggested way to build the game quickly and easily.  
+Prepare Assets and Generate your xbe/iso:
 ```shell script
 node tools/prepare_sdl_assets.js
-make -f Makefile.xbox NXDK_DIR=/path/to/nxdk
+docker run --rm -v $(pwd):/src -u $(id -u):$(id -g) matthewcpp/nxdk /bin/bash -c "cd /src; make -f Makefile.xbox"
 ```
 
 ### Building with Emscripten
