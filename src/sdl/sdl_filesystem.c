@@ -8,7 +8,7 @@
 
 char* path_prefix = NULL;
 size_t path_prefix_len = 0;
-
+FilesystemErrorFunc error_func = NULL;
 FILE* handles[FILESYSTEM_MAX_OPEN_FILES];
 
 void filesystem_init(const char* filesystem_path_prefix) {
@@ -24,6 +24,8 @@ void filesystem_uninit() {
         free(path_prefix);
         path_prefix = NULL;
     }
+
+    error_func = NULL;
 }
 
 const char* filesystem_get_asset_base_path() {
@@ -53,6 +55,9 @@ int filesystem_open(const char* path) {
         handle = -1;
     }
 
+    if (handle == -1 && error_func != NULL)
+        error_func(filesystem_path);
+
     free(filesystem_path);
     return handle;
 }
@@ -77,4 +82,8 @@ int filesystem_read(void* buf, int size, int count, int handle) {
 
 void filesystem_seek(int handle, int offset, int origin) {
     fseek(handles[handle], offset, origin);
+}
+
+void filesystem_set_error_callback(FilesystemErrorFunc func) {
+    error_func = func;
 }

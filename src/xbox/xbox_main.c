@@ -39,6 +39,10 @@ int main(int argc, char** argv) {
     Renderer* renderer = sdl_renderer_create(window, ASSET_DIR);
     Audio* audio = xbox_audio_create(ASSET_DIR);
 
+    filesystem_set_error_callback(xbox_fatal_error);
+    renderer_set_error_callback(renderer, xbox_fatal_error);
+    audio_set_error_callback(audio, xbox_fatal_error);
+
     Game* game = game_create(audio, input, renderer);
 
     SDL_Event event;

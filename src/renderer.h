@@ -5,6 +5,11 @@
 
 #include "rect.h"
 
+/**
+ * A function that will be called when a renderer error occurs.  Will receive a string with details about the error.
+ */
+typedef void(*RendererErrorFunc)(const char*);
+
 typedef struct Sprite Sprite;
 typedef struct Renderer Renderer;
 typedef struct Font Font;
@@ -40,5 +45,7 @@ void renderer_destroy_sprite(Renderer* renderer, Sprite* sprite);
 Font* renderer_load_font(Renderer* renderer, const char* font_base_path);
 void renderer_destroy_font(Renderer* renderer, Font* font);
 Sprite* renderer_create_text_sprite(Renderer* renderer, Font* font, const char* str);
+
+void renderer_set_error_callback(Renderer* renderer, RendererErrorFunc func);
 
 #endif

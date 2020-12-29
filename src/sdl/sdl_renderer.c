@@ -21,6 +21,8 @@ Renderer* sdl_renderer_create(SDL_Window* window, const char* asset_dir) {
     renderer_set_clear_color(renderer, 255, 255, 255);
     renderer_end_tile_drawing(renderer);
 
+    renderer->error_callback = NULL;
+
     return renderer;
 }
 
@@ -42,7 +44,14 @@ Sprite* renderer_load_sprite(Renderer* renderer, const char* sprite_base_path) {
     massage_path(path_buffer, strlen(path_buffer));
 
     SDL_Surface* surface = IMG_Load(path_buffer);
-    if (!surface) return NULL;
+    if (!surface) {
+        if (renderer->error_callback)
+            renderer->error_callback(path_buffer);
+
+        free(path_buffer);
+
+        return NULL;
+    }
 
     SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer->sdl_renderer, surface);
     SDL_FreeSurface(surface);
@@ -55,9 +64,16 @@ Sprite* renderer_load_sprite(Renderer* renderer, const char* sprite_base_path) {
     massage_path(path_buffer, strlen(path_buffer));
 
     FILE* sprite_info_file = fopen(path_buffer, "rb");
-    fread(&sprite->horizontal_slices, sizeof(uint32_t), 1, sprite_info_file);
-    fread(&sprite->vertical_slices, sizeof(uint32_t), 1, sprite_info_file);
-    fclose(sprite_info_file);
+    if (sprite_info_file) {
+        fread(&sprite->horizontal_slices, sizeof(uint32_t), 1, sprite_info_file);
+        fread(&sprite->vertical_slices, sizeof(uint32_t), 1, sprite_info_file);
+        fclose(sprite_info_file);
+    }
+    else if (renderer->error_callback) {
+        renderer->error_callback(path_buffer);
+        renderer_destroy_sprite(renderer, sprite);
+        sprite = NULL;
+    }
 
     free(path_buffer);
 
@@ -229,4 +245,8 @@ int sprite_horizontal_frame_size(Sprite* sprite) {
 
 int sprite_vertical_frame_size(Sprite* sprite) {
     return sprite->height / sprite->vertical_slices;
+}
+
+void renderer_set_error_callback(Renderer* renderer, RendererErrorFunc func) {
+    renderer->error_callback = func;
 }

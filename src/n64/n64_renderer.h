@@ -26,6 +26,7 @@ struct Renderer {
     int tile_batch_count;
     DrawMode draw_mode;
     Point screen_size;
+    RendererErrorFunc error_callback;
 };
 
 Renderer* n64_renderer_create(int screen_width, int screen_height);

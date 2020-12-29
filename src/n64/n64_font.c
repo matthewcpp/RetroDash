@@ -22,6 +22,9 @@ Font* renderer_load_font(Renderer* renderer, const char* font_base_path) {
 
     int sprite_handle = dfs_open(path_buffer);
     if (sprite_handle < 0){
+        if (renderer->error_callback != NULL)
+            renderer->error_callback(path_buffer);
+
         free(path_buffer);
         return NULL;
     }
@@ -30,6 +33,9 @@ Font* renderer_load_font(Renderer* renderer, const char* font_base_path) {
     int font_handle = dfs_open(path_buffer);
     free(path_buffer);
     if (font_handle < 0) {
+        if (renderer->error_callback != NULL)
+            renderer->error_callback(path_buffer);
+
         dfs_close(sprite_handle);
         return NULL;
     }

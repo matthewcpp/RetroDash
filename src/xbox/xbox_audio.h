@@ -23,6 +23,7 @@ struct Audio {
     unsigned int voice_pos;
 
     int is_playing;
+    AudioErrorFunc error_callback;
 };
 
 

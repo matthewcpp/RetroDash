@@ -1,6 +1,7 @@
 #include "sdl_renderer.h"
 
 #include "../font_private.h"
+#include "../util.h"
 
 #include <SDL_image.h>
 
@@ -17,13 +18,17 @@ Font* renderer_load_font(Renderer* renderer, const char* font_base_path) {
     char* path_buffer = malloc(strlen(renderer->asset_dir) + strlen(font_base_path) + 12); // separator .png, .font
 
     sprintf(path_buffer, "%s/%s.font", renderer->asset_dir, font_base_path);
+    massage_path(path_buffer, strlen(path_buffer));
     FILE* font_info_file = fopen(path_buffer, "rb");
 
     if (!font_info_file) return NULL;
 
     sprintf(path_buffer, "%s/%s.png", renderer->asset_dir, font_base_path);
+    massage_path(path_buffer, strlen(path_buffer));
+
     SDL_Surface* surface = IMG_Load(path_buffer);
     free(path_buffer);
+
     if (!surface) {
         fclose(font_info_file);
         return NULL;

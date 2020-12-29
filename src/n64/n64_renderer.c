@@ -22,6 +22,8 @@ Renderer* n64_renderer_create(int screen_width, int screen_height) {
     renderer->tile_batch_count = 0;
     software_tile_batch_init(&renderer->software_tiles);
 
+    renderer->error_callback = NULL;
+
     return renderer;
 }
 
@@ -35,6 +37,9 @@ Sprite* renderer_load_sprite(Renderer* renderer, const char* path) {
     sprintf(spritePath, "/%s.sprite", path);
 
     int handle = dfs_open(spritePath);
+    if (handle < 0 && renderer->error_callback != NULL)
+        renderer->error_callback(spritePath);
+
     free(spritePath);
 
     if (handle < 0)
@@ -227,4 +232,8 @@ int sprite_horizontal_frame_size(Sprite* sprite){
 
 int sprite_vertical_frame_size(Sprite* sprite) {
     return sprite->libdragon_sprite->height / sprite->libdragon_sprite->vslices;
+}
+
+void renderer_set_error_callback(Renderer* renderer, RendererErrorFunc func) {
+    renderer->error_callback = func;
 }

@@ -71,6 +71,10 @@ Music* audio_load_music(Audio* audio, const char* path){
     short* decoded;
     int channels, len,  sample_rate;
     len = stb_vorbis_decode_filename(full_path, &channels, &sample_rate, &decoded);
+
+    if (len < 0 && audio->error_callback != NULL)
+        audio->error_callback(full_path);
+
     free(full_path);
 
     if (len < 0)
@@ -142,4 +146,8 @@ void audio_set_music_volume(Audio* audio, float volume) {
 
 int audio_is_playing_music(Audio* audio) {
     return audio->is_playing;
+}
+
+void audio_set_error_callback(Audio* audio, AudioErrorFunc func) {
+    audio->error_callback = func;
 }
