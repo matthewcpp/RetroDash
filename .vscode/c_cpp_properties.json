@@ -1,0 +1,19 @@
+{
+    "configurations": [
+        {
+            "name": "NXDK",
+            "includePath": [
+                "${workspaceFolder}/**",
+                "/nxdk/lib",
+                "/nxdk/lib/winapi",
+                "/nxdk/lib/xboxrt/vcruntime"
+            ],
+            "defines": ["PLATFORM_XBOX"],
+            "compilerPath": "/usr/lib/llvm-10/bin/clang",
+            "cStandard": "c11",
+            "cppStandard": "c++14",
+            "intelliSenseMode": "clang-x64"
+        }
+    ],
+    "version": 4
+}

@@ -19,3 +19,5 @@ bin
 RetroDash.iso
 main.exe
 main.lib
+
+.devcontainer.json
