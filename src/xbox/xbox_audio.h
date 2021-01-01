@@ -29,6 +29,5 @@ struct Audio {
 
 
 Audio* xbox_audio_create(const char* asset_dir);
-void xbox_audio_init(Audio* audio);
 void xbox_audio_destroy(Audio* audio);
 #endif

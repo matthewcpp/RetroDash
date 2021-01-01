@@ -11,10 +11,21 @@
 
 void xbox_audio_callback(void* device, void* data);
 
+const unsigned short buffer_size = 48*1024;
+#define MAXRAM 0x03FFAFFF
+
 Audio* xbox_audio_create(const char* asset_dir) {
     Audio* audio = calloc(1, sizeof(Audio));
     audio->_asset_dir = malloc(strlen(asset_dir) + 1);
     strcpy(audio->_asset_dir, asset_dir);
+
+        for (int i = 0; i < XBOX_AUDIO_NUM_BUFFERS; i++) {
+        audio->playback_buffers[i] = MmAllocateContiguousMemoryEx(buffer_size, 0, MAXRAM, 0, (PAGE_READWRITE | PAGE_WRITECOMBINE));
+        memset(audio->playback_buffers[i], 0, buffer_size);
+    }
+
+    /* Initialize audio subsystem to begin playback */
+    XAudioInit(16, 2, &xbox_audio_callback, audio);
 
     return audio;
 }
@@ -25,19 +36,6 @@ void xbox_audio_destroy(Audio* audio) {
     }
 
     free(audio);
-}
-
-const unsigned short buffer_size = 48*1024;
-#define MAXRAM 0x03FFAFFF
-
-void xbox_audio_init(Audio* audio) {
-    for (int i = 0; i < XBOX_AUDIO_NUM_BUFFERS; i++) {
-        audio->playback_buffers[i] = MmAllocateContiguousMemoryEx(buffer_size, 0, MAXRAM, 0, (PAGE_READWRITE | PAGE_WRITECOMBINE));
-        memset(audio->playback_buffers[i], 0, buffer_size);
-    }
-
-    /* Initialize audio subsystem to begin playback */
-    XAudioInit(16, 2, &xbox_audio_callback, audio);
 }
 
 #define MIN(x,y) ((x)<(y)?(x):(y))
@@ -63,10 +61,10 @@ void xbox_audio_callback(void* device, void* data) {
 }
 
 Music* audio_load_music(Audio* audio, const char* path){
-    size_t path_len = strlen(audio->_asset_dir) + strlen(path) + 2;
+    size_t path_len = strlen(audio->_asset_dir) + strlen(path) + 6;
     char* full_path = malloc(path_len);
-    sprintf(full_path, "%s/%s", audio->_asset_dir, path);
-    massage_path(full_path, path_len);
+    sprintf(full_path, "%s/%s.ogg", audio->_asset_dir, path);
+    massage_path(full_path, path_len - 1);
 
     short* decoded;
     int channels, len,  sample_rate;
@@ -88,6 +86,11 @@ Music* audio_load_music(Audio* audio, const char* path){
 }
 
 void audio_destroy_music(Audio* audio, Music* music) {
+    if (music == audio->current_music) {
+        audio->is_playing = 0;
+        XAudioPause();
+    }
+
     free(music->samples);
     free(music);
 }
@@ -111,7 +114,6 @@ void audio_play_music(Audio* audio, Music* music) {
             xbox_audio_callback(NULL, audio);
         }
 
-        debugPrint("Initial Samples provided, begin playback\n");
         XAudioPlay();
     }
 }
