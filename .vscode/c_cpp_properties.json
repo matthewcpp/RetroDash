@@ -8,7 +8,8 @@
                 "/nxdk/lib/winapi",
                 "/nxdk/lib/xboxrt/vcruntime",
                 "/nxdk/lib/sdl/SDL2/include",
-                "/nxdk/lib/sdl/SDL2_image"
+                "/nxdk/lib/sdl/SDL2_image",
+                "/nxdk/lib/pdclib/platform/example/include"
             ],
             "defines": ["PLATFORM_XBOX"],
             "compilerPath": "/usr/lib/llvm-10/bin/clang",

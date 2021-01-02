@@ -82,7 +82,6 @@ int main(int argc, char** argv) {
     game_destroy(game);
     sdl_input_destory(input);
     sdl_renderer_destroy(renderer);
-    xbox_audio_destroy(audio);
     filesystem_uninit();
 
     SDL_Quit();
