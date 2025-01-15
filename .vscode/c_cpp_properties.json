@@ -1,0 +1,25 @@
+{
+    "configurations": [
+        {
+            "name": "n64_libultra",
+            "includePath": [
+                "/usr/include/n64",
+                "/usr/include/n64/nusys",
+                "/usr/include/n64/nustd",
+                "${workspaceFolder}/lib/framework64/include",
+                "${workspaceFolder}/build_n64_libultra/bin/game/assets/include",
+                "${workspaceFolder}/src/**"
+            ],
+            "defines": [
+                "_LANGUAGE_C",
+                "FW64_PLATFORM_N64_LIBULTRA"
+            ],
+            "compileCommands": "${workspaceFolder}/build_n64_libultra/compile_commands.json"
+        },
+        {
+            "name": "Desktop",
+            "configurationProvider": "ms-vscode.cmake-tools"
+        }
+    ],
+    "version": 4
+}

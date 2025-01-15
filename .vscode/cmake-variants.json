@@ -1,0 +1,42 @@
+{
+    "buildType": {
+        "default": "debug",
+        "choices": {
+            "debug": {
+                "short": "Debug",
+                "buildType": "Debug",
+                "settings": {
+                    "CMAKE_BUILD_TYPE": "Debug"
+                }
+            },
+            "release": {
+                "short": "Release",
+                "buildType": "Release",
+                "settings": {
+                    "CMAKE_BUILD_TYPE": "Release"
+                }
+            }
+        }
+    },
+    "platform": {
+        "default": "Desktop",
+        "choices": {
+            "desktop": {
+                "short": "Desktop",
+                "long": "Desktop",
+                "settings": {
+                    "CMAKE_TOOLCHAIN_FILE": "${env:VCPKG_DIR}/scripts/buildsystems/vcpkg.cmake",
+                    "VCPKG_MANIFEST_DIR": "${workspaceFolder}/lib/framework64",
+                    "FW64_PLATFORM_DESKTOP": "ON"
+                }
+            },
+            "n64_libultra": {
+                "short": "n64_libultra",
+                "long": "n64_libultra",
+                "settings": {
+                    "FW64_PLATFORM_N64_LIBULTRA": "ON"
+                }
+            }
+        }
+    }
+}

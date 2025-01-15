@@ -1,176 +1,53 @@
 #include "game.h"
+#include "assets/assets.h"
 
-#include "screens/level_select.h"
-#include "screens/playing.h"
-#include "screens/settings.h"
-#include "screens/title.h"
-#include "screens/tutorial.h"
+#include "framework64/controller_mapping/n64.h"
 
-#include <stdlib.h>
-#include <string.h>
+void game_init(Game* game, fw64Engine* engine) {
+    fw64Allocator* allocator = fw64_default_allocator();
+    fw64Display* display = fw64_displays_get_primary(engine->displays);
 
-typedef union {
-    PlayingScreen* playing;
-    TitleScreen* title;
-    LevelSelectScreen* level_select;
-    TutorialScreen* tutorial;
-    SettingsScreen * settings;
-} State;
+    game->engine = engine;
 
-struct Game {
-    Audio* _audio;
-    Input* _input;
-    Renderer* _renderer;
-    GameScreen current_state;
-    State state;
-    GameSettings settings;
-};
+    fw64SceneInfo scene_info;
+    fw64_scene_info_init(&scene_info);
+    scene_info.node_count = 2;
+    scene_info.mesh_count = 1;
+    scene_info.mesh_instance_count = 1;
 
-static void game_destroy_current_state(Game* game) {
-    switch (game->current_state) {
-        case GAME_SCREEN_TITLE:
-            title_screen_destroy(game->state.title);
-            break;
+    fw64_scene_init(&game->scene, &scene_info, engine->assets, allocator);
+    fw64Node* node = fw64_scene_create_node(&game->scene);
+    vec3_set_all(&node->transform.scale, 0.1f);
+    fw64_node_update(node);
 
-        case GAME_SCREEN_PLAYING:
-            playing_screen_destroy(game->state.playing);
-            break;
+    fw64Mesh* mesh = fw64_scene_load_mesh_asset(&game->scene, FW64_ASSET_mesh_n64_logo);
+    fw64_scene_create_mesh_instance(&game->scene, node, mesh);
 
-        case GAME_SCREEN_LEVEL_SELECT:
-            level_select_screen_destroy(game->state.level_select);
-            break;
+    fw64_rotate_node_init(&game->rotate_node, node);
 
-        case GAME_SCREEN_TUTORIAL:
-            tutorial_screen_destroy(game->state.tutorial);
-            break;
+    fw64Node* camera_node = fw64_scene_create_node(&game->scene);
+    vec3_set(&camera_node->transform.position, 0.0f, 7.5f, 18.0f);
+    Vec3 target = {0.0f, 0.0f, 0.0f};
+    Vec3 up = {0.0f, 1.0f, 0.0f};
+    fw64_transform_look_at(&camera_node->transform, &target, &up);
+    fw64_node_update(camera_node);
 
-        case GAME_SCREEN_SETTINGS:
-            settings_screen_destroy(game->state.settings);
-            break;
+    fw64Camera camera;
+    fw64_camera_init(&camera, camera_node, display);
 
-        case GAME_SCREEN_NONE:
-            break;
-    }
+    game->renderpass = fw64_renderpass_create(display, allocator);
+    fw64_renderpass_set_camera(game->renderpass, &camera);
 }
 
-static void game_set_state(Game* game, GameScreen state) {
-    switch (state) {
-        case GAME_SCREEN_TITLE:
-            game_destroy_current_state(game);
-            game->state.title = title_screen_create(game->_audio, game->_input, game->_renderer);
-            break;
-
-        case GAME_SCREEN_PLAYING: {
-            char level_path[32];
-            strcpy(level_path, level_select_screen_get_selected_path(game->state.level_select));
-            game_destroy_current_state(game);
-            game->state.playing = playing_screen_create(game->_audio, game->_renderer, game->_input, level_path,
-                                                        &game->settings);
-            break;
-        }
-
-        case GAME_SCREEN_LEVEL_SELECT:
-            game_destroy_current_state(game);
-            game->state.level_select = level_select_screen_create(game->_audio, game->_input, game->_renderer);
-            break;
-
-        case GAME_SCREEN_TUTORIAL:
-            game_destroy_current_state(game);
-            game->state.tutorial = tutorial_screen_create(game->_audio, game->_input, game->_renderer, &game->settings);
-            break;
-
-        case GAME_SCREEN_SETTINGS:
-            game_destroy_current_state(game);
-            game->state.settings = settings_screen_create(game->_renderer, game->_input, &game->settings);
-            break;
-
-        case GAME_SCREEN_NONE:
-            break;
-    }
-
-    game->current_state = state;
+void game_update(Game* game){
+    fw64_rotate_node_update(&game->rotate_node, game->engine->time->time_delta);
 }
 
-Game* game_create(Audio* audio, Input* input, Renderer* renderer){
-    Game* game = malloc(sizeof(Game));
-    game->_audio = audio;
-    game->_input = input;
-    game->_renderer = renderer;
-    game->current_state = GAME_SCREEN_NONE;
-
-    settings_init(&game->settings);
-
-    renderer_set_clear_color(game->_renderer, 10, 7, 53);
-    game_set_state(game , GAME_SCREEN_TITLE);
-
-    return game;
-}
-
-void game_destroy(Game* game){
-    game_destroy_current_state(game);
-    free(game);
-}
-
-void game_update(Game* game, float time_delta){
-    GameScreen state_transition = GAME_SCREEN_NONE;
-
-    switch (game->current_state) {
-        case GAME_SCREEN_TITLE:
-            title_screen_update(game->state.title, time_delta);
-            state_transition = game->state.title->transition;
-            break;
-
-        case GAME_SCREEN_PLAYING:
-            playing_screen_update(game->state.playing, time_delta);
-            state_transition = game->state.playing->transition;
-            break;
-
-        case GAME_SCREEN_LEVEL_SELECT:
-            level_select_screen_update(game->state.level_select, time_delta);
-            state_transition = game->state.level_select->transition;
-            break;
-
-        case GAME_SCREEN_TUTORIAL:
-            tutorial_screen_update(game->state.tutorial, time_delta);
-            state_transition = game->state.tutorial->transition;
-            break;
-
-        case GAME_SCREEN_SETTINGS:
-            settings_screen_update(game->state.settings, time_delta);
-            state_transition = game->state.settings->transition;
-            break;
-
-        case GAME_SCREEN_NONE:
-            break;
-    }
-
-    if (state_transition != GAME_SCREEN_NONE)
-        game_set_state(game, state_transition);
-}
-
-void game_draw(Game* game){
-    switch (game->current_state) {
-        case GAME_SCREEN_TITLE:
-            title_screen_draw(game->state.title);
-            break;
-
-        case GAME_SCREEN_PLAYING:
-            playing_screen_draw(game->state.playing);
-            break;
-
-        case GAME_SCREEN_LEVEL_SELECT:
-            level_select_screen_draw(game->state.level_select);
-            break;
-
-        case GAME_SCREEN_TUTORIAL:
-            tutorial_screen_draw(game->state.tutorial);
-            break;
-
-        case GAME_SCREEN_SETTINGS:
-            settings_screen_draw(game->state.settings);
-            break;
-
-        case GAME_SCREEN_NONE:
-            break;
-    }
+void game_draw(Game* game) {
+    fw64_renderer_begin(game->engine->renderer, FW64_PRIMITIVE_MODE_TRIANGLES,  FW64_CLEAR_FLAG_ALL);
+    fw64_renderpass_begin(game->renderpass);
+    fw64_scene_draw_all(&game->scene, game->renderpass);
+    fw64_renderpass_end(game->renderpass);
+    fw64_renderer_submit_renderpass(game->engine->renderer, game->renderpass);
+    fw64_renderer_end(game->engine->renderer, FW64_RENDERER_FLAG_SWAP);
 }
